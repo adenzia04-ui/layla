@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Screen Time. Development works on any paid team; shipping to the App
+	     Store needs Apple's separate Family Controls distribution approval. -->
+	<key>com.apple.developer.family-controls</key>
+	<true/>
+
+	<!-- Shared container between the app and its extensions. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.SMAG.noor</string>
+	</array>
+</dict>
+</plist>

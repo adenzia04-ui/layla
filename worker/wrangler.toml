@@ -1,0 +1,12 @@
+name = "layla-welcome"
+main = "src/index.js"
+compatibility_date = "2026-08-22"
+
+# Public, and safe to keep here: this is the same Firebase Web API key that
+# ships inside the app. It only lets the Worker ask Google to resolve a token.
+[vars]
+FIREBASE_API_KEY = "AIzaSyBroSkqP0WkhPnJfZ5Kwfg2qUAu0oTi7OE"
+MAIL_FROM = "Layla <onboarding@resend.dev>"
+
+# RESEND_API_KEY is NOT here on purpose. Set it as a secret:
+#   npx wrangler secret put RESEND_API_KEY

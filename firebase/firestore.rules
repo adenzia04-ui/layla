@@ -1,0 +1,130 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Guest (anonymous) accounts can use the whole app privately, but cannot
+    // put anything in front of other users.
+    function isFullAccount() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // ── User profile ───────────────────────────────────────────────────
+    // Private in its entirety. It holds precise coordinates and prayer
+    // history, so nobody else can read it — not even to show a name. Names on
+    // stories and the map are denormalised copies instead.
+    match /users/{uid} {
+      allow read, create, update: if isOwner(uid);
+      allow delete: if false; // account deletion goes through Cloud Functions
+
+      match /prayer_days/{date} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /tasbih_sessions/{sessionId} {
+        allow read, create, delete: if isOwner(uid);
+        allow update: if false;
+      }
+    }
+
+    // ── Tahajjud live presence ─────────────────────────────────────────
+    // One document per user, id == uid. Readable by any signed-in user, but
+    // only ever contains a coarse geohash cell — see core/utils/geohash.dart.
+    match /tahajjud_presence/{uid} {
+      allow read: if signedIn();
+
+      allow create, update: if isOwner(uid)
+        && isFullAccount()
+        && request.resource.data.active == true
+        && request.resource.data.cellGeohash is string
+        // precision 5 exactly: no finer location may be published
+        && request.resource.data.cellGeohash.size() == 5
+        && request.resource.data.cellLat is number
+        && request.resource.data.cellLng is number
+        && request.resource.data.expiresAt is timestamp
+        // a session may never be published for longer than three hours
+        && request.resource.data.expiresAt
+             < request.time + duration.value(3, 'h')
+        // reject any attempt to smuggle precise coordinates through
+        && !request.resource.data.keys().hasAny(['lat', 'lng', 'accuracy',
+                                                 'address', 'email']);
+
+      allow delete: if isOwner(uid);
+    }
+
+    // ── Tahajjud stories ───────────────────────────────────────────────
+    match /stories/{storyId} {
+      // Published stories are public to signed-in users; an author can always
+      // see their own, including while it is under review.
+      allow read: if signedIn()
+        && (resource.data.status == 'published'
+            || isOwner(resource.data.uid));
+
+      allow create: if isFullAccount()
+        && request.resource.data.uid == request.auth.uid
+        // Enforced here, not only in the app: an anonymous story must carry no
+        // name at all. A client that tries to send one is refused.
+        && (request.resource.data.isAnonymous == false
+            || !('authorName' in request.resource.data))
+        && request.resource.data.body is string
+        && request.resource.data.body.size() >= 40
+        && request.resource.data.body.size() <= 1200
+        && request.resource.data.status == 'published'
+        && request.resource.data.likeCount == 0
+        && request.resource.data.reportCount == 0;
+
+      // Anyone signed in may move the like counter (the likes subcollection
+      // stops it being moved twice). Everything else is the author's, and
+      // status/reportCount belong to Cloud Functions alone.
+      allow update: if signedIn()
+        && (
+          changedKeys().hasOnly(['likeCount'])
+          || (
+            isOwner(resource.data.uid)
+            && changedKeys().hasOnly(['body', 'mood', 'isAnonymous'])
+            // Turning a story anonymous must not leave the old name behind in
+            // the document — the edit is refused unless the name goes too.
+            && (request.resource.data.isAnonymous == false
+                || !('authorName' in request.resource.data))
+          )
+        );
+
+      allow delete: if isOwner(resource.data.uid);
+
+      match /likes/{likeUid} {
+        allow read: if signedIn();
+        allow create, delete: if isOwner(likeUid);
+        allow update: if false;
+      }
+    }
+
+    // ── Moderation reports ─────────────────────────────────────────────
+    // Write-only from the client: a reporter cannot see other reports, and
+    // cannot see whether a story has been reported before.
+    match /reports/{reportId} {
+      allow create: if signedIn()
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.storyId is string
+        && request.resource.data.status == 'open';
+      allow read, update, delete: if false;
+    }
+
+    // Anything not matched above is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

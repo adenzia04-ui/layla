@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Noor</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>noor</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+
+	<!-- Portrait only: the compass, focus screen and tasbih ring are all
+	     designed for one orientation. -->
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleLightContent</string>
+
+	<!-- ── Widgets & Live Activity ───────────────────────────────────── -->
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>NSSupportsLiveActivitiesFrequentUpdates</key>
+	<false/>
+
+	<!-- ── Prayer lock ───────────────────────────────────────────────── -->
+	<!-- Flip to <true/> ONLY once Apple has granted the Family Controls
+	     (Distribution) entitlement and it is on your provisioning profile.
+	     While this is false, Noor reports the lock as unavailable and the
+	     settings screen says so honestly instead of showing a toggle that
+	     cannot work. See docs/PRAYER_LOCK_LIMITATIONS.md. -->
+	<key>NoorScreenTimeEnabled</key>
+	<false/>
+
+	<!-- ── Permission strings ────────────────────────────────────────── -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Noor uses your location to calculate accurate prayer times, the Tahajjud window, and the direction of the Kaaba. On the Tahajjud map you are only ever shown as a rough area about 5 km across — never your exact position.</string>
+
+	<key>NSCameraUsageDescription</key>
+	<string>Noor uses the camera for step 2 of your prayer confirmation: a photo of your prayer mat. These photos are stored privately against your account and are never shown to anyone else.</string>
+
+
+
+	<key>NSMotionUsageDescription</key>
+	<string>Noor uses the compass and motion sensors to point you toward the Qibla.</string>
+
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Noor does not track you across other apps or websites.</string>
+</dict>
+</plist>

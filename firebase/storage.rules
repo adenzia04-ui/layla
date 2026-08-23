@@ -1,0 +1,45 @@
+// NOT DEPLOYED, AND NOT NEEDED for Noor as it stands.
+//
+// Prayer-mat photos are stored on-device, not in Cloud Storage — see
+// lib/features/prayer_lock/data/proof_repository.dart for why.
+//
+// This file is kept for the day you want photos to survive a device
+// change and are willing to move the project to the Blaze plan. It is
+// already correct: owner-only in both directions, no public URLs.
+// Deploy with: firebase deploy --only storage
+
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*')
+        && request.resource.size < 8 * 1024 * 1024;
+    }
+
+    // Prayer-mat photos.
+    //
+    // These can show the inside of someone's home. Owner-only, in both
+    // directions — there is no public URL, no sharing surface in the app, and
+    // no other user can list or read this path.
+    match /prayer_proofs/{uid}/{date}/{file} {
+      allow read: if isOwner(uid);
+      allow write: if isOwner(uid) && isImage();
+      allow delete: if isOwner(uid);
+    }
+
+    match /profile_photos/{uid} {
+      allow read: if request.auth != null;
+      allow write: if isOwner(uid) && isImage();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
