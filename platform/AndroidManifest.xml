@@ -46,7 +46,7 @@
         android:required="false" />
 
     <application
-        android:label="Noor"
+        android:label="Layla"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

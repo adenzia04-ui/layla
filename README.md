@@ -1,8 +1,8 @@
-# Noor · نور
+# Layla · ليلى
 
 **Stay connected with your prayers.**
 
-A Flutter + Firebase prayer companion: accurate prayer times, Qibla, Tasbih,
+Layla — a Flutter + Firebase prayer companion: accurate prayer times, Qibla, Tasbih,
 Tahajjud with a privacy-safe live map, community stories, a two-step prayer
 confirmation, and a streak that only counts prayers you actually confirmed.
 
