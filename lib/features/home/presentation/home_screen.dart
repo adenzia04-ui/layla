@@ -650,6 +650,9 @@ class _TahajjudTonightCard extends StatelessWidget {
                       Text(
                         active
                             ? 'The last third of the night has begun.'
+                            : window.end.isBefore(now)
+                            ? 'Tonight\'s window has passed. The next opens '
+                                  'after Maghrib.'
                             : 'Begins in ${Fmt.countdown(window.timeUntil(now))}',
                         style: AppType.bodySm.copyWith(color: AppColors.mist),
                       ),

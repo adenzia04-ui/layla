@@ -8,6 +8,7 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_snackbar.dart';
 import '../../../premium/application/premium_store.dart';
 import '../../../prayer_lock/application/prayer_lock_controller.dart';
+import '../../../prayer_lock/application/prayer_lock_sync.dart';
 import '../../../prayer_lock/domain/prayer_session.dart';
 import '../../../prayer_lock/presentation/scan_flow.dart';
 
@@ -62,6 +63,7 @@ class PrayerChoiceCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bool awaiting = session.awaitingProof;
     final bool pro = ref.watch(isProProvider);
+    final bool paused = ref.watch(appBlockingEnabledProvider);
 
     Future<void> run(Future<bool> Function() action) async {
       final bool ok = await action();
@@ -98,7 +100,9 @@ class PrayerChoiceCard extends ConsumerWidget {
           awaiting
               ? 'Your photo finishes it. Until then this prayer is not '
                     'confirmed.'
-              : 'Your apps are paused. Any of these three releases them.',
+              : paused
+              ? 'Your apps are paused. Any of these three releases them.'
+              : 'Any of these three moves the day on.',
           style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
         ),
         const SizedBox(height: Insets.lg),
@@ -111,17 +115,21 @@ class PrayerChoiceCard extends ConsumerWidget {
         // button costs me my streak" is a question an app should answer before
         // it is asked, not after.
         if (!awaiting) ...<Widget>[
-          const _Note(
+          _Note(
             icon: Icons.check_rounded,
-            text:
-                'Praying now — confirm with a photo of your mat. Counts '
-                'towards your streak.',
+            text: pro
+                ? 'Praying now — confirm with a photo of your mat. Counts '
+                      'towards your streak.'
+                : 'Praying now — one tap confirms it. Counts towards your '
+                      'streak.',
           ),
-          const _Note(
+          _Note(
             icon: Icons.schedule_rounded,
-            text:
-                'Later — apps come back, the prayer stays open, and you can '
-                'still confirm it today.',
+            text: paused
+                ? 'Later — apps come back, the prayer stays open, and you '
+                      'can still confirm it today.'
+                : 'Later — the prayer stays open, and you can still confirm '
+                      'it today.',
           ),
           const _Note(
             icon: Icons.close_rounded,

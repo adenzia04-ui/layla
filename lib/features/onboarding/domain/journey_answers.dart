@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show IconData, Icons;
 
 /// Who is praying, and what they are up against.
 ///
@@ -173,41 +174,42 @@ class JourneyAnswers {
 
 /// The avatars offered alongside the gender question.
 ///
-/// Emoji rather than bundled art: they render at any size, need no asset
-/// pipeline, and sidestep the question of whose face is being drawn.
+/// Icons rather than bundled art: they render at any size, need no asset
+/// pipeline, and sidestep the question of whose face is being drawn. They
+/// used to be emoji, which some builds drew as empty boxes.
 abstract final class JourneyAvatars {
-  static const List<({String key, String emoji, String verse, String ref})>
-  all = <({String key, String emoji, String verse, String ref})>[
+  static const List<({String key, IconData icon, String verse, String ref})>
+  all = <({String key, IconData icon, String verse, String ref})>[
     (
       key: 'palm',
-      emoji: '🌴',
+      icon: Icons.forest_rounded,
       verse: 'And lofty palm trees, with layered fruit',
       ref: 'Surah Qaf 50:10',
     ),
     (
       key: 'mountain',
-      emoji: '🏔️',
+      icon: Icons.terrain_rounded,
       verse: 'And the mountains as pegs',
       ref: 'Surah An-Naba 78:7',
     ),
     (
       key: 'sun',
-      emoji: '🌞',
+      icon: Icons.wb_sunny_rounded,
       verse: 'By the sun and its brightness',
       ref: 'Surah Ash-Shams 91:1',
     ),
     (
       key: 'moon',
-      emoji: '🌙',
+      icon: Icons.nightlight_round,
       verse: 'And the moon when it follows it',
       ref: 'Surah Ash-Shams 91:2',
     ),
   ];
 
-  static ({String key, String emoji, String verse, String ref})? byKey(
+  static ({String key, IconData icon, String verse, String ref})? byKey(
     String? key,
   ) {
-    for (final ({String key, String emoji, String verse, String ref}) a
+    for (final ({String key, IconData icon, String verse, String ref}) a
         in all) {
       if (a.key == key) return a;
     }

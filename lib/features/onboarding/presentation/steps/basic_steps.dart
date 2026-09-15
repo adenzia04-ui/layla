@@ -132,7 +132,7 @@ class GenderStep extends JourneyStep {
   @override
   Widget body(BuildContext context, WidgetRef ref, JourneyAnswers a) {
     final JourneyController c = ref.read(journeyProvider.notifier);
-    final ({String key, String emoji, String verse, String ref})? chosen =
+    final ({String key, IconData icon, String verse, String ref})? chosen =
         JourneyAvatars.byKey(a.avatar);
 
     return Column(
@@ -160,7 +160,7 @@ class GenderStep extends JourneyStep {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            for (final ({String key, String emoji, String verse, String ref}) v
+            for (final ({String key, IconData icon, String verse, String ref}) v
                 in JourneyAvatars.all)
               GestureDetector(
                 onTap: () => c.setAvatar(v.key),
@@ -180,7 +180,11 @@ class GenderStep extends JourneyStep {
                       width: a.avatar == v.key ? 2 : 1,
                     ),
                   ),
-                  child: Text(v.emoji, style: const TextStyle(fontSize: 28)),
+                  child: Icon(
+                    v.icon,
+                    size: 28,
+                    color: a.avatar == v.key ? AppColors.gold : AppColors.mist,
+                  ),
                 ),
               ),
           ],
