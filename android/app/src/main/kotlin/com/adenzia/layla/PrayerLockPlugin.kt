@@ -1,4 +1,4 @@
-package com.noorapp.noor
+package com.adenzia.layla
 
 import android.app.Activity
 import android.app.AppOpsManager

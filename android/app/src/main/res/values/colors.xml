@@ -3,4 +3,7 @@
     <!-- AppColors.midnight. The launch window is painted before Flutter exists,
          so it cannot read the Dart palette and has to repeat the value here. -->
     <color name="midnight">#FF060D1B</color>
+    <!-- The ground of the adaptive launcher icon. Same navy as the app's
+         own background, so the icon reads as one piece with the splash. -->
+    <color name="ic_launcher_background">#FF0B1B34</color>
 </resources>

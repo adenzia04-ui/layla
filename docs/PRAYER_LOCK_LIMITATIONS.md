@@ -10,7 +10,7 @@ This is **false for the app as it stands today**, on both platforms. Flutter and
 
 It can be made *conditionally* true, and the two platforms get there by completely different routes:
 
-- **iOS** — possible, via Apple's Screen Time API (`FamilyControls` + `ManagedSettings` + `DeviceActivity`). This is how Opal, one sec, Jomo and ScreenZen work. **Built in Noor** (`platform/ios/`), but dormant until Apple grants the Family Controls entitlement and the Xcode targets are added — see `platform/ios/README.md`.
+- **iOS** — possible, via Apple's Screen Time API (`FamilyControls` + `ManagedSettings` + `DeviceActivity`). This is how Opal, one sec, Jomo and ScreenZen work. **Live in Layla Pro**: the targets are in `ios/` (`NoorDeviceActivityMonitor`, `NoorShield`) and the shield works on a development build. App Store distribution still waits on Apple's Family Controls (Distribution) approval for team 6RQYJNC9LM, requested 16 Sep 2026.
 - **Android** — possible in a weaker, best-effort form, via a foreground service plus two special-access permissions. **Implemented in Noor v1**, off by default.
 
 Neither is a hard lock. Both can be turned off by the user in seconds. Ship the claim above and you will get rejected, or get users who feel lied to.
@@ -56,7 +56,7 @@ What it costs:
 
 ### What Noor ships on iOS
 
-The Screen Time integration **is written** — `platform/ios/` holds the bridge,
+The Screen Time integration **is built and running** — `ios/` holds the bridge,
 the shared shield helper, the `DeviceActivityMonitor` extension and the shield
 UI extension. It is dormant until two things happen, neither of which is code:
 
@@ -64,7 +64,7 @@ UI extension. It is dormant until two things happen, neither of which is code:
 2. The two extension targets and the App Group are added in Xcode, and
    `NoorScreenTimeEnabled` is flipped to `true` in `Info.plist`.
 
-`platform/ios/README.md` is the checklist. Until it is done, `permissions()`
+The Xcode targets already exist. Until Apple approves distribution, `permissions()`
 honestly reports `supported: false`, the settings screen reads "Not available
 on this device", and nothing crashes.
 

@@ -28,3 +28,8 @@ test/failures/
 worker/.wrangler/
 # Training photos stay on this Mac; the README explains the layout
 training/prayer_mat/
+
+# Android release signing — the upload key must never be committed
+android/key.properties
+*.jks
+*.keystore

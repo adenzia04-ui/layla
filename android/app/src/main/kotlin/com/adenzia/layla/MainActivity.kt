@@ -1,4 +1,4 @@
-package com.noorapp.noor
+package com.adenzia.layla
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine

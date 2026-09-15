@@ -1,4 +1,4 @@
-package com.noorapp.noor
+package com.adenzia.layla
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -32,8 +32,8 @@ import android.util.Log
 class PrayerLockService : Service() {
 
     companion object {
-        const val ACTION_START = "com.noorapp.noor.LOCK_START"
-        const val ACTION_STOP = "com.noorapp.noor.LOCK_STOP"
+        const val ACTION_START = "com.adenzia.layla.LOCK_START"
+        const val ACTION_STOP = "com.adenzia.layla.LOCK_STOP"
         const val EXTRA_LABEL = "prayerLabel"
         const val EXTRA_ENDS_AT = "endsAtMillis"
 
