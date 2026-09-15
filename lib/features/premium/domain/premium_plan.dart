@@ -47,7 +47,7 @@ const List<({String title, String detail})> kPremiumBenefits =
       (
         title: 'Everything else stays free',
         detail:
-            'Prayer times, the shield, streaks, Tahajjud, Mood and the '
+            'Prayer times, prayer focus, streaks, Tahajjud, Mood and the '
             'Names are yours either way.',
       ),
     ];

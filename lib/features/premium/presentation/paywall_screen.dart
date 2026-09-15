@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config/platform_features.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -149,9 +150,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             ],
             const SizedBox(height: Insets.lg),
             Text(
-              'Subscriptions renew until cancelled in your Apple ID settings. '
-              'Prayer times, the shield, streaks and Tahajjud are free for '
-              'everyone, always.',
+              'Subscriptions renew until cancelled in your '
+              '${Have.enforcedAppLock ? 'Apple ID' : 'Google Play'} settings. '
+              'Prayer times, ${Have.enforcedAppLock ? 'the shield' : 'prayer '
+                        'focus'}, streaks and Tahajjud are free for everyone, '
+              'always.',
               textAlign: TextAlign.center,
               style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
             ),

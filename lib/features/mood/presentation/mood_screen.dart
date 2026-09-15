@@ -202,10 +202,15 @@ class _MoodChip extends StatelessWidget {
                       Text(mood.label, style: AppType.titleSm),
                       Text(
                         mood.hint,
-                        maxLines: 1,
+                        // Two lines, not one. The tiles are half the screen
+                        // wide, and on a narrower phone the longer hints —
+                        // "Disconnected, on my own", "Confused, unsure of
+                        // the way" — were cut mid-word by the ellipsis.
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: AppType.bodySm.copyWith(
                           fontSize: 11,
+                          height: 1.25,
                           color: AppColors.mistFaint,
                         ),
                       ),

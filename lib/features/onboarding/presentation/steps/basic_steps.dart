@@ -153,7 +153,11 @@ class GenderStep extends JourneyStep {
         ],
         const SizedBox(height: Insets.lg),
         Text(
-          'Pick a token',
+          // Naming it as required: Next stays dim until one is chosen, and
+          // with the label reading simply "Pick a token" somebody who read
+          // it as decoration was left tapping a disabled button with
+          // nothing on screen explaining why.
+          a.avatar == null ? 'Pick a token to go on' : 'Your token',
           style: AppType.label.copyWith(color: AppColors.mistFaint),
         ),
         const SizedBox(height: Insets.md),

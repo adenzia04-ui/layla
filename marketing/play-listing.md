@@ -147,3 +147,28 @@ and a reminder that drifts by fifteen minutes is useless. The answer to give:
 
 If the declaration is refused, the app still works: reminders fall back to
 inexact scheduling and can arrive a few minutes late.
+
+## Two switches to flip before either store, not just Play
+
+Both live in `lib/features/premium/application/premium_store.dart` and are
+deliberate — every paid feature is open while the app is being tested — but
+shipping with them as they are means giving Premium away:
+
+    isProProvider            returns true for everyone
+    kStylesOpenForTesting    true, so every locked colour and counter applies
+
+While they stand, a padlock is drawn on a colour that then works, which is
+the contradiction a reviewer or a first user notices. Set the provider back to
+`ref.watch(premiumProvider).isPro` and the flag to `false` when the store
+products exist.
+
+## Known gaps on Android, stated so nobody is surprised
+
+  - No home-screen or lock-screen widgets, and no Live Activity. Those are
+    WidgetKit; the Android equivalents are unwritten. The app hides the
+    screens rather than offering switches that do nothing.
+  - The prayer lock is a nudge, not a shield: Android lets no app hold
+    another closed. The settings screen, the onboarding question and the
+    website all say so on Android.
+  - The prayer-mat scan has no on-device classifier on Android, so the
+    scanner falls back to a manual capture.

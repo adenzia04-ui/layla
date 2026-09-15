@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../utils/result.dart';
@@ -92,12 +93,7 @@ class LocationService {
       );
     }
 
-    final Position position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.medium,
-        timeLimit: Duration(seconds: 20),
-      ),
-    );
+    final Position position = await _fix();
 
     String city = '';
     String country = '';
@@ -123,6 +119,54 @@ class LocationService {
       city: city,
       country: country,
     );
+  }
+
+  /// A position, from the fastest source that has one.
+  ///
+  /// Asking the sensors for a fresh fix can take the full twenty seconds and
+  /// can fail outright: indoors, in a lift, on a phone whose GPS has not been
+  /// used since it booted. Android in particular hands back nothing until a
+  /// satellite or a network fix lands, and until this fell back, a fresh
+  /// install in a building showed "Prayer times need your location" under a
+  /// permission it had already been granted.
+  ///
+  /// The last known position is the right answer to fall back on: prayer
+  /// times move by about four minutes for every degree of longitude, so a
+  /// fix from earlier today, or from the last city, is far closer to the
+  /// truth than no times at all. A fresh fix is still asked for first, and
+  /// the next call replaces whatever this returned.
+  Future<Position> _fix() async {
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 20),
+        ),
+      );
+    } on Object catch (error) {
+      final Position? last = await _lastKnown();
+      if (last != null) {
+        debugPrint(
+          'Layla Pro: no fresh location fix ($error); '
+          'using the last known position.',
+        );
+        return last;
+      }
+      throw const AppFailure(
+        'Layla Pro could not get a position from this phone. Step near a '
+        'window or switch location on, and the times will fill in.',
+        code: 'location-no-fix',
+      );
+    }
+  }
+
+  Future<Position?> _lastKnown() async {
+    try {
+      return await Geolocator.getLastKnownPosition();
+    } on Object catch (error) {
+      debugPrint('Layla Pro: no last known position — $error');
+      return null;
+    }
   }
 
   /// Live fix if possible, cached otherwise — the dashboard's preferred path.

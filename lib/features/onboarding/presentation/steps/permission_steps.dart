@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/services/permission_service.dart';
+import '../../../../core/config/platform_features.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -155,8 +156,9 @@ class PauseAppsStep extends JourneyStep {
   const PauseAppsStep();
 
   @override
-  String title(JourneyAnswers a) =>
-      'Shall I pause your apps when it is time to pray?';
+  String title(JourneyAnswers a) => Have.enforcedAppLock
+      ? 'Shall I pause your apps when it is time to pray?'
+      : 'Shall I bring you back when it is time to pray?';
 
   @override
   bool answered(JourneyAnswers a) => a.wantsAppPause != null;
@@ -171,8 +173,17 @@ class PauseAppsStep extends JourneyStep {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          'The ones that swallow the ten minutes you meant to pray in. They '
-          'come back the moment you have prayed.',
+          // Android cannot hold another app closed — nothing can — so what
+          // is offered there is what is actually delivered: the prayer
+          // screen comes back over whatever was opened. Promising a shield
+          // and shipping a nudge is how an app earns a one-star review that
+          // is entirely fair.
+          Have.enforcedAppLock
+              ? 'The ones that swallow the ten minutes you meant to pray in. '
+                    'They come back the moment you have prayed.'
+              : 'Open one of the apps that swallow the ten minutes you meant '
+                    'to pray in, and Layla Pro comes back over it. You can '
+                    'always step past it — it is a nudge, not a lock.',
           style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
         ),
         const SizedBox(height: Insets.xl),
