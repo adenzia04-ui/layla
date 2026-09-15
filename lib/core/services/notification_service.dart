@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -240,7 +241,7 @@ class NotificationService {
   }) async {
     if (at.isBefore(DateTime.now())) return;
 
-    await _plugin.zonedSchedule(
+    await _queue(
       _prayerIdBase + index,
       '$prayerName has begun',
       _prayerWords[prayerId] ?? 'It is time for $prayerName.',
@@ -263,18 +264,72 @@ class NotificationService {
           sound: iosSound,
         ),
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      mode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: 'noor://focus/$prayerId',
     );
+  }
+
+  /// Queues one notification, and does not let a refused permission take the
+  /// rest of the day down with it.
+  ///
+  /// On Android 12 and later an exact alarm needs a grant the user can refuse
+  /// or withdraw at any time, and `zonedSchedule` throws when it is missing.
+  /// The prayers are queued in a loop, so one throw used to leave every prayer
+  /// after it unscheduled — the app would look as though reminders simply
+  /// stopped after Fajr. A prayer reminder a few minutes late is worth far
+  /// more than no reminder, so the exact mode is retried as inexact.
+  Future<void> _queue(
+    int id,
+    String title,
+    String body,
+    tz.TZDateTime when,
+    NotificationDetails details, {
+    required AndroidScheduleMode mode,
+    String? payload,
+  }) async {
+    Future<void> attempt(AndroidScheduleMode m) => _plugin.zonedSchedule(
+      id,
+      title,
+      body,
+      when,
+      details,
+      androidScheduleMode: m,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      payload: payload,
+    );
+
+    try {
+      await attempt(mode);
+    } on PlatformException catch (error) {
+      final bool exact =
+          mode == AndroidScheduleMode.exactAllowWhileIdle ||
+          mode == AndroidScheduleMode.exact;
+      if (!exact) {
+        debugPrint('Layla Pro: notification $id not scheduled — $error');
+        return;
+      }
+      debugPrint(
+        'Layla Pro: exact alarms refused ($error); '
+        'scheduling notification $id inexactly instead.',
+      );
+      try {
+        await attempt(AndroidScheduleMode.inexactAllowWhileIdle);
+      } on Object catch (fallbackError) {
+        debugPrint(
+          'Layla Pro: notification $id not scheduled — $fallbackError',
+        );
+      }
+    } on Object catch (error) {
+      debugPrint('Layla Pro: notification $id not scheduled — $error');
+    }
   }
 
   /// [day] is the offset from today, so several nights can be queued without
   /// each one replacing the last.
   Future<void> scheduleTahajjud({required DateTime at, int day = 0}) async {
     if (at.isBefore(DateTime.now())) return;
-    await _plugin.zonedSchedule(
+    await _queue(
       _tahajjudId + day,
       'The last third of the night has begun',
       _prayerWords['tahajjud']!,
@@ -289,9 +344,7 @@ class NotificationService {
         ),
         iOS: DarwinNotificationDetails(sound: iosSound),
       ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      mode: AndroidScheduleMode.inexactAllowWhileIdle,
       payload: 'noor://tahajjud',
     );
   }
@@ -304,7 +357,7 @@ class NotificationService {
   /// iOS, and the delay leaves time to lock the phone and hear what actually
   /// happens at Fajr.
   Future<void> sendTestAdhan({Duration delay = const Duration(seconds: 5)}) {
-    return _plugin.zonedSchedule(
+    return _queue(
       _testId,
       'Testing the adhan',
       'This is what you will hear when a prayer begins.',
@@ -322,9 +375,7 @@ class NotificationService {
           sound: iosSound,
         ),
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      mode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 
@@ -363,7 +414,7 @@ class NotificationService {
     final ({String id, String label}) pick = order[_testCursor % order.length];
     _testCursor++;
 
-    await _plugin.zonedSchedule(
+    await _queue(
       _testPrayerId,
       '${pick.label} has begun',
       _prayerWords[pick.id]!,
@@ -382,9 +433,7 @@ class NotificationService {
           sound: iosSound,
         ),
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      mode: AndroidScheduleMode.exactAllowWhileIdle,
     );
     return pick.label;
   }
@@ -405,7 +454,7 @@ class NotificationService {
   }) async {
     if (at.isBefore(DateTime.now())) return;
 
-    await _plugin.zonedSchedule(
+    await _queue(
       (before ? _beforeIdBase : _afterIdBase) + index,
       before
           ? '$prayerName is in $minutes minutes'
@@ -427,9 +476,7 @@ class NotificationService {
           interruptionLevel: InterruptionLevel.timeSensitive,
         ),
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      mode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: 'noor://focus/$prayerId',
     );
   }

@@ -413,7 +413,18 @@ service cloud.firestore {
         && ramadanRecordWellFormed(request.resource.data)
         && eidSentWellFormed(request.resource.data);
 
-      allow delete: if false; // account deletion goes through Cloud Functions
+      // Account deletion. This used to read `if false`, deferring to an
+      // `onUserDeleted` Cloud Function — which has never been deployed,
+      // because the project is on the free Spark plan. The result was that
+      // deleting an account removed the sign-in and left every document
+      // behind: the profile, the photo, the scoreboard, the code with the
+      // name on it. Both app stores require that deleting an account
+      // deletes its data, and so does the privacy page.
+      //
+      // So the owner erases their own. Only ever their own document, only
+      // ever while signed in as them — the same check that has always
+      // guarded writing it.
+      allow delete: if isOwner(uid);
 
       // Where an excused day is recorded: `excused: true` on the day, and
       // five records carrying PrayerStatus.excused rather than missed, so
@@ -562,15 +573,27 @@ service cloud.firestore {
         && getAfter(/databases/$(database)/documents/friend_code_owners/$(request.auth.uid))
              .data.code == code;
 
-      allow update, delete: if false;
+      allow update: if false;
+
+      // Deleting a code releases it, and the marker below goes with it.
+      // The one-code-per-account rule survives: the marker is create-only,
+      // so a second code can only ever be claimed after the first is given
+      // up, and nobody can hold two at once — which is all that rule was
+      // ever protecting. Releasing is also what account deletion needs: the
+      // document carries a name and a uid, and both have to go.
+      allow delete: if isFullAccount()
+        && resource.data.uid == request.auth.uid;
     }
 
     // The record that this account has claimed its one code.
     //
     // Written once, in the same transaction as the code document, and never
-    // changed or removed — that it cannot be taken back is the whole point.
-    // The owner may read it, which is how a phone recovers a code whose write
-    // onto the profile failed rather than claiming a second one.
+    // changed. The owner may read it, which is how a phone recovers a code
+    // whose write onto the profile failed rather than claiming a second one.
+    //
+    // It may be deleted, but only alongside the code it points at: see the
+    // rule below. One account still cannot hold two codes at once, which is
+    // what this marker exists to prevent.
     match /friend_code_owners/{uid} {
       allow get: if isOwner(uid);
       allow list: if false;
@@ -581,7 +604,19 @@ service cloud.firestore {
         && request.resource.data.code is string
         && request.resource.data.code.size() == 6;
 
-      allow update, delete: if false;
+      allow update: if false;
+
+      // Only together with the code it names, and only by its owner. The
+      // `getAfter` is the whole guarantee: a marker can be dropped solely
+      // in a batch that also drops the code, so the pair cannot come apart
+      // and leave a code nobody can release or a marker pointing at
+      // nothing. Deleting both is what account deletion does, and what
+      // changing a code does.
+      allow delete: if isOwner(uid)
+        && isFullAccount()
+        && !existsAfter(
+             /databases/$(database)/documents/friend_codes/$(resource.data.code)
+           );
     }
 
     // Does this code belong to this account?
@@ -680,7 +715,10 @@ service cloud.firestore {
         && quietWellFormed(request.resource.data)
         && request.resource.data.updatedAt == request.time;
 
-      allow delete: if false;
+      // Erased when the account is. A friend reading a scoreboard that is
+      // no longer there sees the same nothing they see for a friend who
+      // has never published — the screen already handles it.
+      allow delete: if isOwner(uid);
     }
 
     // The friendship: an entry on each person's list, written in one batch.

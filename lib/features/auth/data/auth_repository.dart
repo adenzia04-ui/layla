@@ -14,6 +14,7 @@ import '../../../core/services/location_service.dart';
 import '../../../core/utils/result.dart';
 import '../../prayer_times/domain/prayer_settings.dart';
 import '../domain/app_user.dart';
+import 'account_eraser.dart';
 import 'welcome_email.dart';
 
 final Provider<FirebaseAuth> firebaseAuthProvider = Provider<FirebaseAuth>(
@@ -456,8 +457,20 @@ class AuthRepository {
     final User? user = _auth.currentUser;
     if (user == null) return;
     try {
-      // The user document and its subcollections are removed by the
-      // `onUserDeleted` Cloud Function so nothing is orphaned.
+      // The documents first, while there is still a signed-in user to
+      // authorise the deletes. Once `user.delete()` returns, every rule in
+      // the database refuses this account's data to everyone — including
+      // this phone — and whatever is left is left for good.
+      //
+      // This used to be left to the `onUserDeleted` Cloud Function, which
+      // has never been deployed. See AccountEraser.
+      final List<String> failed = await AccountEraser(_db).erase(user.uid);
+      if (failed.isNotEmpty) {
+        throw AppFailure(
+          'Some of your data could not be removed (${failed.join(', ')}), so '
+          'your account was kept. Check your connection and try again.',
+        );
+      }
       await user.delete();
     } on Object catch (error) {
       throw AppFailure.from(error);

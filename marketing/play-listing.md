@@ -130,3 +130,20 @@ tried without being charged: Play Console → Setup → License testing.
     6. Content rating questionnaire: the app has no ads and no user-generated
        content beyond the Tahajjud stories, which are short text lines a user
        writes about their own night.
+
+## One review question to expect
+
+The manifest declares `USE_EXACT_ALARM`. Play restricts that permission to
+apps whose core purpose is alarms, timers or calendar events, and asks for a
+declaration in the console under App content → Sensitive permissions. Prayer
+reminders qualify: the whole app exists to notify at times fixed by the sun,
+and a reminder that drifts by fifteen minutes is useless. The answer to give:
+
+> Layla Pro notifies the user at the five daily Islamic prayer times, which
+> are computed from the sun's position for their location and cannot be
+> shifted. A reminder delivered late has missed the window it exists for, so
+> the app schedules each one as an exact alarm. It sets no other alarms and
+> shows no ads.
+
+If the declaration is refused, the app still works: reminders fall back to
+inexact scheduling and can arrive a few minutes late.

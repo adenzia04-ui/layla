@@ -60,8 +60,11 @@ class _AccountSettingsScreenState extends ConsumerState<AccountSettingsScreen> {
         backgroundColor: AppColors.navy,
         title: Text('Delete your account?', style: AppType.titleLg),
         content: Text(
-          'This permanently removes your profile, streak, prayer history, '
-          'stories and every prayer-mat photo. It cannot be undone.',
+          'This permanently removes your profile and picture, your streak and '
+          'prayer history, your friend code, what your friends could see of '
+          'your prayers, your stories and every prayer-mat photo. You are '
+          'taken off your friends\' lists and out of any circles. It cannot '
+          'be undone, and it may take a few seconds.',
           style: AppType.bodySm.copyWith(color: AppColors.mist),
         ),
         actions: <Widget>[

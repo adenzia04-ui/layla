@@ -187,7 +187,7 @@ describe('attacks', () => {
     await assertFails(updateDoc(ownerRef(d, ATTACKER), { code: second }));
   });
 
-  test('6. an existing friend_codes document can be neither updated nor deleted', async () => {
+  test('6. a friend_codes document can never be updated, and only its owner may release it', async () => {
     await seedClaimedCode(env, VICTIM, VICTIM_CODE, 'Victim');
     const attacker = db(fullAccount(env, ATTACKER));
     const owner = db(fullAccount(env, VICTIM));
@@ -199,9 +199,15 @@ describe('attacks', () => {
     );
     await assertFails(deleteDoc(codeRef(attacker, VICTIM_CODE)));
 
-    // Not even the owner: a code never changes hands.
+    // A code still never changes hands in place: no update, by anyone.
     await assertFails(updateDoc(codeRef(owner, VICTIM_CODE), { name: 'New' }));
-    await assertFails(deleteDoc(codeRef(owner, VICTIM_CODE)));
+
+    // The owner may release it, though. Deletion used to be refused here
+    // too, which meant an account could be deleted while a document
+    // carrying its owner's name stayed in the database for good. Releasing
+    // is safe because the marker is create-only: one account can still only
+    // hold one code at a time. See deletion.rules.test.js.
+    await assertSucceeds(deleteDoc(codeRef(owner, VICTIM_CODE)));
   });
 
   test('7. a friend code id must be six characters of the alphabet', async () => {
