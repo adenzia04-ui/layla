@@ -6,12 +6,27 @@ import '../../../core/theme/app_colors.dart';
 /// it is not a prayer and never counts toward a streak.
 enum PrayerId {
   fajr('fajr', 'Fajr', PrayerPalette.fajr, Icons.wb_twilight_rounded),
-  sunrise('sunrise', 'Sunrise', PrayerPalette.sunrise, Icons.light_mode_rounded),
+  sunrise(
+    'sunrise',
+    'Sunrise',
+    PrayerPalette.sunrise,
+    Icons.light_mode_rounded,
+  ),
   dhuhr('dhuhr', 'Dhuhr', PrayerPalette.dhuhr, Icons.wb_sunny_rounded),
   asr('asr', 'Asr', PrayerPalette.asr, Icons.filter_drama_rounded),
-  maghrib('maghrib', 'Maghrib', PrayerPalette.maghrib, Icons.brightness_4_rounded),
+  maghrib(
+    'maghrib',
+    'Maghrib',
+    PrayerPalette.maghrib,
+    Icons.brightness_4_rounded,
+  ),
   isha('isha', 'Isha', PrayerPalette.isha, Icons.nightlight_round),
-  tahajjud('tahajjud', 'Tahajjud', PrayerPalette.tahajjud, Icons.bedtime_rounded);
+  tahajjud(
+    'tahajjud',
+    'Tahajjud',
+    PrayerPalette.tahajjud,
+    Icons.bedtime_rounded,
+  );
 
   const PrayerId(this.key, this.label, this.palette, this.icon);
 
@@ -54,11 +69,7 @@ enum PrayerId {
 /// One prayer on a given day, with the window it occupies.
 @immutable
 class PrayerSlot {
-  const PrayerSlot({
-    required this.id,
-    required this.start,
-    required this.end,
-  });
+  const PrayerSlot({required this.id, required this.start, required this.end});
 
   final PrayerId id;
   final DateTime start;

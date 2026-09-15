@@ -22,7 +22,7 @@ class SetupRequiredApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Layla — setup required',
+      title: 'Layla Pro — setup required',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark,
       home: _SetupScreen(error: error),
@@ -35,21 +35,19 @@ class _SetupScreen extends StatelessWidget {
 
   final Object error;
 
-  static const List<({String step, String detail})> _steps =
-      <({String step, String detail})>[
+  static const List<({String step, String detail})>
+  _steps = <({String step, String detail})>[
     (
       step: 'Create a Firebase project',
-      detail: 'console.firebase.google.com → Add project. Then enable '
-          'Authentication (Email/Password + Anonymous), Firestore, and Storage.'
+      detail:
+          'console.firebase.google.com → Add project. Then enable '
+          'Authentication (Email/Password + Anonymous), Firestore, and Storage.',
     ),
     (
       step: 'Connect it to this app',
-      detail: 'flutterfire configure --platforms=ios,android'
+      detail: 'flutterfire configure --platforms=ios,android',
     ),
-    (
-      step: 'Run again',
-      detail: 'flutter run'
-    ),
+    (step: 'Run again', detail: 'flutter run'),
   ];
 
   @override
@@ -95,10 +93,12 @@ class _SetupScreen extends StatelessWidget {
                   Text('Almost there', style: AppType.displayLg),
                   const SizedBox(height: Insets.sm),
                   Text(
-                    'Layla built and launched correctly — it just has no '
+                    'Layla Pro built and launched correctly — it just has no '
                     'Firebase project to talk to yet. Three steps:',
-                    style: AppType.body
-                        .copyWith(color: AppColors.mist, height: 1.55),
+                    style: AppType.body.copyWith(
+                      color: AppColors.mist,
+                      height: 1.55,
+                    ),
                   ),
                   const SizedBox(height: Insets.xl),
                   for (int i = 0; i < _steps.length; i++)

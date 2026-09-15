@@ -7,29 +7,29 @@ import '../domain/story.dart';
 
 final StreamProvider<List<Story>> storyFeedProvider =
     StreamProvider<List<Story>>(
-  (Ref ref) => ref.watch(storyRepositoryProvider).watchFeed(),
-);
+      (Ref ref) => ref.watch(storyRepositoryProvider).watchFeed(),
+    );
 
 final StreamProvider<List<Story>> myStoriesProvider =
     StreamProvider<List<Story>>(
-  (Ref ref) => ref.watch(storyRepositoryProvider).watchMine(),
-);
+      (Ref ref) => ref.watch(storyRepositoryProvider).watchMine(),
+    );
 
 final StreamProviderFamily<Story?, String> storyProvider =
     StreamProvider.family<Story?, String>(
-  (Ref ref, String id) => ref.watch(storyRepositoryProvider).watchStory(id),
-);
+      (Ref ref, String id) => ref.watch(storyRepositoryProvider).watchStory(id),
+    );
 
 final FutureProviderFamily<bool, String> hasLikedProvider =
     FutureProvider.family<bool, String>(
-  (Ref ref, String id) => ref.watch(storyRepositoryProvider).hasLiked(id),
-);
+      (Ref ref, String id) => ref.watch(storyRepositoryProvider).hasLiked(id),
+    );
 
 final AutoDisposeAsyncNotifierProvider<StoryController, void>
-    storyControllerProvider =
+storyControllerProvider =
     AsyncNotifierProvider.autoDispose<StoryController, void>(
-  StoryController.new,
-);
+      StoryController.new,
+    );
 
 class StoryController extends AutoDisposeAsyncNotifier<void> {
   @override

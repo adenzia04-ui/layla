@@ -24,12 +24,9 @@ class StoriesScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.midnight,
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(Insets.sm),
-          child: CircleIconButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onPressed: () => context.pop(),
-          ),
+        leading: CircleIconButton(
+          icon: Icons.arrow_back_ios_new_rounded,
+          onPressed: () => context.pop(),
         ),
         title: Text('Tahajjud Stories', style: AppType.displaySm),
       ),
@@ -38,9 +35,7 @@ class StoriesScreen extends ConsumerWidget {
       // MediaQuery carries the bar's height, so screens pushed outside the
       // shell keep only the device inset and gain no phantom gap.
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.paddingOf(context).bottom,
-        ),
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
         child: FloatingActionButton.extended(
           backgroundColor: AppColors.gold,
           foregroundColor: AppColors.midnight,
@@ -89,8 +84,9 @@ class StoriesScreen extends ConsumerWidget {
                           .read(storyControllerProvider.notifier)
                           .toggleLike(story.id),
                       onReport: () async {
-                        final ReportOutcome? outcome =
-                            await showReportSheet(context);
+                        final ReportOutcome? outcome = await showReportSheet(
+                          context,
+                        );
                         if (outcome == null || !context.mounted) return;
                         final bool ok = await ref
                             .read(storyControllerProvider.notifier)

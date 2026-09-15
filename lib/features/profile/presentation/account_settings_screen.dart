@@ -15,6 +15,7 @@ import '../../../core/widgets/section_header.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/data/auth_repository.dart';
 import '../../auth/domain/app_user.dart';
+import '../../auth/presentation/widgets/sign_out.dart';
 
 class AccountSettingsScreen extends ConsumerStatefulWidget {
   const AccountSettingsScreen({super.key});
@@ -24,8 +25,7 @@ class AccountSettingsScreen extends ConsumerStatefulWidget {
       _AccountSettingsScreenState();
 }
 
-class _AccountSettingsScreenState
-    extends ConsumerState<AccountSettingsScreen> {
+class _AccountSettingsScreenState extends ConsumerState<AccountSettingsScreen> {
   final TextEditingController _name = TextEditingController();
   bool _seeded = false;
   bool _saving = false;
@@ -79,8 +79,9 @@ class _AccountSettingsScreenState
     );
     if (confirm != true) return;
 
-    final bool ok =
-        await ref.read(authControllerProvider.notifier).deleteAccount();
+    final bool ok = await ref
+        .read(authControllerProvider.notifier)
+        .deleteAccount();
     if (!mounted) return;
     ok
         ? context.go(Routes.login)
@@ -92,7 +93,7 @@ class _AccountSettingsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final AppUser? user = ref.watch(appUserProvider).value;
+    final AppUser? user = ref.watch(appUserProvider).valueOrNull;
     final bool isGuest = ref.watch(authRepositoryProvider).isGuest;
 
     if (!_seeded && user != null) {
@@ -104,12 +105,9 @@ class _AccountSettingsScreenState
       scrollable: true,
       ornamentHeight: 180,
       title: 'Account',
-      leading: Padding(
-        padding: const EdgeInsets.all(Insets.sm),
-        child: CircleIconButton(
-          icon: Icons.arrow_back_ios_new_rounded,
-          onPressed: () => context.pop(),
-        ),
+      leading: CircleIconButton(
+        icon: Icons.arrow_back_ios_new_rounded,
+        onPressed: () => context.pop(),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,8 +123,11 @@ class _AccountSettingsScreenState
           NightCard(
             child: Row(
               children: <Widget>[
-                const Icon(Icons.alternate_email_rounded,
-                    size: 19, color: AppColors.mist,),
+                const Icon(
+                  Icons.alternate_email_rounded,
+                  size: 19,
+                  color: AppColors.mist,
+                ),
                 const SizedBox(width: Insets.md),
                 Expanded(
                   child: Text(
@@ -153,8 +154,11 @@ class _AccountSettingsScreenState
               borderColor: AppColors.gold,
               child: Row(
                 children: <Widget>[
-                  const Icon(Icons.shield_outlined,
-                      color: AppColors.gold, size: 20,),
+                  const Icon(
+                    Icons.shield_outlined,
+                    color: AppColors.gold,
+                    size: 20,
+                  ),
                   const SizedBox(width: Insets.md),
                   Expanded(
                     child: Text(
@@ -162,12 +166,41 @@ class _AccountSettingsScreenState
                       style: AppType.bodySm.copyWith(color: AppColors.mist),
                     ),
                   ),
-                  const Icon(Icons.chevron_right_rounded,
-                      color: AppColors.mistFaint,),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.mistFaint,
+                  ),
                 ],
               ),
             ),
           ],
+          const SizedBox(height: Insets.xxl),
+          const SectionHeader(label: 'This device'),
+          NightCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text('Log out', style: AppType.titleSm),
+                const SizedBox(height: Insets.sm),
+                Text(
+                  isGuest
+                      ? 'A guest account cannot be signed back into. Logging '
+                            'out loses your streak and history for good.'
+                      : 'Signs you out on this phone only. Your streak and '
+                            'history stay on your account, waiting for you.',
+                  style: AppType.bodySm.copyWith(
+                    color: isGuest ? AppColors.mist : AppColors.mistFaint,
+                  ),
+                ),
+                const SizedBox(height: Insets.lg),
+                GhostButton(
+                  label: 'Log out',
+                  icon: Icons.logout_rounded,
+                  onPressed: () => confirmSignOut(context, ref),
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: Insets.xxl),
           const SectionHeader(label: 'Danger zone'),
           NightCard(

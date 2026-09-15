@@ -9,8 +9,19 @@ import WidgetKit
 struct NoorWidgetBundle: WidgetBundle {
     var body: some Widget {
         PrayerTimesWidget()
+        PrayerListWidget()
         PrayerArcWidget()
         NextPrayerWidget()
+        LockCountdownBarWidget()
+        LockCountdownRowWidget()
+        PrayWidget()
+        PrayerTrackerWidget()
+        DuasWidget()
+        QiblaWidget()
+        TasbihWidget()
+        GlobeWidget()
+        VerseWidget()
+        NamesWidget()
         PrayerLiveActivity()
     }
 }

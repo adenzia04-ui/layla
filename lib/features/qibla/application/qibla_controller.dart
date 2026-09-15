@@ -32,17 +32,15 @@ class CompassReading {
 
 final StreamProvider<CompassReading> compassProvider =
     StreamProvider<CompassReading>((Ref ref) {
-  final Stream<CompassEvent>? events = FlutterCompass.events;
-  if (events == null) {
-    return Stream<CompassReading>.value(const CompassReading());
-  }
-  return events.map(
-    (CompassEvent event) => CompassReading(
-      heading: event.heading,
-      accuracy: event.accuracy,
-    ),
-  );
-});
+      final Stream<CompassEvent>? events = FlutterCompass.events;
+      if (events == null) {
+        return Stream<CompassReading>.value(const CompassReading());
+      }
+      return events.map(
+        (CompassEvent event) =>
+            CompassReading(heading: event.heading, accuracy: event.accuracy),
+      );
+    });
 
 /// Everything the Qibla screen needs, resolved together.
 @immutable
@@ -80,8 +78,22 @@ class QiblaState {
   /// "NNE", "SW" — a plain-language fallback when the compass is unavailable.
   String get compassPoint {
     const List<String> points = <String>[
-      'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-      'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW',
+      'N',
+      'NNE',
+      'NE',
+      'ENE',
+      'E',
+      'ESE',
+      'SE',
+      'SSE',
+      'S',
+      'SSW',
+      'SW',
+      'WSW',
+      'W',
+      'WNW',
+      'NW',
+      'NNW',
     ];
     return points[(((qiblaBearing % 360) / 22.5) + 0.5).floor() % 16];
   }
@@ -89,20 +101,22 @@ class QiblaState {
 
 final Provider<AsyncValue<QiblaState>> qiblaProvider =
     Provider<AsyncValue<QiblaState>>((Ref ref) {
-  final AsyncValue<PrayerSchedule> schedule = ref.watch(prayerScheduleProvider);
-  final CompassReading compass =
-      ref.watch(compassProvider).value ?? const CompassReading();
+      final AsyncValue<PrayerSchedule> schedule = ref.watch(
+        prayerScheduleProvider,
+      );
+      final CompassReading compass =
+          ref.watch(compassProvider).valueOrNull ?? const CompassReading();
 
-  return schedule.whenData(
-    (PrayerSchedule s) => QiblaState(
-      qiblaBearing: s.qiblaBearing,
-      heading: compass.heading,
-      hasSensor: compass.hasSensor,
-      needsCalibration: compass.needsCalibration,
-      distanceKm: _kaabaDistanceKm(s.latitude, s.longitude),
-    ),
-  );
-});
+      return schedule.whenData(
+        (PrayerSchedule s) => QiblaState(
+          qiblaBearing: s.qiblaBearing,
+          heading: compass.heading,
+          hasSensor: compass.hasSensor,
+          needsCalibration: compass.needsCalibration,
+          distanceKm: _kaabaDistanceKm(s.latitude, s.longitude),
+        ),
+      );
+    });
 
 /// Great-circle distance to the Kaaba, shown under the compass.
 double _kaabaDistanceKm(double lat, double lng) {
@@ -113,7 +127,8 @@ double _kaabaDistanceKm(double lat, double lng) {
 
   final double dLat = rad(kaabaLat - lat);
   final double dLng = rad(kaabaLng - lng);
-  final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+  final double a =
+      math.sin(dLat / 2) * math.sin(dLat / 2) +
       math.cos(rad(lat)) *
           math.cos(rad(kaabaLat)) *
           math.sin(dLng / 2) *

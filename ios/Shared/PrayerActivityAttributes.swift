@@ -7,12 +7,23 @@ import Foundation
 /// updates the activity, the widget extension renders it, and both need the
 /// same type.
 struct PrayerActivityAttributes: ActivityAttributes {
+    /// One prayer in the day's row.
+    struct PrayerStop: Codable, Hashable {
+        var key: String
+        var label: String
+        var at: Date
+    }
+
     struct ContentState: Codable, Hashable {
-        /// "Maghrib"
+        /// "Maghrib" — the next prayer, or the paused one while apps are locked.
         var prayerLabel: String
 
-        /// When the countdown lands.
+        /// When the countdown lands: the next prayer's time, or the end of
+        /// the 30-minute pause while apps are locked.
         var endsAt: Date
+
+        /// Today's five, so the activity can draw the times row.
+        var prayers: [PrayerStop]
 
         /// True while apps are blocked and the prayer is unconfirmed.
         var locked: Bool

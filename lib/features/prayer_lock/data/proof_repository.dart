@@ -13,8 +13,8 @@ import '../../prayer_times/domain/prayer.dart';
 
 final Provider<ProofRepository> proofRepositoryProvider =
     Provider<ProofRepository>(
-  (Ref ref) => ProofRepository(ref.watch(authRepositoryProvider)),
-);
+      (Ref ref) => ProofRepository(ref.watch(authRepositoryProvider)),
+    );
 
 /// Handles Step 2 of the confirmation: capturing and keeping the prayer-mat
 /// photo.
@@ -106,9 +106,7 @@ class ProofRepository {
     try {
       final DateTime moment = now ?? DateTime.now();
       final String dateId = Fmt.dayId(moment);
-      final Directory dir = Directory(
-        '${(await _root()).path}/$uid/$dateId',
-      );
+      final Directory dir = Directory('${(await _root()).path}/$uid/$dateId');
       await dir.create(recursive: true);
 
       onProgress?.call(0.6);
@@ -133,7 +131,7 @@ class ProofRepository {
     } on AppFailure {
       rethrow;
     } on Object catch (error) {
-      debugPrint('Layla: proof save failed — $error');
+      debugPrint('Layla Pro: proof save failed — $error');
       throw const AppFailure(
         'The photo could not be saved. Please try again.',
         code: 'proof-write-failed',
@@ -171,7 +169,7 @@ class ProofRepository {
         }
       }
     } on Object catch (error) {
-      debugPrint('Layla: proof pruning skipped — $error');
+      debugPrint('Layla Pro: proof pruning skipped — $error');
     }
   }
 }

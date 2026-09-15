@@ -17,11 +17,16 @@ class PrayerEngine {
     required DateTime date,
     PrayerSettings settings = const PrayerSettings(),
   }) {
-    final adhan.Coordinates coordinates =
-        adhan.Coordinates(latitude, longitude);
+    final adhan.Coordinates coordinates = adhan.Coordinates(
+      latitude,
+      longitude,
+    );
 
-    final Map<PrayerId, DateTime> today =
-        _timesFor(coordinates, date, settings);
+    final Map<PrayerId, DateTime> today = _timesFor(
+      coordinates,
+      date,
+      settings,
+    );
     final Map<PrayerId, DateTime> tomorrow = _timesFor(
       coordinates,
       date.add(const Duration(days: 1)),
@@ -75,8 +80,10 @@ class PrayerEngine {
     required DateTime reference,
     PrayerSettings settings = const PrayerSettings(),
   }) {
-    final adhan.Coordinates coordinates =
-        adhan.Coordinates(latitude, longitude);
+    final adhan.Coordinates coordinates = adhan.Coordinates(
+      latitude,
+      longitude,
+    );
 
     final List<TahajjudWindow> candidates = <TahajjudWindow>[
       for (final int offset in <int>[-1, 0, 1])
@@ -143,9 +150,8 @@ class PrayerEngine {
   ) {
     final adhan.PrayerTimes t = _rawTimes(coordinates, date, settings);
 
-    DateTime adjust(PrayerId id, DateTime value) => value
-        .toLocal()
-        .add(Duration(minutes: settings.adjustmentFor(id)));
+    DateTime adjust(PrayerId id, DateTime value) =>
+        value.toLocal().add(Duration(minutes: settings.adjustmentFor(id)));
 
     return <PrayerId, DateTime>{
       PrayerId.fajr: adjust(PrayerId.fajr, t.fajr),

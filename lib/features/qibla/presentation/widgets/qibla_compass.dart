@@ -8,7 +8,7 @@ import '../../../../core/widgets/mihrab_arch.dart';
 
 /// The compass face: a rotating gold dial, cardinal marks, and a Kaaba needle
 /// that turns emerald the moment the phone is facing the Qibla.
-class QiblaCompass extends StatelessWidget {
+class QiblaCompass extends StatefulWidget {
   const QiblaCompass({
     super.key,
     required this.heading,
@@ -24,9 +24,52 @@ class QiblaCompass extends StatelessWidget {
   final double size;
 
   @override
+  State<QiblaCompass> createState() => _QiblaCompassState();
+}
+
+class _QiblaCompassState extends State<QiblaCompass> {
+  /// Turns, accumulated rather than wrapped.
+  ///
+  /// `AnimatedRotation` animates between the numbers it is given, so feeding it
+  /// `-heading / 360` sent the dial the long way round every time the phone
+  /// crossed north: 359° to 0° is one degree of movement but a jump from
+  /// -0.997 to 0, and the dial dutifully unwound a whole revolution. Keeping a
+  /// running total and adding only the shortest signed step keeps the number
+  /// continuous, so one degree of turning is one degree of animation.
+  double _turns = 0;
+  double? _lastHeading;
+
+  @override
+  void initState() {
+    super.initState();
+    _turns = ((widget.heading ?? 0) * -1) / 360;
+    _lastHeading = widget.heading;
+  }
+
+  @override
+  void didUpdateWidget(QiblaCompass old) {
+    super.didUpdateWidget(old);
+    final double? now = widget.heading;
+    if (now == null) return;
+    final double? was = _lastHeading;
+    _lastHeading = now;
+    if (was == null) {
+      _turns = -now / 360;
+      return;
+    }
+    // Shortest way round, signed: +179 goes forward, +181 goes back one degree.
+    double delta = (now - was) % 360;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    _turns -= delta / 360;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final double dialTurns = ((heading ?? 0) * -1) / 360;
-    final double needleTurns = qiblaBearing / 360;
+    final double size = widget.size;
+    final bool aligned = widget.aligned;
+    final double dialTurns = _turns;
+    final double needleTurns = widget.qiblaBearing / 360;
 
     return SizedBox(
       height: size,
@@ -129,31 +172,77 @@ class _KaabaNeedle extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
+        // The arrow, pointing out of the dial along the bearing.
+        //
+        // The block alone marks *where* the Kaaba is; it does not say which
+        // way. At a glance a small rectangle near the rim reads as a tick on
+        // the scale, and the tail below it can be mistaken for the pointer,
+        // which points inward — the wrong way. A triangle aimed outward is
+        // unambiguous from across a room, which is the distance this is
+        // actually read from when it is on the floor beside a mat.
+        CustomPaint(
+          size: Size(size * 0.82, size * 0.66),
+          painter: _ArrowPainter(color),
+        ),
+        SizedBox(height: size * 0.06),
+        // The Kaaba as it actually is: black, with the gold band of the
+        // kiswah across it. It used to be the inverse — a gold block with a
+        // dark stripe — which reads as a generic marker rather than the thing
+        // being pointed at.
         Container(
-          height: size,
-          width: size * 0.82,
+          height: size * 0.62,
+          width: size * 0.72,
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: color,
+            color: AppColors.midnight,
             borderRadius: BorderRadius.circular(3),
+            // A hairline, so the black still separates from the navy dial.
+            border: Border.all(color: color.withValues(alpha: 0.55)),
             boxShadow: <BoxShadow>[
-              BoxShadow(color: color.withValues(alpha: 0.5), blurRadius: 12),
+              BoxShadow(color: color.withValues(alpha: 0.35), blurRadius: 10),
             ],
           ),
-          alignment: Alignment.center,
-          child: Container(
-            height: size * 0.22,
-            width: size * 0.82,
-            color: AppColors.midnight.withValues(alpha: 0.55),
+          // 20% black, then the band, then the rest black. Flex rather than
+          // fixed heights so the proportions hold at every dial size.
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              const Spacer(flex: 20),
+              Expanded(flex: 10, child: ColoredBox(color: color)),
+              const Spacer(flex: 70),
+            ],
           ),
-        ),
-        Container(
-          height: size * 0.5,
-          width: 2,
-          color: color.withValues(alpha: 0.7),
         ),
       ],
     );
   }
+}
+
+/// The triangle above the Kaaba block, filled and pointing outward.
+class _ArrowPainter extends CustomPainter {
+  const _ArrowPainter(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Path head = Path()
+      ..moveTo(size.width / 2, 0)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+    canvas
+      ..drawPath(
+        head,
+        Paint()
+          ..color = color.withValues(alpha: 0.45)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
+      )
+      ..drawPath(head, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(_ArrowPainter old) => old.color != color;
 }
 
 class _DialPainter extends CustomPainter {
@@ -174,8 +263,9 @@ class _DialPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.2
-        ..color = (aligned ? AppColors.emerald : AppColors.goldDim)
-            .withValues(alpha: 0.9),
+        ..color = (aligned ? AppColors.emerald : AppColors.goldDim).withValues(
+          alpha: 0.9,
+        ),
     );
     canvas.drawCircle(
       c,

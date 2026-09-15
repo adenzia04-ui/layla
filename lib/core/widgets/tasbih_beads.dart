@@ -25,12 +25,12 @@ class TasbihBeads extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: size,
-        width: size * 0.78,
-        child: CustomPaint(
-          painter: _BeadsPainter(color: color, beads: beads),
-        ),
-      );
+    height: size,
+    width: size * 0.78,
+    child: CustomPaint(
+      painter: _BeadsPainter(color: color, beads: beads),
+    ),
+  );
 }
 
 class _BeadsPainter extends CustomPainter {
@@ -84,14 +84,20 @@ class _BeadsPainter extends CustomPainter {
     final Path leaf = Path()
       ..moveTo(size.width * 0.52, size.height * 0.11)
       ..cubicTo(
-        size.width * 0.34, size.height * 0.08,
-        size.width * 0.40, size.height * -0.01,
-        size.width * 0.56, size.height * 0.005,
+        size.width * 0.34,
+        size.height * 0.08,
+        size.width * 0.40,
+        size.height * -0.01,
+        size.width * 0.56,
+        size.height * 0.005,
       )
       ..cubicTo(
-        size.width * 0.66, size.height * 0.02,
-        size.width * 0.62, size.height * 0.09,
-        size.width * 0.52, size.height * 0.11,
+        size.width * 0.66,
+        size.height * 0.02,
+        size.width * 0.62,
+        size.height * 0.09,
+        size.width * 0.52,
+        size.height * 0.11,
       )
       ..close();
     canvas.drawPath(leaf, fill);

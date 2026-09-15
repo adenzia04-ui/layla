@@ -26,12 +26,12 @@ class NoorFlame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: size,
-        width: size * 0.82,
-        child: CustomPaint(
-          painter: _FlamePainter(glow: glow, dimmed: dimmed),
-        ),
-      );
+    height: size,
+    width: size * 0.82,
+    child: CustomPaint(
+      painter: _FlamePainter(glow: glow, dimmed: dimmed),
+    ),
+  );
 }
 
 class _FlamePainter extends CustomPainter {
@@ -69,23 +69,89 @@ class _FlamePainter extends CustomPainter {
     double y(double v) => v * s.height;
     return Path()
       ..moveTo(x(pts[0]), y(pts[1]))
-      ..cubicTo(x(pts[2]), y(pts[3]), x(pts[4]), y(pts[5]), x(pts[6]), y(pts[7]))
-      ..cubicTo(x(pts[8]), y(pts[9]), x(pts[10]), y(pts[11]), x(pts[12]), y(pts[13]))
+      ..cubicTo(
+        x(pts[2]),
+        y(pts[3]),
+        x(pts[4]),
+        y(pts[5]),
+        x(pts[6]),
+        y(pts[7]),
+      )
+      ..cubicTo(
+        x(pts[8]),
+        y(pts[9]),
+        x(pts[10]),
+        y(pts[11]),
+        x(pts[12]),
+        y(pts[13]),
+      )
       ..close();
   }
 
   // base        outer control pair          tip          inner control pair        base
   static const List<double> _left = <double>[
-    0.44, 0.90,  0.20, 0.80,  0.15, 0.55,   0.31, 0.33,   0.37, 0.52,  0.45, 0.68,  0.49, 0.88,
+    0.44,
+    0.90,
+    0.20,
+    0.80,
+    0.15,
+    0.55,
+    0.31,
+    0.33,
+    0.37,
+    0.52,
+    0.45,
+    0.68,
+    0.49,
+    0.88,
   ];
   static const List<double> _centre = <double>[
-    0.45, 0.95,  0.29, 0.72,  0.35, 0.40,   0.47, 0.12,   0.60, 0.40,  0.65, 0.72,  0.57, 0.95,
+    0.45,
+    0.95,
+    0.29,
+    0.72,
+    0.35,
+    0.40,
+    0.47,
+    0.12,
+    0.60,
+    0.40,
+    0.65,
+    0.72,
+    0.57,
+    0.95,
   ];
   static const List<double> _right = <double>[
-    0.55, 0.90,  0.56, 0.68,  0.61, 0.50,   0.71, 0.33,   0.78, 0.56,  0.75, 0.78,  0.64, 0.90,
+    0.55,
+    0.90,
+    0.56,
+    0.68,
+    0.61,
+    0.50,
+    0.71,
+    0.33,
+    0.78,
+    0.56,
+    0.75,
+    0.78,
+    0.64,
+    0.90,
   ];
   static const List<double> _core = <double>[
-    0.47, 0.88,  0.42, 0.72,  0.46, 0.58,   0.52, 0.42,   0.58, 0.58,  0.58, 0.74,  0.55, 0.88,
+    0.47,
+    0.88,
+    0.42,
+    0.72,
+    0.46,
+    0.58,
+    0.52,
+    0.42,
+    0.58,
+    0.58,
+    0.58,
+    0.74,
+    0.55,
+    0.88,
   ];
 
   @override

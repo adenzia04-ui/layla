@@ -16,23 +16,9 @@ Path buildMihrabPath(Size size, {double shoulder = 0.42, double inset = 0}) {
     ..moveTo(inset, h)
     ..lineTo(inset, springY)
     // left half sweeping up to the point
-    ..cubicTo(
-      inset,
-      springY * 0.34,
-      cx - w * 0.30,
-      0,
-      cx,
-      0,
-    )
+    ..cubicTo(inset, springY * 0.34, cx - w * 0.30, 0, cx, 0)
     // right half mirrored back down
-    ..cubicTo(
-      cx + w * 0.30,
-      0,
-      inset + w,
-      springY * 0.34,
-      inset + w,
-      springY,
-    )
+    ..cubicTo(cx + w * 0.30, 0, inset + w, springY * 0.34, inset + w, springY)
     ..lineTo(inset + w, h)
     ..close();
 }
@@ -47,7 +33,8 @@ class MihrabClipper extends CustomClipper<Path> {
   Path getClip(Size size) => buildMihrabPath(size, shoulder: shoulder);
 
   @override
-  bool shouldReclip(MihrabClipper oldClipper) => oldClipper.shoulder != shoulder;
+  bool shouldReclip(MihrabClipper oldClipper) =>
+      oldClipper.shoulder != shoulder;
 }
 
 /// A filled arch — the soft glowing dome behind the hero clock on Home and on
@@ -66,13 +53,13 @@ class MihrabGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CustomPaint(
-        painter: _MihrabGlowPainter(
-          color: color,
-          shoulder: shoulder,
-          opacity: opacity,
-        ),
-        size: Size.infinite,
-      );
+    painter: _MihrabGlowPainter(
+      color: color,
+      shoulder: shoulder,
+      opacity: opacity,
+    ),
+    size: Size.infinite,
+  );
 }
 
 class _MihrabGlowPainter extends CustomPainter {
@@ -130,15 +117,15 @@ class MihrabOutline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CustomPaint(
-        painter: _MihrabOutlinePainter(
-          color: color,
-          strokeWidth: strokeWidth,
-          progress: progress,
-          shoulder: shoulder,
-          innerArch: innerArch,
-        ),
-        size: Size.infinite,
-      );
+    painter: _MihrabOutlinePainter(
+      color: color,
+      strokeWidth: strokeWidth,
+      progress: progress,
+      shoulder: shoulder,
+      innerArch: innerArch,
+    ),
+    size: Size.infinite,
+  );
 }
 
 class _MihrabOutlinePainter extends CustomPainter {
@@ -191,10 +178,7 @@ class _MihrabOutlinePainter extends CustomPainter {
       return;
     }
     for (final metric in path.computeMetrics()) {
-      canvas.drawPath(
-        metric.extractPath(0, metric.length * progress),
-        paint,
-      );
+      canvas.drawPath(metric.extractPath(0, metric.length * progress), paint);
     }
   }
 

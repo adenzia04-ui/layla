@@ -7,11 +7,11 @@ import '../domain/story.dart';
 
 final Provider<StoryRepository> storyRepositoryProvider =
     Provider<StoryRepository>(
-  (Ref ref) => StoryRepository(
-    ref.watch(firestoreProvider),
-    ref.watch(authRepositoryProvider),
-  ),
-);
+      (Ref ref) => StoryRepository(
+        ref.watch(firestoreProvider),
+        ref.watch(authRepositoryProvider),
+      ),
+    );
 
 class StoryRepository {
   const StoryRepository(this._db, this._auth);
@@ -51,7 +51,10 @@ class StoryRepository {
         );
   }
 
-  Stream<Story?> watchStory(String id) => _stories.doc(id).snapshots().map(
+  Stream<Story?> watchStory(String id) => _stories
+      .doc(id)
+      .snapshots()
+      .map(
         (DocumentSnapshot<Map<String, Object?>> doc) =>
             doc.exists ? Story.fromDoc(doc) : null,
       );
@@ -59,8 +62,11 @@ class StoryRepository {
   Future<bool> hasLiked(String storyId) async {
     final String? uid = _auth.uid;
     if (uid == null) return false;
-    final DocumentSnapshot<Map<String, Object?>> doc =
-        await _stories.doc(storyId).collection('likes').doc(uid).get();
+    final DocumentSnapshot<Map<String, Object?>> doc = await _stories
+        .doc(storyId)
+        .collection('likes')
+        .doc(uid)
+        .get();
     return doc.exists;
   }
 
@@ -119,10 +125,12 @@ class StoryRepository {
   Future<void> toggleLike(String storyId) async {
     final String? uid = _auth.uid;
     if (uid == null) return;
-    final DocumentReference<Map<String, Object?>> storyRef =
-        _stories.doc(storyId);
-    final DocumentReference<Map<String, Object?>> likeRef =
-        storyRef.collection('likes').doc(uid);
+    final DocumentReference<Map<String, Object?>> storyRef = _stories.doc(
+      storyId,
+    );
+    final DocumentReference<Map<String, Object?>> likeRef = storyRef
+        .collection('likes')
+        .doc(uid);
 
     await _db.runTransaction((Transaction tx) async {
       final DocumentSnapshot<Map<String, Object?>> like = await tx.get(likeRef);
@@ -168,8 +176,9 @@ class StoryRepository {
   Future<void> deleteMine(String storyId) async {
     final String? uid = _auth.uid;
     if (uid == null) return;
-    final DocumentSnapshot<Map<String, Object?>> doc =
-        await _stories.doc(storyId).get();
+    final DocumentSnapshot<Map<String, Object?>> doc = await _stories
+        .doc(storyId)
+        .get();
     if (doc.data()?['uid'] != uid) {
       throw const AppFailure('You can only delete your own story.');
     }

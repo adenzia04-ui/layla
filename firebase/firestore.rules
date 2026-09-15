@@ -13,13 +13,362 @@ service cloud.firestore {
 
     // Guest (anonymous) accounts can use the whole app privately, but cannot
     // put anything in front of other users.
+    //
+    // `sign_in_provider` records how THIS SESSION authenticated, and linking
+    // an email or an Apple ID onto a guest does not re-authenticate it — the
+    // claim goes on saying 'anonymous' in every token minted for that session,
+    // including after a forced refresh. `identities` is rebuilt from the
+    // account's linked providers each time a token is minted, so it is what
+    // tells an upgraded guest apart from a real one before the next sign-in.
+    // A guest who has linked nothing has an empty map here, so the second
+    // branch refuses them exactly as the first one does.
     function isFullAccount() {
       return signedIn()
-        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+        && (request.auth.token.firebase.sign_in_provider != 'anonymous'
+            || request.auth.token.firebase.identities.keys()
+                 .hasAny(['email', 'apple.com', 'google.com']));
     }
 
     function changedKeys() {
       return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // ── Profile picture ────────────────────────────────────────────────
+    // The picture lives inside the document, base64 in a string. Firebase is
+    // on the Spark plan: there is no Storage bucket to put it in and no Cloud
+    // Function to shrink it on the way past, so these ceilings are the only
+    // thing standing between a picture somebody chose and everybody's bill.
+    //
+    // A Firestore document is capped at 1 MiB, so an unbounded picture takes
+    // the whole document down with it the moment it goes over — and long
+    // before that it is being paid for on every read rather than once by the
+    // person who picked it.
+    //
+    // There are three ceilings because there are three readerships, and what
+    // a picture costs is not its size but its size multiplied by how often it
+    // is fetched:
+    //
+    //   users/{uid}.photo — 200000 characters, the 512-pixel picture the owner
+    //     cropped. This document is private in its entirety, so nobody but
+    //     the owner ever pays for it, which is what buys the room to raise it
+    //     from the 64000 it was when the avatar was only 256 pixels.
+    //
+    //     It is not read once, though, and it would be easy to assume so:
+    //     confirming a prayer opens a transaction on this document to read
+    //     `stats` (PrayerDayRepository._complete, and markMissed), a
+    //     transaction read never comes from the local cache, and the profile
+    //     listener re-delivers the whole document body on every write to it.
+    //     So the owner pays for their own picture several times a day, on a
+    //     project with a 10 GiB monthly egress allowance. The number below is
+    //     therefore headroom for a detailed photograph, not a target — a
+    //     512-pixel square at quality 85 measures around 130000 even for a
+    //     picture built to be as hard to compress as possible.
+    //
+    //     The real fix is to move both pictures onto a document of their own
+    //     — users/{uid}/private/avatar, gated on isOwner, carrying these same
+    //     two helpers — so the streak path reads a few hundred bytes of stats
+    //     again. That has not been done, and the size of this comment is the
+    //     reason it should be.
+    //
+    //   users/{uid}.photoThumb — 24000 characters, the 128-pixel copy. It sits
+    //     on the same private document only because that is where the owner's
+    //     phone keeps it; it is the one that gets copied out to friends, so it
+    //     is the one that has to stay tiny. Opening a friends list fetches one
+    //     scoreboard per friend, each carrying its own copy of that friend's
+    //     picture, on every snapshot — the cost here is multiplied by the
+    //     length of the list and by how often the list is opened. That is the
+    //     whole reason the two numbers differ: the big one is read by one
+    //     person, the small one is read again and again by everybody.
+    //
+    //   progress/{uid}.photo — 64000 characters, the friend-visible copy
+    //     itself, now fed from photoThumb rather than from photo. Its ceiling
+    //     deliberately does not move with the big one: 256-pixel pictures
+    //     written by older builds are already stored out there under it, and
+    //     lowering it to the new thumbnail size would refuse their next write.
+    //
+    // The app clamps to the same numbers — see Avatar.maxChars and
+    // Avatar.thumbMaxChars — and this is where those clamps are actually
+    // enforced, because a clamp in the app is a suggestion.
+    //
+    // The charset clause is not decoration. `size()` on a rules string counts
+    // UTF-16 code units, not bytes, so on its own a ceiling admits that many
+    // characters of anything — and an accented letter is two bytes, an emoji
+    // four, so a string that measures under the ceiling can still be double
+    // what was budgeted for, downloaded by every friend on every snapshot and
+    // rendering nothing at the far end because it was never base64. Holding
+    // the field to the base64 alphabet makes a character a byte, so a ceiling
+    // means that many bytes exactly, and it means what reaches a friend's
+    // phone is at least decodable.
+    function base64Within(value, limit) {
+      return value is string
+        && value.size() <= limit
+        && value.matches('^[A-Za-z0-9+/]*={0,2}$');
+    }
+
+    // Absent and null both mean "no picture" and both are allowed, on every
+    // one of the three fields: taking a picture off has to be as ordinary as
+    // putting one on, and every build that shipped before a field existed
+    // sends documents without that key at all.
+
+    // users/{uid}.photo — the owner's own full-size copy.
+    function profilePhotoWithinCeiling(data) {
+      return !('photo' in data)
+        || data.photo == null
+        || base64Within(data.photo, 200000);
+    }
+
+    // users/{uid}.photoThumb — the copy that is published onward to friends.
+    function profileThumbWithinCeiling(data) {
+      return !('photoThumb' in data)
+        || data.photoThumb == null
+        || base64Within(data.photoThumb, 24000);
+    }
+
+    // progress/{uid}.photo — unchanged at 64000, for the reason set out above.
+    function photoWithinCeiling(data) {
+      return !('photo' in data)
+        || data.photo == null
+        || base64Within(data.photo, 64000);
+    }
+
+    // ── The prayer pause ───────────────────────────────────────────────
+    // A woman does not pray during menstruation, and those prayers are not
+    // made up afterwards. So the app has to know when a pause is on, in order
+    // to stop asking, stop nagging, stop marking anything missed and stop
+    // counting the days against her — and knowing that is the most sensitive
+    // thing this database holds about anybody.
+    //
+    // Both fields therefore live on users/{uid} and nowhere else, because
+    // users/{uid} is the one document here that only its owner can read. The
+    // day itself is marked on users/{uid}/prayer_days/{date}, which sits
+    // under that same owner-only rule. Neither ever reaches progress/{uid},
+    // the scoreboard a friend fetches: the `keys().hasOnly` clause down there
+    // is what refuses them, and it has to go on refusing them, because a
+    // friend being able to tell would defeat the entire feature.
+    //
+    // The shapes are bounded here for the same reason the pictures above are.
+    // The app clamps too, and a clamp in the app is a suggestion.
+
+    // users/{uid}.cycle — absent or null when no pause is on, and exactly
+    // { startedOn: 'yyyy-MM-dd' } while one is.
+    //
+    // A day id rather than a timestamp, because every other date in this app
+    // is a day id (Fmt.dayId) and the number Home shows is a count of days:
+    // doing that arithmetic on instants means a pause that reads "Day 3" in
+    // one time zone and "Day 2" in another after a flight.
+    //
+    // `hasAll` as well as `hasOnly`, so the map can never arrive empty. An
+    // empty map is neither "a pause is on" nor "no pause is on", and the code
+    // reading it would have to invent an answer on the one screen where an
+    // invented answer is worst. Turning the pause off is null, or no key.
+    //
+    // Three clauses below are belt-and-braces, and deleting any of them
+    // leaves every test in cycle.rules.test.js green: `is map`, `hasAll`,
+    // and `startedOn is string`. Everything each of them excludes makes the
+    // NEXT clause raise an evaluation error — `.keys()` on a string,
+    // `.startedOn` on an empty map, `.matches()` on a number — and a rule
+    // that errors denies the write, so the write is refused with or without
+    // them. They stay precisely because that is enforcement by accident: it
+    // rests on which expression happens to throw rather than on what the
+    // rule says, and an edit that reordered these lines, or reached for a
+    // defaulting read, would turn a silent deny into a silent allow on the
+    // one field in this database where that is worst. Anyone mutation-testing
+    // this file will find these three survive; that is the reason, and it is
+    // not a reason to remove them.
+    function cycleWellFormed(data) {
+      return !('cycle' in data)
+        || data.cycle == null
+        || (data.cycle is map
+            && data.cycle.keys().hasOnly(['startedOn'])
+            && data.cycle.keys().hasAll(['startedOn'])
+            && data.cycle.startedOn is string
+            && data.cycle.startedOn.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'));
+    }
+
+    // users/{uid}.gender — the answer to the one onboarding question that
+    // decides whether the pause is ever offered, held to the two values
+    // GenderStep can produce. A third value would reach a branch that has no
+    // case for it, and the failure would be silent: the pause simply never
+    // appearing for somebody who needs it.
+    //
+    // It is in Firestore at all only so that it survives signing out — it
+    // was SharedPreferences alone, and AuthController clears that on sign-out,
+    // so answering "sister" once did not stick.
+    function genderWellFormed(data) {
+      return !('gender' in data)
+        || data.gender == null
+        || data.gender in ['brother', 'sister'];
+    }
+
+    // ── Friends, round two ─────────────────────────────────────────────
+    // Seven more things a friend can see — a quiet switch, a milestone
+    // badge, a Ramadan line, a cheer, an inbox item, a Jumu'ah masjid and
+    // a circle's shared forty days — and every one of them is bounded here
+    // for the reason the pictures and the pause are: the app clamps too,
+    // and a clamp in the app is a suggestion. Three rules shaped all of
+    // them. Nothing about the pause may reach a friend-readable document.
+    // "Go quiet" has to be true on the server, not just on the screen. And
+    // there are no messages between people: the one piece of typed text a
+    // friend ever reads that is not a name is a masjid, forty characters.
+    // The helpers here are the shapes; the collections that use them come
+    // further down, after the friendship itself.
+
+    // A day id, "2026-09-14". Every date this app writes is one (Fmt.dayId),
+    // and a day rather than an instant is what lets "which Friday" and
+    // "fasting today" mean the same thing on two phones in two time zones.
+    function isDayId(value) {
+      return value is string
+        && value.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    // The six milestones there are. A badge is one of these words and
+    // nothing else, because a friend's phone renders it through a switch
+    // with exactly six cases: a seventh word shows as nothing at best, and
+    // at worst as whatever the client put there.
+    function isMilestoneKey(value) {
+      return value is string
+        && value in ['streak100', 'streak365', 'prayers1000', 'prayers5000',
+                     'tahajjud1', 'tahajjud100'];
+    }
+
+    // { key, at }: the latest milestone, kept on the profile and copied
+    // from there onto the scoreboard with every publish. `at` is any
+    // timestamp rather than request.time because it is the day the
+    // milestone was crossed, not the day of this write — the copy is
+    // republished for weeks afterwards, and the badge is shown for seven
+    // days counted from that day. Whether the counters actually earn the
+    // badge is not checked: the counters are self-reported too, so the
+    // check would bind nobody, and a recount that ever lowered a total
+    // would freeze an honest scoreboard for good.
+    function milestoneWellFormed(m) {
+      return m is map
+        && m.keys().hasOnly(['key', 'at'])
+        && m.keys().hasAll(['key', 'at'])
+        && isMilestoneKey(m.key)
+        && m.at is timestamp;
+    }
+
+    // progress/{uid}.quiet — "Go quiet". Not a hint to the friend's phone
+    // to hide the numbers; a promise that the numbers are not there. So
+    // while it is on the scoreboard has to carry zeros, and nothing from
+    // which a week could be read back: no last completed day, no milestone,
+    // no Ramadan line. A client that says quiet and publishes the numbers
+    // anyway is refused, because that is the one case where hiding in the
+    // UI would be the only hiding there was. Absent and null are both off,
+    // as they are for every optional key on this document.
+    function quietWellFormed(data) {
+      return !('quiet' in data)
+        || data.quiet == null
+        || (data.quiet is bool
+            && (data.quiet == false || quietScoreboard(data)));
+    }
+
+    // `streak` is named here although the scoreboard's own ceiling clause
+    // (a streak can never exceed the longest) and `longestStreak == 0`
+    // between them already force it to zero: the promise is written down
+    // rather than derived. Anyone mutation-testing this file will find that
+    // one line survives, and that is why.
+    function quietScoreboard(data) {
+      return data.streak == 0
+        && data.longestStreak == 0
+        && data.totalPrayers == 0
+        && data.totalTahajjud == 0
+        && data.todayCompleted == 0
+        && (!('lastCompletedDate' in data) || data.lastCompletedDate == null)
+        && (!('milestone' in data) || data.milestone == null)
+        && (!('ramadan' in data) || data.ramadan == null);
+    }
+
+    // progress/{uid}.milestone — absent, null, or the profile's copy.
+    function progressMilestoneWellFormed(data) {
+      return !('milestone' in data)
+        || data.milestone == null
+        || milestoneWellFormed(data.milestone);
+    }
+
+    // progress/{uid}.ramadan — what a friend sees of the month: how many
+    // fasts so far, whether today is one, whether Taraweeh tonight, and
+    // which day that was said of. A count and nothing else: which days
+    // were kept is not published, because a run of days not fasted is as
+    // private as a run of prayers not prayed, and for the same reason.
+    // Thirty is the longest the month is. The month itself cannot be
+    // checked here — the rules language has no Hijri calendar — so "only
+    // during Ramadan" stays with the publisher.
+    function ramadanShareWellFormed(data) {
+      return !('ramadan' in data)
+        || data.ramadan == null
+        || (data.ramadan is map
+            && data.ramadan.keys().hasOnly(['fasts', 'fastingToday',
+                                             'taraweeh', 'date'])
+            && data.ramadan.keys().hasAll(['fasts', 'fastingToday',
+                                            'taraweeh', 'date'])
+            && data.ramadan.fasts is int
+            && data.ramadan.fasts >= 0
+            && data.ramadan.fasts <= 30
+            && data.ramadan.fastingToday is bool
+            && data.ramadan.taraweeh is bool
+            && isDayId(data.ramadan.date));
+    }
+
+    // users/{uid}.quiet — the owner's own switch. Absent and null are off.
+    function profileQuietWellFormed(data) {
+      return !('quiet' in data)
+        || data.quiet == null
+        || data.quiet is bool;
+    }
+
+    // users/{uid}.milestone — the record the publisher copies out, held to
+    // the same shape so that the copy can never fail at publish time.
+    function profileMilestoneWellFormed(data) {
+      return !('milestone' in data)
+        || data.milestone == null
+        || milestoneWellFormed(data.milestone);
+    }
+
+    // users/{uid}.ramadan — the owner's own record of the month: which
+    // Hijri year it belongs to, how many fasts so far, and the last day
+    // marked fasted and the last night marked Taraweeh, from which the
+    // publisher works out "today". Each key is checked only when it is
+    // there, rather than all four demanded at once, because marking a day
+    // is a field update and the first one of the month may be the write
+    // that starts the record. The year is bounded to the centuries this
+    // app could conceivably run in, which is enough to refuse garbage.
+    function ramadanRecordWellFormed(data) {
+      return !('ramadan' in data)
+        || data.ramadan == null
+        || (data.ramadan is map
+            && data.ramadan.keys().hasOnly(['year', 'fasts', 'fastedOn',
+                                             'taraweehOn'])
+            && (!('year' in data.ramadan)
+                || (data.ramadan.year is int
+                    && data.ramadan.year >= 1400
+                    && data.ramadan.year <= 1600))
+            && (!('fasts' in data.ramadan)
+                || (data.ramadan.fasts is int
+                    && data.ramadan.fasts >= 0
+                    && data.ramadan.fasts <= 30))
+            && (!('fastedOn' in data.ramadan)
+                || data.ramadan.fastedOn == null
+                || isDayId(data.ramadan.fastedOn))
+            && (!('taraweehOn' in data.ramadan)
+                || data.ramadan.taraweehOn == null
+                || isDayId(data.ramadan.taraweehOn)));
+    }
+
+    // users/{uid}.eidSent — { "1448-1": true, ... }: which Eids the
+    // greeting has gone out for, so that it goes out once. The keys cannot
+    // be pattern-checked one at a time — the rules language has no way to
+    // walk a map — so the map is held to what matters: every value is
+    // `true`, and it is small. Two Eids a year for a hundred years is two
+    // hundred keys; there is no honest way to need more, and a map with no
+    // ceiling is a document with no ceiling, on the one document the
+    // streak transaction reads on every confirmation.
+    function eidSentWellFormed(data) {
+      return !('eidSent' in data)
+        || data.eidSent == null
+        || (data.eidSent is map
+            && data.eidSent.size() <= 200
+            && data.eidSent.values().hasOnly([true]));
     }
 
     // ── User profile ───────────────────────────────────────────────────
@@ -27,9 +376,54 @@ service cloud.firestore {
     // history, so nobody else can read it — not even to show a name. Names on
     // stories and the map are denormalised copies instead.
     match /users/{uid} {
-      allow read, create, update: if isOwner(uid);
+      allow read: if isOwner(uid);
+
+      // Nothing else on this document is shape-checked, and nothing else
+      // needs to be: the only person who can write it is the only person who
+      // can read it, so a malformed field here hurts nobody but its author.
+      //
+      // Four fields are the exception. The two pictures, because their size
+      // is not only their author's problem — see the ceilings above. And
+      // `cycle` and `gender`, because they are not merely read back: they
+      // decide whether the app asks a woman to pray, whether it marks a
+      // prayer missed, and whether the streak she has kept for months
+      // survives the week. A shape the reading code did not expect there is
+      // a wrong answer in the one place a wrong answer is worst, and unlike
+      // a malformed setting it would not be obvious that anything had gone
+      // wrong until the damage was done.
+      //
+      // Round two of Friends added four more. `quiet`, `milestone` and
+      // `ramadan` are copied or derived onto the scoreboard by the
+      // publisher, and a shape the scoreboard rule would refuse has to be
+      // refused here first — otherwise it sits on the profile and every
+      // publish from then on fails, silently. `eidSent` is a map, and a
+      // map has to be kept small. Absent and null pass all four, as they
+      // pass the others.
+      //
+      // Every other write the app makes (displayName, settings, location,
+      // friendCode, stats, the seed write at sign-up) carries none of the
+      // eight keys and passes the first branch of each helper untouched.
+      allow create, update: if isOwner(uid)
+        && profilePhotoWithinCeiling(request.resource.data)
+        && profileThumbWithinCeiling(request.resource.data)
+        && cycleWellFormed(request.resource.data)
+        && genderWellFormed(request.resource.data)
+        && profileQuietWellFormed(request.resource.data)
+        && profileMilestoneWellFormed(request.resource.data)
+        && ramadanRecordWellFormed(request.resource.data)
+        && eidSentWellFormed(request.resource.data);
+
       allow delete: if false; // account deletion goes through Cloud Functions
 
+      // Where an excused day is recorded: `excused: true` on the day, and
+      // five records carrying PrayerStatus.excused rather than missed, so
+      // that nothing on a paused day is ever counted as owed.
+      //
+      // The shape stays unchecked — a prayer day is written by transactions
+      // whose record maps this rule has never had an opinion about, and
+      // inventing one now would refuse writes from every build already out
+      // there. Owner-only is the whole protection, and it is the reason the
+      // marking lives here and not anywhere a friend can reach.
       match /prayer_days/{date} {
         allow read, write: if isOwner(uid);
       }
@@ -55,9 +449,11 @@ service cloud.firestore {
         && request.resource.data.cellLat is number
         && request.resource.data.cellLng is number
         && request.resource.data.expiresAt is timestamp
-        // a session may never be published for longer than three hours
+        // a session may never be published for longer than eight hours:
+        // the app keeps a light on the map for seven, from the last third
+        // of the night through to morning
         && request.resource.data.expiresAt
-             < request.time + duration.value(3, 'h')
+             < request.time + duration.value(8, 'h')
         // reject any attempt to smuggle precise coordinates through
         && !request.resource.data.keys().hasAny(['lat', 'lng', 'accuracy',
                                                  'address', 'email']);
@@ -120,6 +516,548 @@ service cloud.firestore {
         && request.resource.data.storyId is string
         && request.resource.data.status == 'open';
       allow read, update, delete: if false;
+    }
+
+    // ── Public, read-only ──────────────────────────────────────────────
+    // The charity fund shown on the Premium page: how much of the seven
+    // percent has been set aside, against the target. Written only from the
+    // Firebase console or a Cloud Function, never from a phone.
+    match /public/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── Friends ────────────────────────────────────────────────────────
+    // A six-character code is the only thing a person ever hands out, and
+    // holding it is the only way onto their list — enforced here, not just
+    // in the app. The code document maps it to a uid and a name, is claimed
+    // once per account, and never changes hands: create-only, the uid inside
+    // must be the caller's own, and a full account may look one up by its
+    // exact id but never list the collection. Holding the code is not enough
+    // on its own, because a friend has seen it: someone who has been removed
+    // is blocked, and only the person who removed them can undo that.
+    match /friend_codes/{code} {
+      allow get: if isFullAccount();
+      allow list: if false;
+
+      allow create: if isFullAccount()
+        // The id has to be a code this app could have generated: six
+        // characters of the FriendCode alphabet. Without it any id at all can
+        // be squatted — and a code is meant to be handed out, so the ids
+        // worth squatting are the near-misses of a real one ("ABC-234" typed
+        // as "ABD-234"), filed under the victim's name.
+        && code.matches('^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$')
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 40
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly(['uid', 'name', 'createdAt'])
+        // One code per account, proved against a marker the claimer can write
+        // once and can never unwrite — not against the profile, whose every
+        // field the claimer owns and can delete before claiming again. The
+        // marker is written in the same transaction as this document, so
+        // `getAfter` sees this very code; a second claim would need a second
+        // marker for the same uid, and create-only refuses it.
+        && getAfter(/databases/$(database)/documents/friend_code_owners/$(request.auth.uid))
+             .data.code == code;
+
+      allow update, delete: if false;
+    }
+
+    // The record that this account has claimed its one code.
+    //
+    // Written once, in the same transaction as the code document, and never
+    // changed or removed — that it cannot be taken back is the whole point.
+    // The owner may read it, which is how a phone recovers a code whose write
+    // onto the profile failed rather than claiming a second one.
+    match /friend_code_owners/{uid} {
+      allow get: if isOwner(uid);
+      allow list: if false;
+
+      allow create: if isOwner(uid)
+        && isFullAccount()
+        && request.resource.data.keys().hasOnly(['code'])
+        && request.resource.data.code is string
+        && request.resource.data.code.size() == 6;
+
+      allow update, delete: if false;
+    }
+
+    // Does this code belong to this account?
+    function codeBelongsTo(code, owner) {
+      return code is string
+        && code.size() == 6
+        && exists(/databases/$(database)/documents/friend_codes/$(code))
+        && get(/databases/$(database)/documents/friend_codes/$(code)).data.uid == owner;
+    }
+
+    // What a person's friends may see of their prayers: counters, today's
+    // tally and the profile picture they chose, nothing else — no times, no
+    // proof photos, no location. The owner's phone writes it; the owner
+    // reads it, and so does anyone on the OWNER'S list — the list the
+    // owner's code guards, not one the reader controls.
+    //
+    // And nothing whatsoever about the prayer pause. The `keys().hasOnly`
+    // clause below is what enforces that: `cycle`, `gender` and `excused`
+    // are all outside the published set, so a client that tried to send one
+    // is refused here rather than trusted not to try. Nothing needed adding
+    // for the pause, and a new key on this document is a new thing a friend
+    // can see: the three that round two added — `quiet`, `milestone` and
+    // `ramadan` — were each weighed as exactly that, each is bounded by a
+    // helper above, and none of them can carry the pause, since a quiet
+    // scoreboard is all zeros and the other two are closed maps.
+    //
+    // The old keys carry no new signal either. Through a pause `todayCompleted`
+    // goes on meaning exactly what it has always meant, the same zero as
+    // somebody who has not prayed yet, and `streak` goes on reading the number
+    // it read before, because an excused day carries the chain rather than
+    // ending it. A friend watching sees an ordinary quiet week and cannot
+    // tell it from any other quiet week.
+    match /progress/{uid} {
+      allow get: if signedIn()
+        && (isOwner(uid)
+            || exists(/databases/$(database)/documents/friends/$(uid)/list/$(request.auth.uid)));
+      allow list: if false;
+
+      allow create, update: if isOwner(uid)
+        && isFullAccount()
+        && request.resource.data.keys().hasOnly(['name', 'code', 'streak',
+                                                 'longestStreak',
+                                                 'totalPrayers',
+                                                 'totalTahajjud',
+                                                 'todayCompleted',
+                                                 'todayDate',
+                                                 'lastCompletedDate',
+                                                 'photo',
+                                                 'updatedAt',
+                                                 'quiet',
+                                                 'milestone',
+                                                 'ramadan'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 40
+        && codeBelongsTo(request.resource.data.code, uid)
+        // Every counter is bounded, and the two that must agree are made to.
+        // A scoreboard is self-reported by design, but "self-reported" is not
+        // the same as unbounded: 40000 is roughly a hundred years of days and
+        // 200000 five prayers across the same span, ceilings no worshipper
+        // reaches and a leaderboard cheat or a layout-overflow nuisance does.
+        // The publisher clamps to exactly these — see FriendProgress.
+        && request.resource.data.streak is int
+        && request.resource.data.streak >= 0
+        && request.resource.data.streak <= 40000
+        && request.resource.data.longestStreak is int
+        && request.resource.data.longestStreak >= request.resource.data.streak
+        && request.resource.data.longestStreak <= 40000
+        && request.resource.data.totalPrayers is int
+        && request.resource.data.totalPrayers >= 0
+        && request.resource.data.totalPrayers <= 200000
+        && request.resource.data.totalTahajjud is int
+        && request.resource.data.totalTahajjud >= 0
+        && request.resource.data.totalTahajjud <= 40000
+        && request.resource.data.todayCompleted is int
+        && request.resource.data.todayCompleted >= 0
+        && request.resource.data.todayCompleted <= 5
+        // A day id, not merely a short string: the tally is read against it,
+        // and an empty or garbage one is a day nobody is in.
+        && request.resource.data.todayDate is string
+        && request.resource.data.todayDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && (!('lastCompletedDate' in request.resource.data)
+            || request.resource.data.lastCompletedDate == null
+            || (request.resource.data.lastCompletedDate is string
+                && request.resource.data.lastCompletedDate
+                     .matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
+        // The friend-visible copy of the profile picture, under exactly the
+        // ceiling the original is under. This is the document a friends list
+        // fetches once per friend, so it is the copy that is read most.
+        && photoWithinCeiling(request.resource.data)
+        // The three keys round two added, each absent-or-null-or-bounded,
+        // with quiet checked last of all because it reads the counters the
+        // clauses above have already proved are ints.
+        && progressMilestoneWellFormed(request.resource.data)
+        && ramadanShareWellFormed(request.resource.data)
+        && quietWellFormed(request.resource.data)
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if false;
+    }
+
+    // The friendship: an entry on each person's list, written in one batch.
+    //
+    // Adding someone means writing two documents. On my own list, the entry
+    // carries THEIR code — and the rule checks that code really is theirs,
+    // so I cannot add a person I was never given a code for. On their list,
+    // the entry carries MY code, and it may only be created alongside my own
+    // code-checked entry (existsAfter looks at the batch as a whole) — so
+    // nobody lands on a list without holding that person's code. Either side
+    // may end it, which is what takes a removed friend off both lists. Only
+    // the owner can see their own list, and an entry is never edited.
+    match /friends/{uid}/list/{friendUid} {
+      function wellFormed() {
+        return request.resource.data.keys().hasOnly(['name', 'code', 'since'])
+          && request.resource.data.keys().hasAll(['name', 'code', 'since'])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() >= 1
+          && request.resource.data.name.size() <= 40
+          && request.resource.data.since == request.time;
+      }
+
+      allow read: if isOwner(uid);
+
+      allow create: if isFullAccount()
+        && uid != friendUid
+        && wellFormed()
+        // Neither side has shut the other out. Read after the request, so
+        // that adding someone back lifts my own block on them in the same
+        // batch — a block on the OTHER person's side is theirs alone to lift,
+        // since only the owner may write under their own `blocked`.
+        && !existsAfter(/databases/$(database)/documents/friends/$(uid)/blocked/$(friendUid))
+        && !existsAfter(/databases/$(database)/documents/friends/$(friendUid)/blocked/$(uid))
+        // Whichever side this is, the code on it belongs to the friend
+        // named in the path.
+        && codeBelongsTo(request.resource.data.code, friendUid)
+        && (
+          // My own list: I am adding them, with their code.
+          request.auth.uid == uid
+          // Their list: I am putting myself on it, and my own code-checked
+          // entry for them is CREATED by this same batch. `existsAfter` on
+          // its own is equally satisfied by an entry that was already there
+          // and is untouched, which turns one proof of holding the code into
+          // a permanent re-entry ticket: delete their side, keep mine, and
+          // write myself back onto their list whenever I like. Requiring the
+          // mirror to be new means the code is re-checked every time.
+          || (request.auth.uid == friendUid
+              && !exists(/databases/$(database)/documents/friends/$(friendUid)/list/$(uid))
+              && existsAfter(/databases/$(database)/documents/friends/$(friendUid)/list/$(uid)))
+        );
+
+      allow delete: if isFullAccount()
+        && (request.auth.uid == uid || request.auth.uid == friendUid);
+
+      allow update: if false;
+    }
+
+    // Whom this account will not be befriended by again.
+    //
+    // Removing a friend has to mean something they cannot undo. An entry on
+    // my list carries their code and my entry on theirs carries mine, and
+    // either of us can read our own list — so a friend has seen my code and
+    // could otherwise write themselves straight back onto my list, and back
+    // onto my scoreboard, as often as they liked. The block is written when
+    // I remove someone, is checked before anyone lands on either list, and
+    // only I can lift it — by adding them back.
+    match /friends/{uid}/blocked/{otherUid} {
+      allow read: if isOwner(uid);
+
+      allow create, update: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['since'])
+        && request.resource.data.since == request.time;
+
+      allow delete: if isOwner(uid);
+    }
+
+    // ── Prayers kept together ──────────────────────────────────────────
+    // friends/{uid}/meta/{friendUid}: the two totals as they stood the
+    // first time the owner's phone saw this friend's scoreboard, so that
+    // "N prayers together" counts from the friendship and not from birth.
+    // The owner's own bookkeeping and nobody else's: the friend never sees
+    // this document, and the number on the card is worked out on the
+    // reader's phone from it and from the two scoreboards — which is why
+    // the line goes away the moment either side goes quiet, with nothing
+    // here to change. Each snapshot is held to the ceiling of the total it
+    // is a snapshot of. `at` is any timestamp: nobody but the owner reads
+    // it, so a phone's own clock can mislead nobody but its owner.
+    match /friends/{uid}/meta/{friendUid} {
+      allow read: if isOwner(uid);
+
+      allow create, update: if isOwner(uid)
+        && isFullAccount()
+        && request.resource.data.keys().hasOnly(['myStartTotal',
+                                                 'theirStartTotal', 'at'])
+        && request.resource.data.keys().hasAll(['myStartTotal',
+                                                'theirStartTotal', 'at'])
+        && request.resource.data.myStartTotal is int
+        && request.resource.data.myStartTotal >= 0
+        && request.resource.data.myStartTotal <= 200000
+        && request.resource.data.theirStartTotal is int
+        && request.resource.data.theirStartTotal >= 0
+        && request.resource.data.theirStartTotal <= 200000
+        && request.resource.data.at is timestamp;
+
+      allow delete: if isOwner(uid);
+    }
+
+    // ── Cheers ─────────────────────────────────────────────────────────
+    // "MashaAllah" on a friend's milestone: cheers/{toUid}/from/{fromUid}.
+    // One document per friend per recipient, so a second tap on the same
+    // milestone overwrites rather than counts twice, and a tap on the next
+    // milestone replaces it. It carries the milestone's key and the
+    // server's clock and nothing else — it is a tap, not a message, and
+    // the closed key list is what keeps it one. Only someone on the
+    // recipient's list may leave one: their list, the one their code
+    // guards. Only the recipient reads them, as a count. The friend may
+    // take their own back; nobody else can touch it.
+    match /cheers/{toUid}/from/{fromUid} {
+      allow read: if isOwner(toUid);
+
+      allow create, update: if isFullAccount()
+        && request.auth.uid == fromUid
+        && exists(/databases/$(database)/documents/friends/$(toUid)/list/$(fromUid))
+        && request.resource.data.keys().hasOnly(['milestone', 'at'])
+        && request.resource.data.keys().hasAll(['milestone', 'at'])
+        && isMilestoneKey(request.resource.data.milestone)
+        && request.resource.data.at == request.time;
+
+      allow delete: if isOwner(toUid) || isOwner(fromUid);
+    }
+
+    // ── Inbox ──────────────────────────────────────────────────────────
+    // Things a friend sent: inbox/{toUid}/items/{itemId}. Three kinds and
+    // no fourth. A verse is the id of a Mood card that the recipient's own
+    // phone renders from its own copy of the text. An Eid greeting is
+    // nothing but the fact of one. An invitation is a circle's id and its
+    // code. There is no text field on any of them, and the key list is
+    // closed per kind, because the rule is "no messages between people"
+    // and a free string anywhere on this document would be one. The
+    // sender's name is the same forty-character name that already sits on
+    // every list and scoreboard. An invitation has to be to a circle the
+    // sender is actually in, carrying that circle's own code: without the
+    // check a friend could be sent a Join button that opens onto nothing,
+    // or onto a circle the sender only knew the id of.
+    //
+    // Only someone on the recipient's list may send. Only the recipient
+    // reads, and only the recipient deletes; an item is never edited by
+    // anyone, and the sender can neither take it back nor see whether it
+    // was opened. Nothing here says how often a friend may send — the
+    // rules language cannot count — so a friend who will not stop is
+    // removed, which takes them off the list this rule checks.
+    //
+    // Some clauses below are belt and braces, and a mutation test will find
+    // them: `type in` the three ahead of branches that each re-check their
+    // own kind; `hasAll` beside `hasOnly` on every kind; `comfortId is
+    // string`; `exists` on the circle before the `get` of it; the alphabet
+    // and the length re-stated on an invitation whose circle has to exist
+    // and carry that very code. Each would hold alone — `is string` on a
+    // key that is not there raises, a `get` of nothing raises, and a rule
+    // that raises denies — and they are kept for the reason the pause's
+    // are kept: so that a verse with no card is refused by a clause that
+    // says so, not by whichever expression happened to throw first.
+    match /inbox/{toUid}/items/{itemId} {
+      allow read, delete: if isOwner(toUid);
+      allow update: if false;
+
+      allow create: if isFullAccount()
+        && request.resource.data.fromUid == request.auth.uid
+        && exists(/databases/$(database)/documents/friends/$(toUid)/list/$(request.auth.uid))
+        && request.resource.data.type in ['verse', 'eid', 'circle']
+        && request.resource.data.fromName is string
+        && request.resource.data.fromName.size() >= 1
+        && request.resource.data.fromName.size() <= 40
+        && request.resource.data.at == request.time
+        && (
+          (request.resource.data.type == 'verse'
+            && request.resource.data.keys().hasOnly(['type', 'fromUid',
+                                                     'fromName', 'at',
+                                                     'comfortId'])
+            && request.resource.data.keys().hasAll(['type', 'fromUid',
+                                                    'fromName', 'at',
+                                                    'comfortId'])
+            && request.resource.data.comfortId is string
+            && request.resource.data.comfortId.size() >= 1
+            && request.resource.data.comfortId.size() <= 80)
+          || (request.resource.data.type == 'eid'
+            && request.resource.data.keys().hasOnly(['type', 'fromUid',
+                                                     'fromName', 'at'])
+            && request.resource.data.keys().hasAll(['type', 'fromUid',
+                                                    'fromName', 'at']))
+          || (request.resource.data.type == 'circle'
+            && request.resource.data.keys().hasOnly(['type', 'fromUid',
+                                                     'fromName', 'at',
+                                                     'circleId',
+                                                     'circleCode'])
+            && request.resource.data.keys().hasAll(['type', 'fromUid',
+                                                    'fromName', 'at',
+                                                    'circleId',
+                                                    'circleCode'])
+            && request.resource.data.circleId is string
+            && request.resource.data.circleId.size() >= 1
+            && request.resource.data.circleId.size() <= 40
+            && request.resource.data.circleCode is string
+            && request.resource.data.circleCode
+                 .matches('^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$')
+            && exists(/databases/$(database)/documents/circles/$(request.resource.data.circleId))
+            && request.auth.uid in get(/databases/$(database)/documents/circles/$(request.resource.data.circleId)).data.members
+            && get(/databases/$(database)/documents/circles/$(request.resource.data.circleId)).data.code
+                 == request.resource.data.circleCode)
+        );
+    }
+
+    // ── Jumu'ah ────────────────────────────────────────────────────────
+    // jumuah/{uid}: which masjid this Friday, for friends who might go too.
+    // The one document in this database where a friend reads typed text
+    // that is not a name, and the ceiling is the forty characters a name
+    // gets: room for "Masjid al-Rahman, Whitechapel", no room for a
+    // paragraph. A day id says which Friday, so a line from three weeks
+    // ago is not shown as this week's; whether that day is the coming
+    // Friday is decided on the reader's phone, since the rules cannot know
+    // the reader's time zone. Read by the owner and by anyone on the
+    // OWNER'S list, exactly as the scoreboard is, and never listed.
+    match /jumuah/{uid} {
+      allow get: if signedIn()
+        && (isOwner(uid)
+            || exists(/databases/$(database)/documents/friends/$(uid)/list/$(request.auth.uid)));
+      allow list: if false;
+
+      allow create, update: if isOwner(uid)
+        && isFullAccount()
+        && request.resource.data.keys().hasOnly(['masjid', 'date', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['masjid', 'date', 'updatedAt'])
+        && request.resource.data.masjid is string
+        && request.resource.data.masjid.size() >= 1
+        && request.resource.data.masjid.size() <= 40
+        && isDayId(request.resource.data.date)
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isOwner(uid);
+    }
+
+    // ── Circles ────────────────────────────────────────────────────────
+    // A shared forty days: a few people who agreed to keep Fajr, or all
+    // five, or Tahajjud, from a start day, and can see how the group is
+    // doing. Not a leaderboard. Each member publishes one number — the
+    // days they kept, worked out by their own phone from their own prayer
+    // days, on which an excused day is neither kept nor missed — and the
+    // group sees one bar. Nothing about the pause is on any of it.
+    //
+    // A circle is entered by its code, which is six characters of the
+    // same alphabet a friend code uses and is looked up the same way:
+    // circle_codes/{code} names the circle, a full account may fetch it by
+    // exact id and may never list the collection, and it is written once,
+    // by the circle's creator, in the same batch as the circle itself —
+    // `getAfter` reads that batch as a whole, and `!exists` on the circle
+    // means a code can never be filed later for a circle that has one.
+    // Squatting is refused the way it is for friend codes: the id has to
+    // be a code this app could have generated.
+    //
+    // Three clauses below say one thing three ways — the circle is new, it
+    // is the caller's, and it names this code — and any one of them holds
+    // alone while the other two and the circle's own rule stand: the
+    // circle fixes `createdBy` to the caller, its `code` never changes, and
+    // the document under that code was created with it. They stay together
+    // so the rule reads as what it enforces, and so that no later edit to
+    // the circle's rule can turn a stated refusal here into an accidental
+    // one. The alphabet, likewise, is checked at both ends of the pair, on
+    // this id and on the circle's `code` field, and each check would hold
+    // alone while the other stands.
+    match /circle_codes/{code} {
+      allow get: if isFullAccount();
+      allow list: if false;
+
+      allow create: if isFullAccount()
+        && code.matches('^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$')
+        && request.resource.data.keys().hasOnly(['circleId'])
+        && request.resource.data.keys().hasAll(['circleId'])
+        && request.resource.data.circleId is string
+        && request.resource.data.circleId.size() >= 1
+        && request.resource.data.circleId.size() <= 40
+        && !exists(/databases/$(database)/documents/circles/$(request.resource.data.circleId))
+        && getAfter(/databases/$(database)/documents/circles/$(request.resource.data.circleId))
+             .data.createdBy == request.auth.uid
+        && getAfter(/databases/$(database)/documents/circles/$(request.resource.data.circleId))
+             .data.code == code;
+
+      allow update, delete: if false;
+    }
+
+    // The circle itself. Nothing on it is readable until you are a member,
+    // and the members list is the only thing that ever changes — the name,
+    // the goal, the start day and the code are fixed at creation, so what
+    // somebody joined is what it stays. Joining is the one write a
+    // non-member can make, and it is exactly one thing: their own uid,
+    // appended, to a list that is not yet twenty long. It is checked
+    // against the document as it was and as it will be, never against
+    // anything the joiner read, because the joiner could not read it —
+    // which is why the client joins with an arrayUnion and no get first,
+    // and why a join by somebody already on the list goes through as the
+    // no-op it is rather than being refused for having changed nothing.
+    // Leaving is the mirror: exactly oneself, removed. Nobody can delete a
+    // circle; the last member leaving is what ends one.
+    match /circles/{circleId} {
+      allow read: if signedIn() && request.auth.uid in resource.data.members;
+
+      allow create: if isFullAccount()
+        && request.resource.data.keys().hasOnly(['name', 'goal', 'startsOn',
+                                                 'days', 'code', 'createdBy',
+                                                 'members', 'createdAt'])
+        && request.resource.data.keys().hasAll(['name', 'goal', 'startsOn',
+                                                'days', 'code', 'createdBy',
+                                                'members', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1
+        && request.resource.data.name.size() <= 40
+        && request.resource.data.goal in ['fajr', 'five', 'tahajjud']
+        && isDayId(request.resource.data.startsOn)
+        && request.resource.data.days is int
+        && request.resource.data.days == 40
+        && request.resource.data.code is string
+        && request.resource.data.code.matches('^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{6}$')
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.members == [request.auth.uid]
+        && request.resource.data.createdAt == request.time
+        // The code document that names this circle is in this same batch
+        // and points back here: a circle whose code resolved to nothing,
+        // or to somebody else's circle, could never be joined by the code
+        // its creator hands out.
+        && getAfter(/databases/$(database)/documents/circle_codes/$(request.resource.data.code))
+             .data.circleId == circleId;
+
+      allow update: if isFullAccount()
+        && changedKeys().hasOnly(['members'])
+        && request.resource.data.members is list
+        && (
+          // Join: myself, once, on the end, and room for me.
+          (!(request.auth.uid in resource.data.members)
+            && request.resource.data.members
+                 == resource.data.members.concat([request.auth.uid])
+            && request.resource.data.members.size() <= 20)
+          // Leave: myself, gone.
+          || (request.auth.uid in resource.data.members
+            && request.resource.data.members
+                 == resource.data.members.removeAll([request.auth.uid]))
+          // Already in: the arrayUnion changed nothing, and nothing is
+          // exactly what a member may change.
+          || (request.auth.uid in resource.data.members
+            && request.resource.data.members == resource.data.members)
+        );
+
+      allow delete: if false;
+
+      // One number per member: circles/{circleId}/progress/{uid}. Written
+      // by its owner while they are a member, read by every member, never
+      // by anyone outside — membership is read off the circle itself on
+      // every request, so leaving ends both at once. Forty is the most
+      // days a forty-day circle has. The owner may take their number with
+      // them when they leave.
+      match /progress/{uid} {
+        function circleMembers() {
+          return get(/databases/$(database)/documents/circles/$(circleId)).data.members;
+        }
+
+        allow read: if signedIn() && request.auth.uid in circleMembers();
+
+        allow create, update: if isOwner(uid)
+          && isFullAccount()
+          && request.auth.uid in circleMembers()
+          && request.resource.data.keys().hasOnly(['kept', 'updatedAt'])
+          && request.resource.data.keys().hasAll(['kept', 'updatedAt'])
+          && request.resource.data.kept is int
+          && request.resource.data.kept >= 0
+          && request.resource.data.kept <= 40
+          && request.resource.data.updatedAt == request.time;
+
+        allow delete: if isOwner(uid);
+      }
     }
 
     // Anything not matched above is denied.

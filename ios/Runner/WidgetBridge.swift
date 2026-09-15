@@ -72,8 +72,26 @@ enum WidgetBridge {
                 result(false)
                 return
             }
-            NoorSharedStore.write(json: json)
-            WidgetCenter.shared.reloadAllTimelines()
+            // Redraw only when the widget-visible part changed. WidgetKit
+            // budgets reloads per day; spending them on identical snapshots
+            // left nothing for the rebuild that mattered.
+            let changed = NoorSharedStore.write(json: json)
+            if changed { WidgetCenter.shared.reloadAllTimelines() }
+            result(true)
+
+        case "publishGlobe":
+            guard let data = args?["png"] as? FlutterStandardTypedData else {
+                result(false)
+                return
+            }
+            NoorSharedStore.writeGlobe(data.data)
+            // The globe turns slowly; one redraw every half hour is plenty.
+            let key = "noor.widget.globeReloadAt"
+            let last = UserDefaults.standard.double(forKey: key)
+            if Date().timeIntervalSince1970 - last > 30 * 60 {
+                UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: key)
+                WidgetCenter.shared.reloadAllTimelines()
+            }
             result(true)
 
         case "reloadWidgets":
@@ -97,18 +115,37 @@ enum WidgetBridge {
         else { return }
 
         let city = raw["city"] as? String ?? ""
-        let label = (raw["lockedPrayerLabel"] as? String).flatMap {
-            $0.isEmpty ? nil : $0
-        } ?? "Prayer"
-        let currentEpoch = raw["currentEpoch"] as? Int ?? 0
-        let endsAt = Date(timeIntervalSince1970: TimeInterval(currentEpoch))
-            .addingTimeInterval(30 * 60)
+        let locked = raw["locked"] as? Bool ?? false
+        let prayers: [PrayerActivityAttributes.PrayerStop] =
+            ((raw["prayers"] as? [[String: Any]]) ?? []).compactMap { p in
+                guard let key = p["key"] as? String, let label = p["label"] as? String,
+                      let epoch = p["epoch"] as? Int else { return nil }
+                return .init(key: key, label: label, at: Date(timeIntervalSince1970: TimeInterval(epoch)))
+            }
+        let nextKey = raw["nextKey"] as? String ?? ""
+        let nextAt = Date(timeIntervalSince1970: TimeInterval(raw["nextEpoch"] as? Int ?? 0))
+        let nextLabel = prayers.first { $0.key == nextKey }?.label ?? "Prayer"
+
+        // While apps are paused the countdown is the pause; otherwise it is
+        // the next prayer, and the activity goes stale the moment it lands
+        // so the view can say so instead of sitting at 00:00.
+        let label: String
+        let endsAt: Date
+        if locked {
+            label = (raw["lockedPrayerLabel"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? nextLabel
+            let currentEpoch = raw["currentEpoch"] as? Int ?? 0
+            endsAt = Date(timeIntervalSince1970: TimeInterval(currentEpoch)).addingTimeInterval(30 * 60)
+        } else {
+            label = nextLabel
+            endsAt = nextAt
+        }
 
         let state = PrayerActivityAttributes.ContentState(
             prayerLabel: label,
             endsAt: endsAt,
-            locked: raw["locked"] as? Bool ?? false,
-            overdue: Date() > endsAt,
+            prayers: prayers,
+            locked: locked,
+            overdue: locked && Date() > endsAt,
             completedToday: raw["completedToday"] as? Int ?? 0,
             totalToday: raw["totalToday"] as? Int ?? 5,
             streak: raw["streak"] as? Int ?? 0
@@ -116,9 +153,7 @@ enum WidgetBridge {
 
         let content = ActivityContent(
             state: state,
-            // Let iOS retire it a few hours after the window, so a forgotten
-            // activity does not sit on the Lock Screen indefinitely.
-            staleDate: endsAt.addingTimeInterval(60 * 60 * 4)
+            staleDate: locked ? endsAt.addingTimeInterval(60 * 60 * 4) : endsAt
         )
 
         if let existing = Activity<PrayerActivityAttributes>.activities.first {

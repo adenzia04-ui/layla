@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
+import '../data/tahajjud_repository.dart';
+
 /// A believer currently praying Tahajjud, as seen by everyone else.
 ///
 /// Note what is *not* here: no precise coordinates, no address, no email, no
@@ -34,9 +36,7 @@ class TahajjudPresence {
   bool get isExpired => DateTime.now().isAfter(expiresAt);
   Duration get elapsed => DateTime.now().difference(startedAt);
 
-  factory TahajjudPresence.fromDoc(
-    DocumentSnapshot<Map<String, Object?>> doc,
-  ) {
+  factory TahajjudPresence.fromDoc(DocumentSnapshot<Map<String, Object?>> doc) {
     final Map<String, Object?> data = doc.data() ?? <String, Object?>{};
     return TahajjudPresence(
       uid: doc.id,
@@ -44,10 +44,10 @@ class TahajjudPresence {
       cellGeohash: data['cellGeohash'] as String? ?? '',
       lat: (data['cellLat'] as num?)?.toDouble() ?? 0,
       lng: (data['cellLng'] as num?)?.toDouble() ?? 0,
-      startedAt:
-          (data['startedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      expiresAt: (data['expiresAt'] as Timestamp?)?.toDate() ??
-          DateTime.now().add(const Duration(minutes: 90)),
+      startedAt: (data['startedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      expiresAt:
+          (data['expiresAt'] as Timestamp?)?.toDate() ??
+          DateTime.now().add(kTahajjudSessionDuration),
       countryCode: data['countryCode'] as String? ?? '',
     );
   }
@@ -80,19 +80,30 @@ class PresenceCluster {
     for (final TahajjudPresence p in people) {
       byCell.putIfAbsent(p.cellGeohash, () => <TahajjudPresence>[]).add(p);
     }
-    return byCell.entries.map((MapEntry<String, List<TahajjudPresence>> e) {
-      final List<TahajjudPresence> group = e.value;
-      return PresenceCluster(
-        geohash: e.key,
-        // Average within the cell keeps the marker inside its own area.
-        lat: group.fold<double>(0, (double s, TahajjudPresence p) => s + p.lat) /
-            group.length,
-        lng: group.fold<double>(0, (double s, TahajjudPresence p) => s + p.lng) /
-            group.length,
-        count: group.length,
-        includesMe:
-            myUid != null && group.any((TahajjudPresence p) => p.uid == myUid),
-      );
-    }).toList(growable: false);
+    return byCell.entries
+        .map((MapEntry<String, List<TahajjudPresence>> e) {
+          final List<TahajjudPresence> group = e.value;
+          return PresenceCluster(
+            geohash: e.key,
+            // Average within the cell keeps the marker inside its own area.
+            lat:
+                group.fold<double>(
+                  0,
+                  (double s, TahajjudPresence p) => s + p.lat,
+                ) /
+                group.length,
+            lng:
+                group.fold<double>(
+                  0,
+                  (double s, TahajjudPresence p) => s + p.lng,
+                ) /
+                group.length,
+            count: group.length,
+            includesMe:
+                myUid != null &&
+                group.any((TahajjudPresence p) => p.uid == myUid),
+          );
+        })
+        .toList(growable: false);
   }
 }

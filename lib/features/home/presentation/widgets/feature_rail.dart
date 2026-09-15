@@ -126,7 +126,8 @@ class _FeatureTile extends StatelessWidget {
           height: 58,
           width: 58,
           child: Center(
-            child: item.iconWidget ??
+            child:
+                item.iconWidget ??
                 Icon(item.icon, size: 34, color: item.accent),
           ),
         ),

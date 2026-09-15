@@ -3,10 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/routing/app_router.dart';
-import 'core/routing/routes.dart';
 import 'core/theme/app_theme.dart';
-import 'features/prayer_lock/application/prayer_lock_controller.dart';
-import 'features/prayer_lock/domain/prayer_session.dart';
 
 class NoorApp extends ConsumerWidget {
   const NoorApp({super.key});
@@ -15,19 +12,17 @@ class NoorApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final GoRouter router = ref.watch(routerProvider);
 
-    // When a prayer window opens while Noor is in the foreground, take the
-    // user straight to focus. Only a *new* prayer triggers this — changes in
-    // status are handled by the router's redirect, so pressing "I Have Prayed"
-    // does not bounce the user off the confirmation screen.
-    ref.listen<PrayerSession?>(activeSessionProvider,
-        (PrayerSession? previous, PrayerSession? next) {
-      if (next == null) return;
-      if (previous != null && previous.prayer == next.prayer) return;
-      router.go(Routes.focus(next.prayer.key));
-    });
+    // A prayer window opening no longer seizes the screen.
+    //
+    // It used to jump straight to /focus, which meant the app took the phone
+    // over mid-sentence — while someone was reading, mid-message, mid-anything
+    // — and the only way out was to answer it. Blocking the *other* apps is
+    // the feature; commandeering Layla Pro was collateral. The same three choices
+    // now sit on the home screen, and the banner above the tab bar keeps them
+    // one tap away from anywhere.
 
     return MaterialApp.router(
-      title: 'Layla',
+      title: 'Layla Pro',
       debugShowCheckedModeBanner: false,
       routerConfig: router,
       theme: AppTheme.dark,

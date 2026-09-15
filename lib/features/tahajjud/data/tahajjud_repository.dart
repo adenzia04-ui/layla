@@ -9,15 +9,20 @@ import '../domain/tahajjud_presence.dart';
 
 /// How long a Tahajjud presence lives before it disappears on its own, even if
 /// the app is killed mid-session.
-const Duration kTahajjudSessionDuration = Duration(minutes: 90);
+/// How long "I am praying" keeps you on the map.
+///
+/// Four hours: long enough to carry a light from the last third of the night
+/// through to Fajr, short enough that nobody stays on the map into the
+/// afternoon because they slept. Leaving early is still one tap.
+const Duration kTahajjudSessionDuration = Duration(hours: 4);
 
 final Provider<TahajjudRepository> tahajjudRepositoryProvider =
     Provider<TahajjudRepository>(
-  (Ref ref) => TahajjudRepository(
-    ref.watch(firestoreProvider),
-    ref.watch(authRepositoryProvider),
-  ),
-);
+      (Ref ref) => TahajjudRepository(
+        ref.watch(firestoreProvider),
+        ref.watch(authRepositoryProvider),
+      ),
+    );
 
 class TahajjudRepository {
   const TahajjudRepository(this._db, this._auth);
@@ -37,21 +42,20 @@ class TahajjudRepository {
       .limit(limit)
       .snapshots()
       .map(
-        (QuerySnapshot<Map<String, Object?>> snap) => snap.docs
-            .map(TahajjudPresence.fromDoc)
-            .toList(growable: false),
+        (QuerySnapshot<Map<String, Object?>> snap) =>
+            snap.docs.map(TahajjudPresence.fromDoc).toList(growable: false),
       );
 
   Stream<TahajjudPresence?> watchMySession() {
     final String? uid = _auth.uid;
     if (uid == null) return Stream<TahajjudPresence?>.value(null);
-    return _presence.doc(uid).snapshots().map(
-          (DocumentSnapshot<Map<String, Object?>> doc) {
-        if (!doc.exists) return null;
-        final TahajjudPresence presence = TahajjudPresence.fromDoc(doc);
-        return presence.isExpired ? null : presence;
-      },
-    );
+    return _presence.doc(uid).snapshots().map((
+      DocumentSnapshot<Map<String, Object?>> doc,
+    ) {
+      if (!doc.exists) return null;
+      final TahajjudPresence presence = TahajjudPresence.fromDoc(doc);
+      return presence.isExpired ? null : presence;
+    });
   }
 
   /// Publishes the user to the map. The document id is the uid, so a user can
@@ -77,8 +81,11 @@ class TahajjudRepository {
     }
 
     final String cell = Geo.encode(place.lat, place.lng);
-    final ({double lat, double lng}) coarse =
-        Geo.coarsePoint(place.lat, place.lng, uid);
+    final ({double lat, double lng}) coarse = Geo.coarsePoint(
+      place.lat,
+      place.lng,
+      uid,
+    );
     final DateTime startedAt = DateTime.now();
 
     await _presence.doc(uid).set(<String, Object?>{
@@ -88,8 +95,7 @@ class TahajjudRepository {
       'cellLng': coarse.lng,
       'countryCode': place.country,
       'startedAt': Timestamp.fromDate(startedAt),
-      'expiresAt':
-          Timestamp.fromDate(startedAt.add(kTahajjudSessionDuration)),
+      'expiresAt': Timestamp.fromDate(startedAt.add(kTahajjudSessionDuration)),
       'active': true,
     });
   }

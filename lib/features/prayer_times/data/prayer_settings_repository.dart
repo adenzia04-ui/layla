@@ -6,8 +6,8 @@ import '../domain/prayer_settings.dart';
 
 final Provider<PrayerSettingsRepository> prayerSettingsRepositoryProvider =
     Provider<PrayerSettingsRepository>(
-  (Ref ref) => PrayerSettingsRepository(ref.watch(authRepositoryProvider)),
-);
+      (Ref ref) => PrayerSettingsRepository(ref.watch(authRepositoryProvider)),
+    );
 
 /// Every settings mutation funnels through here so the whole map is written
 /// back atomically and the UI updates from the Firestore stream.
@@ -28,38 +28,37 @@ class PrayerSettingsRepository {
     PrayerSettings current,
     PrayerId prayer,
     int minutes,
-  ) =>
-      save(
-        current.copyWith(
-          adjustments: <String, int>{
-            ...current.adjustments,
-            prayer.key: minutes.clamp(-30, 30),
-          },
-        ),
-      );
+  ) => save(
+    current.copyWith(
+      adjustments: <String, int>{
+        ...current.adjustments,
+        prayer.key: minutes.clamp(-30, 30),
+      },
+    ),
+  );
 
   Future<void> setNotification(
     PrayerSettings current,
     PrayerId prayer, {
     required bool enabled,
-  }) =>
-      save(
-        current.copyWith(
-          notifications: <String, bool>{
-            ...current.notifications,
-            prayer.key: enabled,
-          },
-        ),
-      );
+  }) => save(
+    current.copyWith(
+      notifications: <String, bool>{
+        ...current.notifications,
+        prayer.key: enabled,
+      },
+    ),
+  );
 
-  Future<void> setLockEnabled(PrayerSettings current, {required bool enabled}) =>
-      save(current.copyWith(lockEnabled: enabled));
+  Future<void> setLockEnabled(
+    PrayerSettings current, {
+    required bool enabled,
+  }) => save(current.copyWith(lockEnabled: enabled));
 
   Future<void> setTahajjudVisible(
     PrayerSettings current, {
     required bool visible,
-  }) =>
-      save(current.copyWith(tahajjudVisible: visible));
+  }) => save(current.copyWith(tahajjudVisible: visible));
 
   Future<void> setUse24hClock(PrayerSettings current, {required bool use24h}) =>
       save(current.copyWith(use24hClock: use24h));

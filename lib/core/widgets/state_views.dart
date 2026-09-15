@@ -39,8 +39,11 @@ class _NoorLoaderState extends State<NoorLoader>
           animation: _c,
           builder: (BuildContext context, Widget? child) {
             final double pulse =
-                0.75 + 0.25 * (0.5 + 0.5 * -Curves.easeInOut.transform(
-                    (_c.value * 2 % 1.0),));
+                0.75 +
+                0.25 *
+                    (0.5 +
+                        0.5 *
+                            -Curves.easeInOut.transform((_c.value * 2 % 1.0)));
             return Transform.rotate(
               angle: _c.value * 6.2831853,
               child: Opacity(
@@ -131,10 +134,10 @@ class ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => EmptyView(
-        icon: Icons.error_outline_rounded,
-        title: 'Something went wrong',
-        body: message,
-        actionLabel: onRetry == null ? null : 'Try again',
-        onAction: onRetry,
-      );
+    icon: Icons.error_outline_rounded,
+    title: 'Something went wrong',
+    body: message,
+    actionLabel: onRetry == null ? null : 'Try again',
+    onAction: onRetry,
+  );
 }

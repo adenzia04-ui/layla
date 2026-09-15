@@ -44,9 +44,13 @@ void main() {
     );
   }
 
-  testWidgets('globe at night', (WidgetTester tester) =>
-      render(tester, PrayerId.isha, 'isha'),);
+  testWidgets(
+    'globe at night',
+    (WidgetTester tester) => render(tester, PrayerId.isha, 'isha'),
+  );
 
-  testWidgets('globe at maghrib', (WidgetTester tester) =>
-      render(tester, PrayerId.maghrib, 'maghrib'),);
+  testWidgets(
+    'globe at maghrib',
+    (WidgetTester tester) => render(tester, PrayerId.maghrib, 'maghrib'),
+  );
 }

@@ -66,8 +66,9 @@ class _AppTextFieldState extends State<AppTextField> {
           style: AppType.body.copyWith(color: scheme.onSurface),
           decoration: InputDecoration(
             hintText: widget.hint,
-            prefixIcon:
-                widget.prefixIcon == null ? null : Icon(widget.prefixIcon, size: 19),
+            prefixIcon: widget.prefixIcon == null
+                ? null
+                : Icon(widget.prefixIcon, size: 19),
             suffixIcon: widget.obscure
                 ? IconButton(
                     onPressed: () => setState(() => _hidden = !_hidden),

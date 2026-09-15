@@ -36,8 +36,9 @@ void main() {
 
     for (final String label in <String>['Qibla', 'Tasbih', 'Prayer Times']) {
       final Finder text = find.text(label);
-      final Finder tile =
-          find.ancestor(of: text, matching: find.byType(InkWell)).first;
+      final Finder tile = find
+          .ancestor(of: text, matching: find.byType(InkWell))
+          .first;
 
       expect(
         (tester.getCenter(text).dx - tester.getCenter(tile).dx).abs(),
@@ -77,55 +78,55 @@ void main() {
 /// landed in one and not the other, and the golden quietly kept rendering the
 /// old icon.
 Widget _harness() => MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ColoredBox(
-        color: AppColors.midnight,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: FeatureRail(
-              items: <FeatureItem>[
-                FeatureItem(
-                  label: 'Prayer Times',
-                  icon: Icons.access_time_rounded,
-                  onTap: () {},
-                ),
-                FeatureItem(
-                  label: 'Qibla',
-                  icon: Icons.explore_rounded,
-                  accent: const Color(0xFF5AA6E8),
-                  onTap: () {},
-                ),
-                FeatureItem(
-                  label: 'Tasbih',
-                  icon: Icons.radio_button_checked_rounded,
-                  accent: AppColors.emerald,
-                  iconWidget: const TasbihBeads(size: 26),
-                  onTap: () {},
-                ),
-                FeatureItem(
-                  label: 'Tahajjud',
-                  icon: Icons.bedtime_rounded,
-                  accent: const Color(0xFFB98FE0),
-                  badge: '12',
-                  onTap: () {},
-                ),
-                FeatureItem(
-                  label: 'Tahajjud Stories',
-                  icon: Icons.menu_book_rounded,
-                  accent: AppColors.goldSoft,
-                  onTap: () {},
-                ),
-                FeatureItem(
-                  label: 'Prayer Streak',
-                  icon: Icons.local_fire_department_rounded,
-                  accent: AppColors.ember,
-                  iconWidget: const NoorFlame(size: 26, glow: false),
-                  onTap: () {},
-                ),
-              ],
+  debugShowCheckedModeBanner: false,
+  home: ColoredBox(
+    color: AppColors.midnight,
+    child: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: FeatureRail(
+          items: <FeatureItem>[
+            FeatureItem(
+              label: 'Prayer Times',
+              icon: Icons.access_time_rounded,
+              onTap: () {},
             ),
-          ),
+            FeatureItem(
+              label: 'Qibla',
+              icon: Icons.explore_rounded,
+              accent: const Color(0xFF5AA6E8),
+              onTap: () {},
+            ),
+            FeatureItem(
+              label: 'Tasbih',
+              icon: Icons.radio_button_checked_rounded,
+              accent: AppColors.emerald,
+              iconWidget: const TasbihBeads(size: 26),
+              onTap: () {},
+            ),
+            FeatureItem(
+              label: 'Tahajjud',
+              icon: Icons.bedtime_rounded,
+              accent: const Color(0xFFB98FE0),
+              badge: '12',
+              onTap: () {},
+            ),
+            FeatureItem(
+              label: 'Tahajjud Stories',
+              icon: Icons.menu_book_rounded,
+              accent: AppColors.goldSoft,
+              onTap: () {},
+            ),
+            FeatureItem(
+              label: 'Prayer Streak',
+              icon: Icons.local_fire_department_rounded,
+              accent: AppColors.ember,
+              iconWidget: const NoorFlame(size: 26, glow: false),
+              onTap: () {},
+            ),
+          ],
         ),
       ),
-    );
+    ),
+  ),
+);

@@ -42,17 +42,23 @@ class NotificationService {
   /// an unsourced saying attributed to the Prophet ﷺ in a notification is
   /// exactly the kind of thing that should not be invented for flavour.
   static const Map<String, String> _prayerWords = <String, String>{
-    'fajr': 'The two rak‘ahs before Fajr are better than the world and all '
+    'fajr':
+        'The two rak‘ahs before Fajr are better than the world and all '
         'it contains. — Muslim 725',
-    'dhuhr': 'Indeed, prayer has been decreed upon the believers a decree of '
+    'dhuhr':
+        'Indeed, prayer has been decreed upon the believers a decree of '
         'specified times. — Qur’an 4:103',
-    'asr': 'Whoever prays the two cool prayers — ‘Asr and Fajr — will enter '
+    'asr':
+        'Whoever prays the two cool prayers — ‘Asr and Fajr — will enter '
         'Paradise. — Bukhari 574',
-    'maghrib': 'And establish prayer at the two ends of the day and at the '
+    'maghrib':
+        'And establish prayer at the two ends of the day and at the '
         'approach of the night. — Qur’an 11:114',
-    'isha': 'Whoever prays ‘Isha in congregation, it is as if he prayed half '
+    'isha':
+        'Whoever prays ‘Isha in congregation, it is as if he prayed half '
         'the night. — Muslim 656',
-    'tahajjud': 'The best prayer after the prescribed prayers is the prayer '
+    'tahajjud':
+        'The best prayer after the prescribed prayers is the prayer '
         'of the night. — Muslim 1163',
   };
 
@@ -61,12 +67,21 @@ class NotificationService {
   /// iOS wants a filename in the app bundle; Android wants a bare resource
   /// name from `res/raw`. The clip is 17s — iOS silently falls back to the
   /// default tone for anything over 30s, so it must stay short.
-  static const String _adhanIos = 'adhan.caf';
+  /// The file iOS plays for prayer reminders. The adhan by default; the
+  /// person can choose a quieter tone in Reminders settings, and the choice
+  /// is applied here before anything is scheduled. See NotificationSounds.
+  static String iosSound = 'adhan.caf';
   static const RawResourceAndroidNotificationSound _adhanAndroid =
       RawResourceAndroidNotificationSound('adhan');
 
   /// Base offsets keep ids from colliding across features.
   static const int _prayerIdBase = 1000;
+
+  /// Separate bands so the three calls for one prayer replace themselves on a
+  /// reschedule without ever overwriting each other. Both stay below
+  /// [_tahajjudId].
+  static const int _beforeIdBase = 1100;
+  static const int _afterIdBase = 1200;
   static const int _tahajjudId = 2000;
 
   static const int _testId = 9000;
@@ -82,9 +97,11 @@ class NotificationService {
 
     tzdata.initializeTimeZones();
     try {
-      tz.setLocalLocation(tz.getLocation(await FlutterTimezone.getLocalTimezone()));
+      tz.setLocalLocation(
+        tz.getLocation(await FlutterTimezone.getLocalTimezone()),
+      );
     } on Object catch (error) {
-      debugPrint('Layla: falling back to UTC timezone ($error)');
+      debugPrint('Layla Pro: falling back to UTC timezone ($error)');
       tz.setLocalLocation(tz.UTC);
     }
 
@@ -108,11 +125,11 @@ class NotificationService {
     _ready = true;
   }
 
-
   Future<void> _createAndroidChannels() async {
-    final AndroidFlutterLocalNotificationsPlugin? android =
-        _plugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android == null) return;
 
     await android.createNotificationChannel(
@@ -151,13 +168,15 @@ class NotificationService {
     if (Platform.isIOS) {
       return await _plugin
               .resolvePlatformSpecificImplementation<
-                  IOSFlutterLocalNotificationsPlugin>()
+                IOSFlutterLocalNotificationsPlugin
+              >()
               ?.requestPermissions(alert: true, badge: true, sound: true) ??
           false;
     }
-    final AndroidFlutterLocalNotificationsPlugin? android =
-        _plugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     final bool granted =
         await android?.requestNotificationsPermission() ?? false;
     // Without this, Android may delay the alarm past the prayer window.
@@ -194,9 +213,9 @@ class NotificationService {
           styleInformation: const DefaultStyleInformation(true, true),
           sound: _adhanAndroid,
         ),
-        iOS: const DarwinNotificationDetails(
+        iOS: DarwinNotificationDetails(
           interruptionLevel: InterruptionLevel.timeSensitive,
-          sound: _adhanIos,
+          sound: iosSound,
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -206,22 +225,24 @@ class NotificationService {
     );
   }
 
-  Future<void> scheduleTahajjud({required DateTime at}) async {
+  /// [day] is the offset from today, so several nights can be queued without
+  /// each one replacing the last.
+  Future<void> scheduleTahajjud({required DateTime at, int day = 0}) async {
     if (at.isBefore(DateTime.now())) return;
     await _plugin.zonedSchedule(
-      _tahajjudId,
+      _tahajjudId + day,
       'The last third of the night has begun',
       _prayerWords['tahajjud']!,
       tz.TZDateTime.from(at, tz.local),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
+      NotificationDetails(
+        android: const AndroidNotificationDetails(
           _tahajjudChannel,
           'Tahajjud',
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
           sound: _adhanAndroid,
         ),
-        iOS: DarwinNotificationDetails(sound: _adhanIos),
+        iOS: DarwinNotificationDetails(sound: iosSound),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -243,8 +264,8 @@ class NotificationService {
       'Testing the adhan',
       'This is what you will hear when a prayer begins.',
       tz.TZDateTime.now(tz.local).add(delay),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
+      NotificationDetails(
+        android: const AndroidNotificationDetails(
           _reminderChannel,
           'Prayer reminders',
           importance: Importance.high,
@@ -253,7 +274,7 @@ class NotificationService {
         ),
         iOS: DarwinNotificationDetails(
           interruptionLevel: InterruptionLevel.timeSensitive,
-          sound: _adhanIos,
+          sound: iosSound,
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -268,8 +289,8 @@ class NotificationService {
   /// silently look identical from the user's side, and they are fixed in
   /// completely different places.
   Future<List<String>> pendingSummary() async {
-    final List<PendingNotificationRequest> pending =
-        await _plugin.pendingNotificationRequests();
+    final List<PendingNotificationRequest> pending = await _plugin
+        .pendingNotificationRequests();
     return pending
         .map((PendingNotificationRequest r) => r.title ?? 'Reminder #${r.id}')
         .toList();
@@ -287,15 +308,14 @@ class NotificationService {
   }) async {
     const List<({String id, String label})> order =
         <({String id, String label})>[
-      (id: 'fajr', label: 'Fajr'),
-      (id: 'dhuhr', label: 'Dhuhr'),
-      (id: 'asr', label: 'Asr'),
-      (id: 'maghrib', label: 'Maghrib'),
-      (id: 'isha', label: '‘Isha'),
-      (id: 'tahajjud', label: 'Tahajjud'),
-    ];
-    final ({String id, String label}) pick =
-        order[_testCursor % order.length];
+          (id: 'fajr', label: 'Fajr'),
+          (id: 'dhuhr', label: 'Dhuhr'),
+          (id: 'asr', label: 'Asr'),
+          (id: 'maghrib', label: 'Maghrib'),
+          (id: 'isha', label: '‘Isha'),
+          (id: 'tahajjud', label: 'Tahajjud'),
+        ];
+    final ({String id, String label}) pick = order[_testCursor % order.length];
     _testCursor++;
 
     await _plugin.zonedSchedule(
@@ -303,8 +323,8 @@ class NotificationService {
       '${pick.label} has begun',
       _prayerWords[pick.id]!,
       tz.TZDateTime.now(tz.local).add(delay),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
+      NotificationDetails(
+        android: const AndroidNotificationDetails(
           _focusChannel,
           'Prayer focus',
           importance: Importance.max,
@@ -314,7 +334,7 @@ class NotificationService {
         ),
         iOS: DarwinNotificationDetails(
           interruptionLevel: InterruptionLevel.timeSensitive,
-          sound: _adhanIos,
+          sound: iosSound,
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -324,15 +344,71 @@ class NotificationService {
     return pick.label;
   }
 
+  /// The call before the adhan, and the one after the window has been open a
+  /// while with nothing confirmed.
+  ///
+  /// Deliberately not the adhan sound. The adhan announces that the time has
+  /// come; playing it ten minutes early, and again half an hour late, teaches
+  /// people to stop believing it. These are a plain notification tone.
+  Future<void> scheduleReminder({
+    required int index,
+    required String prayerName,
+    required String prayerId,
+    required DateTime at,
+    required bool before,
+    required int minutes,
+  }) async {
+    if (at.isBefore(DateTime.now())) return;
+
+    await _plugin.zonedSchedule(
+      (before ? _beforeIdBase : _afterIdBase) + index,
+      before
+          ? '$prayerName is in $minutes minutes'
+          : '$prayerName was $minutes minutes ago',
+      before
+          ? 'A moment to get ready.'
+          : 'It is not too late — the window is still open.',
+      tz.TZDateTime.from(at, tz.local),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          _reminderChannel,
+          'Prayer reminders',
+          importance: Importance.high,
+          priority: Priority.high,
+          styleInformation: DefaultStyleInformation(true, true),
+        ),
+        iOS: DarwinNotificationDetails(
+          interruptionLevel: InterruptionLevel.timeSensitive,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      payload: 'noor://focus/$prayerId',
+    );
+  }
+
   Future<void> cancelPrayer(int index) => _plugin.cancel(_prayerIdBase + index);
+
+  Future<void> cancelReminder(int index, {required bool before}) =>
+      _plugin.cancel((before ? _beforeIdBase : _afterIdBase) + index);
+
+  /// Called the moment a prayer is confirmed.
+  ///
+  /// Without this the late reminder still fires: "Asr was 30 minutes ago, it
+  /// is not too late" arriving at somebody who prayed twenty minutes ago is
+  /// the app not paying attention, and it is the sort of thing that gets
+  /// notifications turned off altogether.
+  Future<void> cancelLateReminder(int index) =>
+      cancelReminder(index, before: false);
 
   Future<void> cancelAll() => _plugin.cancelAll();
 
   /// Set when the app was launched by tapping a notification, so the router can
   /// honour it after the first frame.
   Future<String?> launchPayload() async {
-    final NotificationAppLaunchDetails? details =
-        await _plugin.getNotificationAppLaunchDetails();
+    final NotificationAppLaunchDetails? details = await _plugin
+        .getNotificationAppLaunchDetails();
     if (details?.didNotificationLaunchApp ?? false) {
       return details!.notificationResponse?.payload;
     }

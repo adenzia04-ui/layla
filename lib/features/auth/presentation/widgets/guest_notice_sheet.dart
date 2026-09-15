@@ -21,15 +21,15 @@ class _GuestNoticeSheet extends StatelessWidget {
 
   static const List<({IconData icon, String title, String body})> _works =
       <({IconData icon, String title, String body})>[
-    (
-      icon: Icons.check_circle_outline_rounded,
-      title: 'Works as a guest',
-      body: 'Prayer times, Qibla, Tasbih, Tahajjud times, and your streak.',
-    ),
-  ];
+        (
+          icon: Icons.check_circle_outline_rounded,
+          title: 'Works as a guest',
+          body: 'Prayer times, Qibla, Tasbih, Tahajjud times, and your streak.',
+        ),
+      ];
 
-  static const List<({IconData icon, String title, String body})> _limits =
-      <({IconData icon, String title, String body})>[
+  static const List<({IconData icon, String title, String body})>
+  _limits = <({IconData icon, String title, String body})>[
     (
       icon: Icons.cloud_off_rounded,
       title: 'Tied to this phone',
@@ -75,9 +75,9 @@ class _GuestNoticeSheet extends StatelessWidget {
             const SizedBox(height: Insets.xl),
             for (final ({IconData icon, String title, String body}) item
                 in <({IconData icon, String title, String body})>[
-              ..._works,
-              ..._limits,
-            ])
+                  ..._works,
+                  ..._limits,
+                ])
               Padding(
                 padding: const EdgeInsets.only(bottom: Insets.lg),
                 child: Row(
@@ -99,8 +99,9 @@ class _GuestNoticeSheet extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             item.body,
-                            style: AppType.bodySm
-                                .copyWith(color: AppColors.mistFaint),
+                            style: AppType.bodySm.copyWith(
+                              color: AppColors.mistFaint,
+                            ),
                           ),
                         ],
                       ),
@@ -117,15 +118,17 @@ class _GuestNoticeSheet extends StatelessWidget {
               ),
               child: Row(
                 children: <Widget>[
-                  const Icon(Icons.upgrade_rounded,
-                      size: 18, color: AppColors.goldSoft,),
+                  const Icon(
+                    Icons.upgrade_rounded,
+                    size: 18,
+                    color: AppColors.goldSoft,
+                  ),
                   const SizedBox(width: Insets.sm),
                   Expanded(
                     child: Text(
                       'You can add an email and password later from Profile '
                       'and keep every day of your streak.',
-                      style:
-                          AppType.bodySm.copyWith(color: AppColors.mist),
+                      style: AppType.bodySm.copyWith(color: AppColors.mist),
                     ),
                   ),
                 ],

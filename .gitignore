@@ -16,3 +16,15 @@ ios/Runner/GoogleService-Info.plist
 firebase/functions/node_modules/
 firebase/functions/lib/
 .firebase/
+firebase/rules-tests/node_modules/
+
+# Emulator logs (firebase emulators:exec writes these at the repo root)
+firestore-debug.log
+firebase-debug.log
+ui-debug.log
+
+# Local-only artefacts
+test/failures/
+worker/.wrangler/
+# Training photos stay on this Mac; the README explains the layout
+training/prayer_mat/

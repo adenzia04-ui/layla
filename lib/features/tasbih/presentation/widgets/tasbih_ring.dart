@@ -59,10 +59,8 @@ class _TasbihRingState extends State<TasbihRing>
       behavior: HitTestBehavior.opaque,
       child: AnimatedBuilder(
         animation: _pulse,
-        builder: (BuildContext context, Widget? child) => Transform.scale(
-          scale: 1 - _pulse.value,
-          child: child,
-        ),
+        builder: (BuildContext context, Widget? child) =>
+            Transform.scale(scale: 1 - _pulse.value, child: child),
         child: SizedBox(
           height: widget.size,
           width: widget.size,
@@ -75,9 +73,9 @@ class _TasbihRingState extends State<TasbihRing>
                 curve: Motion.enter,
                 builder: (BuildContext context, double value, Widget? child) =>
                     CustomPaint(
-                  size: Size.square(widget.size),
-                  painter: _RingPainter(progress: value, accent: accent),
-                ),
+                      size: Size.square(widget.size),
+                      painter: _RingPainter(progress: value, accent: accent),
+                    ),
               ),
               Column(
                 mainAxisSize: MainAxisSize.min,
@@ -98,9 +96,7 @@ class _TasbihRingState extends State<TasbihRing>
                     decoration: BoxDecoration(
                       color: accent.withValues(alpha: 0.14),
                       borderRadius: Radii.chip,
-                      border: Border.all(
-                        color: accent.withValues(alpha: 0.45),
-                      ),
+                      border: Border.all(color: accent.withValues(alpha: 0.45)),
                     ),
                     child: Text(
                       'of ${widget.target}',

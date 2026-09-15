@@ -24,10 +24,6 @@ struct ArcShape: Shape {
 
 /// The curved-gauge widget: how far through the current stretch of the day you
 /// are, from the prayer that just passed to the one coming.
-///
-/// Structurally the sleep-insights gauge from the reference, restyled in Layl —
-/// gold instead of green, with the two endpoints labelled by prayer rather than
-/// bedtime and wake-up.
 struct PrayerArcWidgetView: View {
     let entry: NoorEntry
 
@@ -38,85 +34,91 @@ struct PrayerArcWidgetView: View {
     }
 
     var body: some View {
-        ZStack {
-            Layl.nightSky
-
-            HStack(spacing: 14) {
-                gauge
-                details
-            }
-            .padding(14)
+        HStack(spacing: 16) {
+            readout
+            details
         }
     }
 
+    /// The arc, with a sun travelling along it.
+    ///
+    /// The stroke used to start at the left end however little of the day
+    /// had passed, and ten minutes into a six-hour stretch it was a fat gold
+    /// blob on the end of the track — true, and it looked broken. Now a
+    /// glowing marker sits where you are on the arc, and the gold stroke only
+    /// appears behind it once there is enough of it to read as a line.
     private var gauge: some View {
-        ZStack {
+        let progress = snapshot.progress()
+        return ZStack {
             ArcShape()
                 .stroke(
                     Layl.navyLine,
-                    style: StrokeStyle(lineWidth: 13, lineCap: .round)
+                    style: StrokeStyle(lineWidth: 9, lineCap: .round)
                 )
 
-            ArcShape(to: snapshot.progress())
-                .stroke(
-                    AngularGradient(
-                        colors: [Layl.goldDim, Layl.gold, Layl.goldSoft],
-                        center: .bottom,
-                        startAngle: .degrees(180),
-                        endAngle: .degrees(360)
-                    ),
-                    style: StrokeStyle(lineWidth: 13, lineCap: .round)
-                )
-                .shadow(color: Layl.gold.opacity(0.55), radius: 7)
-
-            VStack(spacing: 0) {
-                Spacer()
-                Text(
-                    timerInterval: Date()...max(
-                        snapshot.nextDate,
-                        Date().addingTimeInterval(1)
-                    ),
-                    countsDown: true
-                )
-                .font(Layl.numeral(19, weight: .bold))
-                .foregroundStyle(Layl.cream)
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-
-                Text("until \(snapshot.nextPrayer?.label ?? "next")")
-                    .font(Layl.ui(9))
-                    .foregroundStyle(Layl.mist)
-                    .lineLimit(1)
+            if progress > 0.06 {
+                ArcShape(to: progress)
+                    .stroke(
+                        AngularGradient(
+                            colors: [Layl.goldDim, Layl.gold, Layl.goldSoft],
+                            center: .bottom,
+                            startAngle: .degrees(180),
+                            endAngle: .degrees(360)
+                        ),
+                        style: StrokeStyle(lineWidth: 9, lineCap: .round)
+                    )
+                    .shadow(color: Layl.gold.opacity(0.45), radius: 5)
             }
-            .padding(.bottom, 2)
+
+            GeometryReader { geo in
+                let radius = min(geo.size.width / 2, geo.size.height)
+                let centre = CGPoint(x: geo.size.width / 2, y: geo.size.height)
+                let angle = Double.pi * (1 - progress)
+                Circle()
+                    .fill(Layl.goldSoft)
+                    .frame(width: 13, height: 13)
+                    .shadow(color: Layl.gold.opacity(0.9), radius: 7)
+                    .position(
+                        x: centre.x + radius * cos(angle),
+                        y: centre.y - radius * sin(angle)
+                    )
+            }
         }
-        .frame(width: 118, height: 66)
+        .frame(width: 124, height: 62)
+    }
+
+    /// The arc, and the number under it — not inside it, where a wide value
+    /// like "4:04:54" ran into the gold.
+    private var readout: some View {
+        VStack(spacing: 6) {
+            gauge
+            Countdown(to: snapshot.nextDate, size: 22, alignment: .center)
+            Text("until \(snapshot.next.label)")
+                .font(Layl.ui(11))
+                .foregroundStyle(Layl.mist)
+                .lineLimit(1)
+        }
+        .frame(width: 132)
     }
 
     private var details: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 5) {
-                Image(systemName: "location.fill")
-                    .font(.system(size: 9))
-                    .foregroundStyle(Layl.goldDim)
-                Text(snapshot.city)
-                    .font(Layl.ui(11, weight: .semibold))
-                    .foregroundStyle(Layl.cream)
-                    .lineLimit(1)
-
+        VStack(alignment: .leading, spacing: 7) {
+            HStack(spacing: 6) {
+                PlaceLine(city: snapshot.city, size: 11, color: Layl.cream)
                 Spacer(minLength: 4)
-
                 streak
+                LaylaBadge(size: 18)
             }
 
+            // Before Fajr nothing is running; the stretch is the night.
             endpoint(
-                symbol: current?.symbol ?? "moon",
-                label: current?.label ?? "Now",
+                symbol: current?.symbol ?? "moon.fill",
+                label: current?.label ?? "Night",
                 date: current?.date
             )
             endpoint(
-                symbol: snapshot.nextPrayer?.symbol ?? "sun.max",
-                label: snapshot.nextPrayer?.label ?? "Next",
+                symbol: snapshot.next.symbol,
+                label: snapshot.next.label,
                 date: snapshot.nextDate,
                 highlighted: true
             )
@@ -124,10 +126,9 @@ struct PrayerArcWidgetView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// Only meaningful once the app has published through the App Group, and
-    /// only worth drawing when the user actually has a run going. A stale
-    /// record — Noor not opened in a day and a half — is shown dimmed rather
-    /// than hidden, so a number on screen is never quietly wrong.
+    /// Only worth drawing when the user has a run going. A stale record —
+    /// the app not opened in a day and a half — is dimmed, never hidden, so a
+    /// number on screen is never quietly wrong.
     @ViewBuilder
     private var streak: some View {
         if let shared = entry.shared, shared.streak > 0 {
@@ -138,11 +139,9 @@ struct PrayerArcWidgetView: View {
                     .font(Layl.numeral(11, weight: .bold))
             }
             .foregroundStyle(shared.isStale ? Layl.mistFaint : Layl.gold)
-            .padding(.horizontal, 6)
+            .padding(.horizontal, 7)
             .padding(.vertical, 3)
-            .background {
-                Capsule().fill(Layl.navyElevated.opacity(0.75))
-            }
+            .background { Capsule().fill(Layl.navyElevated.opacity(0.8)) }
         }
     }
 
@@ -152,29 +151,36 @@ struct PrayerArcWidgetView: View {
         date: Date?,
         highlighted: Bool = false
     ) -> some View {
-        HStack(spacing: 7) {
+        HStack(spacing: 8) {
             Image(systemName: symbol)
-                .font(.system(size: 12))
+                .font(.system(size: 13))
                 .foregroundStyle(highlighted ? Layl.gold : Layl.mistFaint)
                 .frame(width: 16)
 
-            VStack(alignment: .leading, spacing: 0) {
-                Text(label)
-                    .font(Layl.ui(10))
-                    .foregroundStyle(Layl.mist)
-                if let date {
-                    Text(date, style: .time)
-                        .font(Layl.numeral(13))
-                        .foregroundStyle(highlighted ? Layl.cream : Layl.mist)
-                }
+            Text(label)
+                .font(Layl.ui(12, weight: .semibold))
+                .foregroundStyle(highlighted ? Layl.cream : Layl.mist)
+                .lineLimit(1)
+
+            Spacer(minLength: 4)
+
+            if let date {
+                Text(date, style: .time)
+                    .font(Layl.numeral(13))
+                    .foregroundStyle(highlighted ? Layl.cream : Layl.mist)
             }
         }
-        .padding(.vertical, 5)
-        .padding(.horizontal, 8)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 7)
+        .padding(.horizontal, 10)
         .background {
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .fill(Layl.navyElevated.opacity(highlighted ? 0.85 : 0.45))
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Layl.navyElevated.opacity(highlighted ? 0.9 : 0.45))
+                .overlay {
+                    if highlighted {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Layl.gold.opacity(0.5), lineWidth: 1)
+                    }
+                }
         }
     }
 }
@@ -187,7 +193,7 @@ struct PrayerArcWidget: Widget {
             provider: NoorProvider()
         ) { entry in
             PrayerArcWidgetView(entry: entry)
-                .containerBackground(for: .widget) { Layl.midnight }
+                .containerBackground(for: .widget) { NightBackground() }
         }
         .configurationDisplayName("Prayer Progress")
         .description("A curved countdown from the last prayer to the next.")

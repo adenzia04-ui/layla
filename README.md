@@ -78,12 +78,14 @@ Full specification, user flow, screen list, navigation map and database schema:
 Blocking apps is impossible from Dart on both platforms. Both native routes are
 written:
 
-- **iOS — Apple Screen Time** (`platform/ios/`). Genuinely shields the apps the
-  user picked, for the length of each prayer window, while Noor is closed.
-  Dormant until Apple grants the **Family Controls (Distribution)** entitlement
-  and the Xcode extension targets are added —
-  **[`platform/ios/README.md`](platform/ios/README.md)** is the checklist.
-  Request the entitlement first; it takes days to weeks.
+- **iOS — Apple Screen Time**. Live. Three app extensions in `ios/` are real
+  Xcode targets embedded in Runner: `NoorDeviceActivityMonitor` (raises the
+  shield on schedule while the app is closed), `NoorShield` (the gold-mark
+  screen a blocked app shows) and `NoorWidgetsExtension`. All are signed with
+  team `6RQYJNC9LM` under `com.adenzia.layla.*` and share App Group
+  `group.com.adenzia.layla`. Development works today; TestFlight and the App
+  Store need Apple's **Family Controls (Distribution)** approval for this team,
+  requested at https://developer.apple.com/contact/request/family-controls-distribution.
 - **Android — soft lock** (`platform/kotlin/`). A foreground service returns you
   to Noor when another app comes forward. Best-effort: OEM battery managers can
   stop it, and the user can always escape.

@@ -7,6 +7,11 @@
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.widgetkit-extension</string>
 	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Outfit.ttf</string>
+		<string>AmiriQuran-Regular.ttf</string>
+	</array>
 	<key>NSWidgetWantsLocation</key>
 	<true/>
 </dict>

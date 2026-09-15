@@ -22,7 +22,9 @@ android {
         applicationId = "com.noorapp.noor"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
+        // 24, not 23: the camera plugin's CameraX implementation — what the
+        // prayer-mat scanner runs on — supports API 24 and up.
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
         // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
         // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)

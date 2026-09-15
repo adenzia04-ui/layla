@@ -43,9 +43,7 @@ class PrayerStrip extends StatelessWidget {
                 isActive: active?.id == slot.id,
                 status: day.recordFor(slot.id).status,
                 use24h: use24h,
-                onTap: onTapPrayer == null
-                    ? null
-                    : () => onTapPrayer!(slot.id),
+                onTap: onTapPrayer == null ? null : () => onTapPrayer!(slot.id),
               ),
             ),
           _TahajjudStripItem(
@@ -209,21 +207,28 @@ class _StatusDot extends StatelessWidget {
   Widget build(BuildContext context) {
     final ({IconData icon, Color color}) look = switch (status) {
       PrayerStatus.completed => (
-          icon: Icons.check_circle,
-          color: AppColors.emerald,
-        ),
+        icon: Icons.check_circle,
+        color: AppColors.emerald,
+      ),
       PrayerStatus.awaitingProof => (
-          icon: Icons.photo_camera_back_outlined,
-          color: AppColors.amber,
-        ),
+        icon: Icons.photo_camera_back_outlined,
+        color: AppColors.amber,
+      ),
       PrayerStatus.missed => (
-          icon: Icons.remove_circle_outline,
-          color: AppColors.rose,
-        ),
+        icon: Icons.remove_circle_outline,
+        color: AppColors.rose,
+      ),
+      // Covered by the prayer pause. A neutral dash rather than the rose
+      // cross above it: this prayer was never owed, so it must not read as
+      // one that was skipped.
+      PrayerStatus.excused => (
+        icon: Icons.remove_rounded,
+        color: AppColors.mistFaint,
+      ),
       PrayerStatus.pending => (
-          icon: Icons.circle_outlined,
-          color: AppColors.mistFaint,
-        ),
+        icon: Icons.circle_outlined,
+        color: AppColors.mistFaint,
+      ),
     };
     return Icon(look.icon, size: 13, color: look.color);
   }

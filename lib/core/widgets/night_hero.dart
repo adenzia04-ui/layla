@@ -27,16 +27,16 @@ class NightHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Positioned.fill(
-        child: RepaintBoundary(
-          child: CustomPaint(
-            painter: _NightHeroPainter(
-              starOpacity: starOpacity,
-              skylineOpacity: skylineOpacity,
-              moonPhase: moonPhase,
-            ),
-          ),
+    child: RepaintBoundary(
+      child: CustomPaint(
+        painter: _NightHeroPainter(
+          starOpacity: starOpacity,
+          skylineOpacity: skylineOpacity,
+          moonPhase: moonPhase,
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _NightHeroPainter extends CustomPainter {
@@ -80,17 +80,18 @@ class _NightHeroPainter extends CustomPainter {
       Offset(size.width * 0.5, size.height * 0.86),
       size.width * 0.6,
       Paint()
-        ..shader = RadialGradient(
-          colors: <Color>[
-            AppColors.gold.withValues(alpha: 0.14),
-            Colors.transparent,
-          ],
-        ).createShader(
-          Rect.fromCircle(
-            center: Offset(size.width * 0.5, size.height * 0.86),
-            radius: size.width * 0.6,
-          ),
-        ),
+        ..shader =
+            RadialGradient(
+              colors: <Color>[
+                AppColors.gold.withValues(alpha: 0.14),
+                Colors.transparent,
+              ],
+            ).createShader(
+              Rect.fromCircle(
+                center: Offset(size.width * 0.5, size.height * 0.86),
+                radius: size.width * 0.6,
+              ),
+            ),
     );
   }
 
@@ -102,8 +103,7 @@ class _NightHeroPainter extends CustomPainter {
       final double x = random.nextDouble() * size.width;
       final double y = random.nextDouble() * size.height * 0.72;
       final double r = random.nextDouble() * 1.3 + 0.4;
-      final double alpha =
-          (random.nextDouble() * 0.7 + 0.2) * starOpacity;
+      final double alpha = (random.nextDouble() * 0.7 + 0.2) * starOpacity;
       paint.color = AppColors.cream.withValues(alpha: alpha);
       canvas.drawCircle(Offset(x, y), r, paint);
     }
@@ -129,13 +129,12 @@ class _NightHeroPainter extends CustomPainter {
     final Path crescent = Path.combine(
       PathOperation.difference,
       Path()..addOval(Rect.fromCircle(center: c, radius: r)),
-      Path()
-        ..addOval(
-          Rect.fromCircle(
-            center: c.translate(r * (0.5 + moonPhase), -r * 0.16),
-            radius: r * 0.96,
-          ),
+      Path()..addOval(
+        Rect.fromCircle(
+          center: c.translate(r * (0.5 + moonPhase), -r * 0.16),
+          radius: r * 0.96,
         ),
+      ),
     );
     canvas.drawPath(
       crescent,
@@ -151,8 +150,7 @@ class _NightHeroPainter extends CustomPainter {
       const Color(0xFF050B18),
       const Color(0xFF0B1B34),
       0.25,
-    )!
-        .withValues(alpha: skylineOpacity);
+    )!.withValues(alpha: skylineOpacity);
     final Paint fill = Paint()..color = body;
     final Paint rim = Paint()
       ..style = PaintingStyle.stroke
@@ -160,10 +158,7 @@ class _NightHeroPainter extends CustomPainter {
       ..color = AppColors.gold.withValues(alpha: 0.30 * skylineOpacity);
 
     // ground band
-    canvas.drawRect(
-      Rect.fromLTRB(0, groundY, size.width, baseY),
-      fill,
-    );
+    canvas.drawRect(Rect.fromLTRB(0, groundY, size.width, baseY), fill);
 
     void minaret(double cx, double height, double width) {
       final double top = groundY - height;
@@ -188,17 +183,19 @@ class _NightHeroPainter extends CustomPainter {
       );
 
       // cap
-      final Path cap = buildMihrabPath(Size(width * 1.6, width * 2.2))
-          .shift(Offset(cx - width * 0.8, top - width * 0.7));
+      final Path cap = buildMihrabPath(
+        Size(width * 1.6, width * 2.2),
+      ).shift(Offset(cx - width * 0.8, top - width * 0.7));
       canvas.drawPath(cap, fill);
       canvas.drawPath(cap, rim);
       canvas.drawCircle(Offset(cx, top - width * 0.95), width * 0.16, fill);
     }
 
     void dome(double cx, double width, double height) {
-      final Path path =
-          buildMihrabPath(Size(width, height), shoulder: 0.30)
-              .shift(Offset(cx - width / 2, groundY - height));
+      final Path path = buildMihrabPath(
+        Size(width, height),
+        shoulder: 0.30,
+      ).shift(Offset(cx - width / 2, groundY - height));
       canvas.drawPath(path, fill);
       canvas.drawPath(path, rim);
       // finial

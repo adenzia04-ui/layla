@@ -77,10 +77,7 @@ class _CategoryCard extends StatelessWidget {
               color: AppColors.mist,
             ),
           ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.mistFaint,
-          ),
+          const Icon(Icons.chevron_right_rounded, color: AppColors.mistFaint),
         ],
       ),
     );

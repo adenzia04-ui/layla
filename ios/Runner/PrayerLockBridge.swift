@@ -64,6 +64,9 @@ enum PrayerLockBridge {
 
         switch call.method {
         case "permissions":
+            // Read on every foreground, which makes it the natural place to
+            // notice a self-test whose window has expired.
+            NoorLock.releaseExpiredTestShield()
             result([
                 "supported": true,
                 "authorized":
@@ -81,7 +84,21 @@ enum PrayerLockBridge {
                     await MainActor.run { result(true) }
                 } catch {
                     NSLog("Noor: Screen Time authorisation failed — \(error)")
-                    await MainActor.run { result(false) }
+                    // The reason, not just "no".
+                    //
+                    // This used to return a bare false, so the settings screen
+                    // showed a red cross and nothing else — and every cause
+                    // below has a different fix. "Screen Time is off in iOS
+                    // Settings" is a ten-second fix; the user just had no way
+                    // to know that was the problem.
+                    let reason = Self.authorisationReason(error)
+                    await MainActor.run {
+                        result(FlutterError(
+                            code: "screentime-denied",
+                            message: reason,
+                            details: "\(error)"
+                        ))
+                    }
                 }
             }
 
@@ -109,7 +126,14 @@ enum PrayerLockBridge {
         case "startTestWindow":
             let end = NoorLock.startTestWindow()
             NoorLock.activePrayerLabel = "Test"
-            result(Int(end.timeIntervalSince1970 * 1000))
+            var report = NoorLock.selfTestReport()
+            report["endMillis"] = Int(end.timeIntervalSince1970 * 1000)
+            result(report)
+
+        case "startTriggerTest":
+            let start = NoorLock.startTriggerTest()
+            NoorLock.activePrayerLabel = "Trigger test"
+            result(Int(start.timeIntervalSince1970 * 1000))
 
         // Android-only members of the shared interface.
         case "requestUsageAccess", "requestOverlay":
@@ -168,7 +192,41 @@ enum PrayerLockBridge {
             result(false)
             return
         }
+        // The one surface in this flow left at the platform default. The
+        // shield beside it is themed to midnight, and SwiftUI otherwise
+        // follows the device appearance — so on a phone set to Light this
+        // slid a full-screen white sheet over an app that has no light mode.
+        host.overrideUserInterfaceStyle = .dark
         controller.present(host, animated: true)
+    }
+
+    /// Plain English for the ways FamilyControls says no.
+    @available(iOS 16.0, *)
+    private static func authorisationReason(_ error: Error) -> String {
+        guard let familyError = error as? FamilyControlsError else {
+            return "Screen Time could not be enabled: "
+                + error.localizedDescription
+        }
+        switch familyError {
+        case .invalidAccountType:
+            return "Turn Screen Time on first: iOS Settings \u{203A} Screen Time. "
+                + "Layla Pro can only pause apps once iOS itself is managing them."
+        case .authorizationCanceled:
+            return "The Screen Time request was dismissed. Tap it again and "
+                + "choose Continue."
+        case .authorizationConflict:
+            return "Another app already manages Screen Time on this phone. "
+                + "Only one can, so Layla Pro cannot pause apps until that is removed."
+        case .restricted:
+            return "Screen Time is restricted on this phone \u{2014} usually a "
+                + "Family Sharing or device management rule."
+        case .networkError:
+            return "Screen Time could not reach Apple. Check the connection "
+                + "and try again."
+        @unknown default:
+            return "Screen Time refused the request: "
+                + error.localizedDescription
+        }
     }
 }
 
@@ -204,6 +262,7 @@ struct NoorActivityPickerView: View {
                 }
         }
     }
+
 }
 
 #endif

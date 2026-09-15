@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AppColors.midnight. The launch window is painted before Flutter exists,
+         so it cannot read the Dart palette and has to repeat the value here. -->
+    <color name="midnight">#FF060D1B</color>
+</resources>

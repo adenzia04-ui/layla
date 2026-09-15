@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../application/starred_duas.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -14,7 +18,7 @@ import 'dua_page_screen.dart';
 /// The printed page is always one tap away. The page is the authority; this is
 /// the reading view. If the two ever disagree, the book wins — and you can see
 /// it without leaving the screen.
-class DuaTextDetailScreen extends StatelessWidget {
+class DuaTextDetailScreen extends ConsumerWidget {
   const DuaTextDetailScreen({
     super.key,
     required this.dua,
@@ -27,9 +31,9 @@ class DuaTextDetailScreen extends StatelessWidget {
   final int sectionNumber;
 
   @override
-  Widget build(BuildContext context) {
-    final PageRange range = duaSectionPages[sectionNumber] ??
-        (start: 1, end: 1);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final PageRange range =
+        duaSectionPages[sectionNumber] ?? (start: 1, end: 1);
 
     return NightScaffold(
       title: sectionTitle,
@@ -62,32 +66,74 @@ class DuaTextDetailScreen extends StatelessWidget {
                   ),
                 ),
               ],
+              const Spacer(),
+              // The same star as the list, in the same gold — starring from
+              // here is the natural moment, once you have read the thing and
+              // decided you want it again.
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                tooltip: ref.watch(starredDuasProvider).contains(dua.number)
+                    ? 'Remove from favourites'
+                    : 'Keep at the top',
+                icon: Icon(
+                  ref.watch(starredDuasProvider).contains(dua.number)
+                      ? Icons.star_rounded
+                      : Icons.star_outline_rounded,
+                  size: 22,
+                  color: ref.watch(starredDuasProvider).contains(dua.number)
+                      ? AppColors.gold
+                      : AppColors.mistFaint,
+                ),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  ref.read(starredDuasProvider.notifier).toggle(dua.number);
+                },
+              ),
             ],
           ),
           const SizedBox(height: Insets.lg),
 
-          // Arabic first and largest, right-aligned, with generous line
-          // height — vocalized Arabic needs the room or the harakat collide.
-          NightCard(
-            padding: const EdgeInsets.all(Insets.xl),
-            child: SizedBox(
+          // Arabic first and largest, with generous line height — vocalized
+          // Arabic needs the room or the harakat collide. No card behind it,
+          // matching the recitation screen: a navy panel on a navy ground was
+          // boxing the words in for no reason.
+          //
+          // Guarded, because section 132 is the book's closing chapter of
+          // etiquette rather than a supplication and carries no Arabic at all.
+          if (dua.hasArabic) ...<Widget>[
+            SizedBox(
               width: double.infinity,
               child: Text(
                 dua.arabic,
-                textAlign: TextAlign.right,
+                textAlign: TextAlign.center,
                 textDirection: TextDirection.rtl,
-                style: const TextStyle(
-                  fontSize: 26,
-                  height: 2.0,
-                  color: AppColors.cream,
-                ),
+                style: AppType.arabic(
+                  25,
+                  height: 2,
+                ).copyWith(color: AppColors.cream),
               ),
             ),
-          ),
-          const SizedBox(height: Insets.lg),
+            const SizedBox(height: Insets.lg),
+          ],
 
-          _Block(label: 'Transliteration', body: dua.transliteration),
-          _Block(label: 'Translation', body: dua.english),
+          // Forty entries in the source edition carry no transliteration and two
+          // carry no English. Those lines are left out rather than printed empty,
+          // and nothing is written in to fill the hole.
+          // A narration is a report of what was done, not words to say, so it
+          // is labelled as one instead of appearing to be a dua whose
+          // transliteration went missing.
+          if (dua.note != null) _Block(label: 'Note', body: dua.note!),
+          if (dua.hasTransliteration)
+            _Block(label: 'Transliteration', body: dua.spoken),
+          if (dua.hasEnglish)
+            _Block(label: 'Translation', body: dua.english)
+          else
+            const _Block(
+              label: 'Translation',
+              body:
+                  'Not carried by the digital edition — the printed page below '
+                  'has it.',
+            ),
 
           const SizedBox(height: Insets.sm),
           NightCard(

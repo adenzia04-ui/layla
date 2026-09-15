@@ -96,10 +96,7 @@ abstract final class Geo {
     // two independent fractions in [-0.6, 0.6] of the cell half-size
     final double fx = ((h & 0xFFFF) / 0xFFFF - 0.5) * 1.2;
     final double fy = (((h >> 16) & 0xFFFF) / 0xFFFF - 0.5) * 1.2;
-    return (
-      lat: cell.lat + cell.latErr * fy,
-      lng: cell.lng + cell.lngErr * fx,
-    );
+    return (lat: cell.lat + cell.latErr * fy, lng: cell.lng + cell.lngErr * fx);
   }
 
   /// FNV-1a — small, stable across runs and platforms.
@@ -113,16 +110,12 @@ abstract final class Geo {
   }
 
   /// Great-circle distance in kilometres — used to sort nearby believers.
-  static double distanceKm(
-    double lat1,
-    double lng1,
-    double lat2,
-    double lng2,
-  ) {
+  static double distanceKm(double lat1, double lng1, double lat2, double lng2) {
     const double earthRadius = 6371.0;
     final double dLat = _rad(lat2 - lat1);
     final double dLng = _rad(lng2 - lng1);
-    final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final double a =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(_rad(lat1)) *
             math.cos(_rad(lat2)) *
             math.sin(dLng / 2) *

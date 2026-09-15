@@ -46,11 +46,9 @@ class _StoryComposerScreenState extends ConsumerState<StoryComposerScreen> {
 
   Future<void> _publish() async {
     FocusScope.of(context).unfocus();
-    final String? id = await ref.read(storyControllerProvider.notifier).publish(
-          body: _body.text,
-          mood: _mood,
-          anonymous: _anonymous,
-        );
+    final String? id = await ref
+        .read(storyControllerProvider.notifier)
+        .publish(body: _body.text, mood: _mood, anonymous: _anonymous);
     if (id == null || !mounted) return;
     context
       ..showSuccess('Your story has been shared.')
@@ -63,8 +61,10 @@ class _StoryComposerScreenState extends ConsumerState<StoryComposerScreen> {
     final int length = _body.text.trim().length;
     final bool canPublish = length >= 40 && length <= 1200;
 
-    ref.listen<AsyncValue<void>>(storyControllerProvider,
-        (AsyncValue<void>? previous, AsyncValue<void> next) {
+    ref.listen<AsyncValue<void>>(storyControllerProvider, (
+      AsyncValue<void>? previous,
+      AsyncValue<void> next,
+    ) {
       if (next.hasError && !next.isLoading) context.showError(next.error!);
     });
 
@@ -73,12 +73,9 @@ class _StoryComposerScreenState extends ConsumerState<StoryComposerScreen> {
     return NightScaffold(
       scrollable: true,
       ornamentHeight: 200,
-      leading: Padding(
-        padding: const EdgeInsets.all(Insets.sm),
-        child: CircleIconButton(
-          icon: Icons.close_rounded,
-          onPressed: () => context.pop(),
-        ),
+      leading: CircleIconButton(
+        icon: Icons.close_rounded,
+        onPressed: () => context.pop(),
       ),
       title: 'Share your story',
       // Pinned rather than sitting at the end of the scroll. The Scaffold
@@ -127,8 +124,10 @@ class _StoryComposerScreenState extends ConsumerState<StoryComposerScreen> {
             'Write about your own experience. Please avoid presenting '
             'anything as a guaranteed result of prayer or dua, and do not '
             "share other people's private details.",
-            style: AppType.bodySm
-                .copyWith(color: AppColors.mistFaint, height: 1.5),
+            style: AppType.bodySm.copyWith(
+              color: AppColors.mistFaint,
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: Insets.md),
           TextField(

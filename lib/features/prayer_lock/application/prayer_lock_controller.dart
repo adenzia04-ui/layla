@@ -8,6 +8,7 @@ import '../../../core/services/prefs_service.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/result.dart';
 import '../../auth/data/auth_repository.dart';
+import '../../cycle/application/cycle_controller.dart';
 import '../../prayer_times/application/prayer_times_controller.dart';
 import '../../prayer_times/domain/prayer.dart';
 import '../../streaks/application/streak_controller.dart';
@@ -15,13 +16,17 @@ import '../../streaks/data/prayer_day_repository.dart';
 import '../../streaks/domain/prayer_day.dart';
 import '../data/prayer_lock_platform.dart';
 import 'prayer_lock_sync.dart';
+import '../data/mat_vision.dart';
+import '../domain/mat_check.dart';
 import '../data/proof_repository.dart';
 import '../domain/prayer_session.dart';
 
 /// Prayers the user has waved away for this window. Kept in memory only: the
 /// dismissal lasts until the window closes, and never survives a restart.
-final NotifierProvider<DismissedPrayers, Set<String>> dismissedSessionsProvider =
-    NotifierProvider<DismissedPrayers, Set<String>>(DismissedPrayers.new);
+final NotifierProvider<DismissedPrayers, Set<String>>
+dismissedSessionsProvider = NotifierProvider<DismissedPrayers, Set<String>>(
+  DismissedPrayers.new,
+);
 
 /// Public because its provider's type signature is public.
 class DismissedPrayers extends Notifier<Set<String>> {
@@ -30,8 +35,7 @@ class DismissedPrayers extends Notifier<Set<String>> {
 
   void dismiss(String key) => state = <String>{...state, key};
 
-  void clear(String key) =>
-      state = state.where((String k) => k != key).toSet();
+  void clear(String key) => state = state.where((String k) => k != key).toSet();
 }
 
 /// The prayer window that is currently open, if any.
@@ -40,22 +44,47 @@ class DismissedPrayers extends Notifier<Set<String>> {
 /// the prayer is not yet confirmed, and the user has the focus feature on.
 /// A prayer stuck at `awaiting_proof` keeps its session alive for the rest of
 /// the window — refusing the photo does not release the lock.
-final Provider<PrayerSession?> activeSessionProvider =
-    Provider<PrayerSession?>((Ref ref) {
+final Provider<PrayerSession?>
+activeSessionProvider = Provider<PrayerSession?>((Ref ref) {
   // Check auth BEFORE touching the schedule. `NoorApp` listens to this
   // provider at the root of the widget tree, and `prayerScheduleProvider`
   // pulls in `placeProvider` — so without this guard the very first thing a
   // new user sees is an iOS location prompt on top of the onboarding screen,
   // before they have been told why Noor wants it or even made an account.
-  if (ref.watch(authStateProvider).value == null) return null;
+  if (ref.watch(authStateProvider).valueOrNull == null) return null;
 
-  final PrayerSchedule? schedule = ref.watch(prayerScheduleProvider).value;
-  final PrayerDay? day = ref.watch(todayPrayerDayProvider).value;
-  final DateTime now = ref.watch(clockProvider).value ?? DateTime.now();
-  final bool lockEnabled = ref.watch(prayerSettingsProvider).lockEnabled;
+  // No session while the prayer pause is on, so nothing locks her phone, no
+  // banner appears and Home offers no choices — none of these prayers is
+  // owed. Checked here rather than left to the day records below, because the
+  // catch-up may not have reached today yet and the lock must not depend on a
+  // write having landed: the pause itself is the fact.
+  //
+  // Gated, not removed. Ending the pause re-runs this provider and the next
+  // prayer whose time is in opens its session exactly as before.
+  if (ref.watch(cycleActiveProvider)) return null;
+
+  final PrayerSchedule? schedule = ref
+      .watch(prayerScheduleProvider)
+      .valueOrNull;
+  final PrayerDay? day = ref.watch(todayPrayerDayProvider).valueOrNull;
+  final DateTime now = ref.watch(clockProvider).valueOrNull ?? DateTime.now();
   final Set<String> dismissed = ref.watch(dismissedSessionsProvider);
 
-  if (schedule == null || day == null || !lockEnabled) return null;
+  // Deliberately not gated on `lockEnabled` any more.
+  //
+  // A session is "this prayer's time has come and it is not settled yet" —
+  // which is true whether or not the user wants their apps paused. Tying it to
+  // the blocking setting meant that turning blocking off also removed the
+  // prompt to confirm a prayer at all, and anyone whose `lockEnabled` was
+  // false silently lost the home-screen choices, the banner, and any way to
+  // record a prayer from the home screen. One flag, three disappearances, no
+  // error anywhere.
+  //
+  // The shield is still the blocking setting's business: `prayerLockSync`
+  // hands the OS no windows when it is off, and `engageLock` checks it before
+  // raising anything. What a person is asked is now separate from what their
+  // phone does about it.
+  if (schedule == null || day == null) return null;
 
   for (final PrayerSlot slot in schedule.obligatory) {
     final DateTime endsAt = slot.start.add(kPrayerSessionLength);
@@ -70,9 +99,13 @@ final Provider<PrayerSession?> activeSessionProvider =
     // Completed and missed both close the session — and closing the session is
     // what lifts the shield. Missing a prayer is an honest answer, so it must
     // be a way out; the cost is the streak, not a phone locked all day.
-    if (status == PrayerStatus.completed || status == PrayerStatus.missed) {
-      continue;
-    }
+    //
+    // So does excused, which is why this asks `isSettled` rather than naming
+    // the two. It used to name them, and a prayer on a paused day therefore
+    // matched neither and fell through to open a session: the shield would
+    // have risen five times a day over prayers she does not owe, which is the
+    // exact opposite of what the pause is for.
+    if (status.isSettled) continue;
 
     // A dismissal only holds while Step 1 has not been pressed. Once the user
     // says "I have prayed", the session cannot be waved away.
@@ -104,10 +137,10 @@ class UploadProgress extends Notifier<double?> {
 }
 
 final AutoDisposeAsyncNotifierProvider<PrayerLockController, void>
-    prayerLockControllerProvider =
+prayerLockControllerProvider =
     AsyncNotifierProvider.autoDispose<PrayerLockController, void>(
-  PrayerLockController.new,
-);
+      PrayerLockController.new,
+    );
 
 class PrayerLockController extends AutoDisposeAsyncNotifier<void> {
   @override
@@ -121,7 +154,9 @@ class PrayerLockController extends AutoDisposeAsyncNotifier<void> {
   Future<bool> beginConfirmation(PrayerSession session) async {
     state = const AsyncValue<void>.loading();
     state = await AsyncValue.guard(
-      () => ref.read(prayerDayRepositoryProvider).beginConfirmation(
+      () => ref
+          .read(prayerDayRepositoryProvider)
+          .beginConfirmation(
             prayer: session.prayer,
             scheduledAt: session.startedAt,
           ),
@@ -131,28 +166,44 @@ class PrayerLockController extends AutoDisposeAsyncNotifier<void> {
 
   /// **Step 2 — the prayer-mat photo.**
   ///
-  /// The prayer is marked completed only after the upload has finished
-  /// successfully. If the user cancels the picker, denies the camera, kills
-  /// the app, or the upload fails, this returns false and the record stays at
-  /// `awaiting_proof`.
+  /// The prayer is marked completed only after the photo has been checked and
+  /// stored successfully. If the check rejects it, the app is killed, or the
+  /// save fails, this returns false and the record stays at `awaiting_proof`.
+  ///
+  /// [photo] comes from the scanner, which has already seen a mat in the live
+  /// preview — but the full check runs again here regardless. The scanner
+  /// judges frames on-device only, for cost; this is the one place a prayer is
+  /// allowed to become `completed`, so it is the one place the real gate
+  /// belongs.
   Future<bool> submitProof({
     required PrayerSession session,
-    required ImageSource source,
+    required XFile photo,
   }) async {
     state = const AsyncValue<void>.loading();
-    final UploadProgress progress =
-        ref.read(proofUploadProgressProvider.notifier);
+    final UploadProgress progress = ref.read(
+      proofUploadProgressProvider.notifier,
+    );
 
     state = await AsyncValue.guard(() async {
       final ProofRepository proofs = ref.read(proofRepositoryProvider);
+      final XFile file = photo;
 
-      final XFile? file = await proofs.capture(source: source);
-      if (file == null) {
-        // Cancelled at the picker — not an error, but not a confirmation.
+      // Look at the photo before keeping it. A confident "this is a face" or
+      // "this is the sky" is worth catching here, while the camera is still
+      // fresh in mind — rejecting it later would mean asking someone to go
+      // back and photograph their mat again for no visible reason.
+      //
+      // Only a confident contradiction blocks. Anything else passes, because
+      // no free classifier can actually recognise a prayer mat and this must
+      // not become a gate that traps honest people.
+      final MatVerdict verdict = await ref
+          .read(matVisionProvider)
+          .inspect(file.path);
+      if (verdict == MatVerdict.looksWrong) {
         throw const AppFailure(
-          'A photo of your prayer mat is required to complete this '
-          'confirmation.',
-          code: 'proof-cancelled',
+          'That does not look like your prayer mat. Point the camera down at '
+          'the mat and take it again.',
+          code: 'proof-not-a-mat',
         );
       }
 
@@ -163,15 +214,29 @@ class PrayerLockController extends AutoDisposeAsyncNotifier<void> {
         onProgress: progress.set,
       );
 
-      await ref.read(prayerDayRepositoryProvider).completeWithProof(
-            prayer: session.prayer,
-            proofPath: path,
-          );
+      await ref
+          .read(prayerDayRepositoryProvider)
+          .completeWithProof(prayer: session.prayer, proofPath: path);
       progress.set(null);
       await releaseLock();
     });
 
     if (state.hasError) progress.set(null);
+    return !state.hasError;
+  }
+
+  /// **"I prayed."** — the whole confirmation, for those without Premium.
+  ///
+  /// One tap completes the prayer and lifts the lock. Nothing is proven, and
+  /// nothing pretends to be: the streak is a promise kept in public.
+  Future<bool> confirmWithoutProof(PrayerSession session) async {
+    state = const AsyncValue<void>.loading();
+    state = await AsyncValue.guard(() async {
+      await ref
+          .read(prayerDayRepositoryProvider)
+          .completeWithoutProof(prayer: session.prayer);
+      await releaseLock();
+    });
     return !state.hasError;
   }
 
@@ -189,7 +254,9 @@ class PrayerLockController extends AutoDisposeAsyncNotifier<void> {
   Future<bool> markMissed(PrayerSession session) async {
     state = const AsyncValue<void>.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(prayerDayRepositoryProvider).markMissed(
+      await ref
+          .read(prayerDayRepositoryProvider)
+          .markMissed(
             prayer: session.prayer,
             dateId: Fmt.dayId(session.startedAt),
           );
@@ -213,6 +280,28 @@ class PrayerLockController extends AutoDisposeAsyncNotifier<void> {
         .dismiss('${Fmt.dayId(DateTime.now())}|${session.prayer.key}');
   }
 
+  /// **"I will pray when I am home."**
+  ///
+  /// Lifts the shield and leaves the prayer exactly where it was — pending,
+  /// neither prayed nor missed. The window stays open, so confirming later
+  /// still counts and still keeps the streak.
+  ///
+  /// This is the honest option for someone who is driving, at work, or simply
+  /// not near a mat. The alternative is what the app used to force: either lie
+  /// and press "I have prayed", or mark it missed and break a streak that was
+  /// never actually broken. Both are worse than trusting the person, and the
+  /// second teaches people that the app punishes honesty.
+  Future<bool> deferUntilHome(PrayerSession session) async {
+    state = const AsyncValue<void>.loading();
+    state = await AsyncValue.guard(() async {
+      await releaseLock();
+      ref
+          .read(dismissedSessionsProvider.notifier)
+          .dismiss('${Fmt.dayId(DateTime.now())}|${session.prayer.key}');
+    });
+    return !state.hasError;
+  }
+
   /// Mirrors the session into the OS layer where that is possible at all.
   ///
   /// The OS normally raises the lock on its own from the schedule handed over
@@ -233,18 +322,19 @@ class PrayerLockController extends AutoDisposeAsyncNotifier<void> {
       return;
     }
 
-    await ref.read(prefsProvider).setActiveSession(
+    await ref
+        .read(prefsProvider)
+        .setActiveSession(
           '${Fmt.dayId(session.startedAt)}|${session.prayer.key}|'
           '${session.endsAt.millisecondsSinceEpoch}',
         );
     if (!ref.read(appBlockingEnabledProvider)) return;
     try {
-      await ref.read(prayerLockPlatformProvider).start(
-            prayerLabel: session.prayer.label,
-            endsAt: session.endsAt,
-          );
+      await ref
+          .read(prayerLockPlatformProvider)
+          .start(prayerLabel: session.prayer.label, endsAt: session.endsAt);
     } on Object catch (error) {
-      debugPrint('Layla: native lock could not start ($error)');
+      debugPrint('Layla Pro: native lock could not start ($error)');
     }
   }
 
@@ -256,7 +346,7 @@ class PrayerLockController extends AutoDisposeAsyncNotifier<void> {
     try {
       await ref.read(prayerLockPlatformProvider).stop();
     } on Object catch (error) {
-      debugPrint('Layla: native lock could not stop ($error)');
+      debugPrint('Layla Pro: native lock could not stop ($error)');
     }
   }
 }

@@ -146,16 +146,21 @@ class StoriesDisclaimer extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Icon(Icons.info_outline_rounded,
-              size: 18, color: AppColors.goldSoft,),
+          const Icon(
+            Icons.info_outline_rounded,
+            size: 18,
+            color: AppColors.goldSoft,
+          ),
           const SizedBox(width: Insets.md),
           Expanded(
             child: Text(
               'These are personal experiences shared by other users. They are '
               'not religious rulings, and nothing here promises a particular '
               'outcome from prayer or dua.',
-              style: AppType.bodySm
-                  .copyWith(color: AppColors.mist, height: 1.45),
+              style: AppType.bodySm.copyWith(
+                color: AppColors.mist,
+                height: 1.45,
+              ),
             ),
           ),
         ],

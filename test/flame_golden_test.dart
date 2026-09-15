@@ -30,9 +30,6 @@ void main() {
         ),
       ),
     );
-    await expectLater(
-      find.byType(Row),
-      matchesGoldenFile('goldens/flame.png'),
-    );
+    await expectLater(find.byType(Row), matchesGoldenFile('goldens/flame.png'));
   });
 }

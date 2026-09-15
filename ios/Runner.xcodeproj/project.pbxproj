@@ -14,6 +14,7 @@
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3C06493D838A4D889060DE75 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20E0A746E28C7B39888B6DE6 /* Pods_Runner.framework */; };
+		3D5F56C07540A50D5885D243 /* mat_prompts.json in Resources */ = {isa = PBXBuildFile; fileRef = 564DC4250A75A6399BA77CDF /* mat_prompts.json */; };
 		52E6B46A8BD02C1D6133D972 /* PrayerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5FE5D2482D8F8CCFE8EF544 /* PrayerActivityAttributes.swift */; };
 		5EBD081CF5B40C205149661B /* PrayerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5FE5D2482D8F8CCFE8EF544 /* PrayerActivityAttributes.swift */; };
 		6B016B35AB95EA1C8E33873A /* NoorSharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22D5F9CC82605DE753B234E /* NoorSharedStore.swift */; };
@@ -32,7 +33,13 @@
 		A1DDBB708ADAB3FD1F1FE14D /* NoorLockShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D5A28F181C1C3C8198CA25 /* NoorLockShared.swift */; };
 		A44731A2921059DA6B9AF491 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7AFDCF688339EF90946E2892 /* GoogleService-Info.plist */; };
 		B0377867945182C30C9E1BEE /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0332F95B51E4FA1567BE3501 /* WidgetBridge.swift */; };
+		BC679D4709AC1B10D1FCCE4A /* MatVisionBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FA6C609497453E527227DF8 /* MatVisionBridge.swift */; };
 		DAC54956778543D4C04E3747 /* NoorSharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22D5F9CC82605DE753B234E /* NoorSharedStore.swift */; };
+		E7339CDFA1173442B09FCBC2 /* MatEncoder.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 307D1BFE232BB4A6285B44E4 /* MatEncoder.mlpackage */; };
+		A5C1E0010000000000005A02 /* NoorShield.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A5C1E0010000000000005A01 /* NoorShield.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A5C1E0010000000000005A04 /* ShieldConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5C1E0010000000000005A03 /* ShieldConfigurationProvider.swift */; };
+		A5C1E0010000000000005A05 /* NoorLockShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D5A28F181C1C3C8198CA25 /* NoorLockShared.swift */; };
+		A5C1E0010000000000005A07 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A5C1E0010000000000005A06 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +64,13 @@
 			remoteGlobalIDString = C7B1118BA2F16629642154D1;
 			remoteInfo = NoorDeviceActivityMonitor;
 		};
+		A5C1E0010000000000005A19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A5C1E0010000000000005A11;
+			remoteInfo = NoorShield;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,6 +82,7 @@
 			files = (
 				77E167F83036C46F0003A8E1 /* NoorWidgetsExtension.appex in Embed Foundation Extensions */,
 				107EBE7DB3C91D68AB91F2F6 /* NoorDeviceActivityMonitor.appex in Embed Foundation Extensions */,
+				A5C1E0010000000000005A02 /* NoorShield.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -94,12 +109,14 @@
 		19F15C8FC114B6D9DDEB9B64 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		20E0A746E28C7B39888B6DE6 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		298E91A05A7974FA68265A58 /* PrayerLockBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PrayerLockBridge.swift; sourceTree = "<group>"; };
+		307D1BFE232BB4A6285B44E4 /* MatEncoder.mlpackage */ = {isa = PBXFileReference; includeInIndex = 1; path = MatEncoder.mlpackage; sourceTree = "<group>"; };
 		31C94A8E8E337F25FCFECC5D /* NoorDeviceActivityMonitor.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NoorDeviceActivityMonitor.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3D79DA5C44516BE98E9F18CA /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		504D699C410CC4BA71C2F414 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
+		564DC4250A75A6399BA77CDF /* mat_prompts.json */ = {isa = PBXFileReference; includeInIndex = 1; path = mat_prompts.json; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7798C942967162DE6A954B61 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
@@ -109,6 +126,7 @@
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7AFDCF688339EF90946E2892 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		8FA6C609497453E527227DF8 /* MatVisionBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MatVisionBridge.swift; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +140,11 @@
 		D22D5F9CC82605DE753B234E /* NoorSharedStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NoorSharedStore.swift; sourceTree = "<group>"; };
 		D4E07152A93AFF61C34742FA /* NoorDeviceActivityMonitor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NoorDeviceActivityMonitor.swift; sourceTree = "<group>"; };
 		D9D5A28F181C1C3C8198CA25 /* NoorLockShared.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NoorLockShared.swift; sourceTree = "<group>"; };
+		A5C1E0010000000000005A01 /* NoorShield.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NoorShield.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5C1E0010000000000005A03 /* ShieldConfigurationProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShieldConfigurationProvider.swift; sourceTree = "<group>"; };
+		A5C1E0010000000000005A06 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A5C1E0010000000000005A08 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A5C1E0010000000000005A09 /* NoorShield.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NoorShield.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -180,6 +203,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B37FBBDC34DF23A29617599 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A5C1E0010000000000005A13 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,6 +277,7 @@
 				B96BA5621C9A9F0D948EB0A8 /* Frameworks */,
 				7AFDCF688339EF90946E2892 /* GoogleService-Info.plist */,
 				D7B47E4A1C3CE74A35656F7C /* Shared */,
+				A5C1E0010000000000005A10 /* NoorShield */,
 				00A11B31858F0768C70718BE /* NoorDeviceActivityMonitor */,
 			);
 			sourceTree = "<group>";
@@ -257,6 +288,7 @@
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
 				77E167E33036C46E0003A8E1 /* NoorWidgetsExtension.appex */,
+				A5C1E0010000000000005A01 /* NoorShield.appex */,
 				31C94A8E8E337F25FCFECC5D /* NoorDeviceActivityMonitor.appex */,
 			);
 			name = Products;
@@ -278,6 +310,9 @@
 				298E91A05A7974FA68265A58 /* PrayerLockBridge.swift */,
 				D9D5A28F181C1C3C8198CA25 /* NoorLockShared.swift */,
 				024E762EC0A22FF93B5DB39A /* adhan.caf */,
+				8FA6C609497453E527227DF8 /* MatVisionBridge.swift */,
+				307D1BFE232BB4A6285B44E4 /* MatEncoder.mlpackage */,
+				564DC4250A75A6399BA77CDF /* mat_prompts.json */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -301,6 +336,17 @@
 				D22D5F9CC82605DE753B234E /* NoorSharedStore.swift */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		A5C1E0010000000000005A10 /* NoorShield */ = {
+			isa = PBXGroup;
+			children = (
+				A5C1E0010000000000005A03 /* ShieldConfigurationProvider.swift */,
+				A5C1E0010000000000005A06 /* Assets.xcassets */,
+				A5C1E0010000000000005A08 /* Info.plist */,
+				A5C1E0010000000000005A09 /* NoorShield.entitlements */,
+			);
+			path = NoorShield;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -365,6 +411,7 @@
 			dependencies = (
 				77E167F73036C46F0003A8E1 /* PBXTargetDependency */,
 				98A84CBC6265B4B1B1D00CAF /* PBXTargetDependency */,
+				A5C1E0010000000000005A20 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
@@ -386,6 +433,23 @@
 			name = NoorDeviceActivityMonitor;
 			productName = NoorDeviceActivityMonitor;
 			productReference = 31C94A8E8E337F25FCFECC5D /* NoorDeviceActivityMonitor.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		A5C1E0010000000000005A11 /* NoorShield */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A5C1E0010000000000005A15 /* Build configuration list for PBXNativeTarget "NoorShield" */;
+			buildPhases = (
+				A5C1E0010000000000005A12 /* Sources */,
+				A5C1E0010000000000005A13 /* Frameworks */,
+				A5C1E0010000000000005A14 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NoorShield;
+			productName = NoorShield;
+			productReference = A5C1E0010000000000005A01 /* NoorShield.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -428,6 +492,7 @@
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
 				77E167E23036C46E0003A8E1 /* NoorWidgetsExtension */,
+				A5C1E0010000000000005A11 /* NoorShield */,
 				C7B1118BA2F16629642154D1 /* NoorDeviceActivityMonitor */,
 			);
 		};
@@ -465,6 +530,16 @@
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				A44731A2921059DA6B9AF491 /* GoogleService-Info.plist in Resources */,
 				9F13F6F342715D77DA06CDDF /* adhan.caf in Resources */,
+				E7339CDFA1173442B09FCBC2 /* MatEncoder.mlpackage in Resources */,
+				3D5F56C07540A50D5885D243 /* mat_prompts.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A5C1E0010000000000005A14 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5C1E0010000000000005A07 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -621,6 +696,16 @@
 				DAC54956778543D4C04E3747 /* NoorSharedStore.swift in Sources */,
 				06646C34AB8A6A73B4B9DD54 /* PrayerLockBridge.swift in Sources */,
 				A1DDBB708ADAB3FD1F1FE14D /* NoorLockShared.swift in Sources */,
+				BC679D4709AC1B10D1FCCE4A /* MatVisionBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A5C1E0010000000000005A12 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5C1E0010000000000005A04 /* ShieldConfigurationProvider.swift in Sources */,
+				A5C1E0010000000000005A05 /* NoorLockShared.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -642,6 +727,12 @@
 			name = NoorDeviceActivityMonitor;
 			target = C7B1118BA2F16629642154D1 /* NoorDeviceActivityMonitor */;
 			targetProxy = D485A983C08433ED587499C9 /* PBXContainerItemProxy */;
+		};
+		A5C1E0010000000000005A20 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NoorShield;
+			target = A5C1E0010000000000005A11 /* NoorShield */;
+			targetProxy = A5C1E0010000000000005A19 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -726,14 +817,14 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 84SFZR7SSG;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NOOR_WIDGETS NOOR_SCREEN_TIME";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -751,7 +842,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -769,7 +860,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
@@ -785,7 +876,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
@@ -799,12 +890,12 @@
 				CODE_SIGN_ENTITLEMENTS = NoorDeviceActivityMonitor/NoorDeviceActivityMonitor.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84SFZR7SSG;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = NoorDeviceActivityMonitor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla.NoorDeviceActivityMonitor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.NoorDeviceActivityMonitor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -828,7 +919,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoorWidgets/NoorWidgets.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84SFZR7SSG;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -846,7 +937,7 @@
 				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla.NoorWidgets;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.NoorWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -874,7 +965,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoorWidgets/NoorWidgets.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84SFZR7SSG;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -891,7 +982,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla.NoorWidgets;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.NoorWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -917,7 +1008,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoorWidgets/NoorWidgets.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84SFZR7SSG;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -934,7 +1025,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla.NoorWidgets;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.NoorWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -953,12 +1044,12 @@
 				CODE_SIGN_ENTITLEMENTS = NoorDeviceActivityMonitor/NoorDeviceActivityMonitor.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84SFZR7SSG;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = NoorDeviceActivityMonitor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla.NoorDeviceActivityMonitor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.NoorDeviceActivityMonitor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1088,14 +1179,14 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 84SFZR7SSG;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NOOR_WIDGETS NOOR_SCREEN_TIME";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -1113,14 +1204,14 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 84SFZR7SSG;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NOOR_WIDGETS NOOR_SCREEN_TIME";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -1136,12 +1227,77 @@
 				CODE_SIGN_ENTITLEMENTS = NoorDeviceActivityMonitor/NoorDeviceActivityMonitor.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 84SFZR7SSG;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = NoorDeviceActivityMonitor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.SMAG.layla.NoorDeviceActivityMonitor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.NoorDeviceActivityMonitor;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Profile;
+		};
+		A5C1E0010000000000005A16 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = NoorShield/NoorShield.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NoorShield/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.NoorShield;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A5C1E0010000000000005A17 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = NoorShield/NoorShield.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NoorShield/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.NoorShield;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A5C1E0010000000000005A18 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = NoorShield/NoorShield.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6RQYJNC9LM;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NoorShield/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adenzia.layla.NoorShield;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1200,6 +1356,16 @@
 				5EF83580B633E3325F7DCD48 /* Release */,
 				7D3B98B0342D53A9BFB332B1 /* Debug */,
 				989E8B0BE2F65E592CC8718C /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A5C1E0010000000000005A15 /* Build configuration list for PBXNativeTarget "NoorShield" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A5C1E0010000000000005A16 /* Debug */,
+				A5C1E0010000000000005A17 /* Release */,
+				A5C1E0010000000000005A18 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

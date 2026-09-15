@@ -155,11 +155,7 @@ class _GridTile extends StatelessWidget {
             // the eye should land on the time first, and a tick that shifts the
             // layout when it appears makes the grid twitch as the day goes on.
             if (status != null && status != PrayerStatus.pending)
-              Positioned(
-                top: 7,
-                right: 8,
-                child: _StatusPip(status: status!),
-              ),
+              Positioned(top: 7, right: 8, child: _StatusPip(status: status!)),
           ],
         ),
       ),
@@ -176,23 +172,30 @@ class _StatusPip extends StatelessWidget {
   Widget build(BuildContext context) {
     final ({IconData icon, Color color}) look = switch (status) {
       PrayerStatus.completed => (
-          icon: Icons.check_circle,
-          color: AppColors.emerald,
-        ),
+        icon: Icons.check_circle,
+        color: AppColors.emerald,
+      ),
       PrayerStatus.awaitingProof => (
-          icon: Icons.photo_camera_back_outlined,
-          color: AppColors.amber,
-        ),
+        icon: Icons.photo_camera_back_outlined,
+        color: AppColors.amber,
+      ),
       PrayerStatus.missed => (
-          // A cross, not a dash: the user said outright they missed it, and
-          // the mark should read as clearly as the tick beside it.
-          icon: Icons.cancel_rounded,
-          color: AppColors.rose,
-        ),
+        // A cross, not a dash: the user said outright they missed it, and
+        // the mark should read as clearly as the tick beside it.
+        icon: Icons.cancel_rounded,
+        color: AppColors.rose,
+      ),
+      // Covered by the prayer pause. A neutral dash rather than the rose
+      // cross above it: this prayer was never owed, so it must not read as
+      // one that was skipped.
+      PrayerStatus.excused => (
+        icon: Icons.remove_rounded,
+        color: AppColors.mistFaint,
+      ),
       PrayerStatus.pending => (
-          icon: Icons.circle_outlined,
-          color: AppColors.mistFaint,
-        ),
+        icon: Icons.circle_outlined,
+        color: AppColors.mistFaint,
+      ),
     };
     return Icon(look.icon, size: 13, color: look.color);
   }

@@ -33,6 +33,14 @@ abstract final class AppColors {
   static const Color rose = Color(0xFFCF5C6B); // missed / error
   static const Color ember = Color(0xFFF07A3C); // streak flame
 
+  /// Someone praying, right now, on the Tahajjud map.
+  ///
+  /// The only blue in the palette, and deliberately so: it reads as alive
+  /// against navy in a way gold cannot, because gold is the app's furniture
+  /// and would be lost among it.
+  static const Color pulse = Color(0xFF4DA6FF);
+  static const Color pulseSoft = Color(0xFF9CD2FF);
+
   // ── Gradients ─────────────────────────────────────────────────────────
   static const LinearGradient nightSky = LinearGradient(
     begin: Alignment.topCenter,
@@ -71,18 +79,18 @@ enum PrayerPalette {
   final Color onSurface;
 
   LinearGradient get gradient => LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [start, end],
-      );
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [start, end],
+  );
 
   /// A dimmed version for inactive list rows.
   LinearGradient get mutedGradient => LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Color.lerp(start, AppColors.navy, 0.55)!,
-          Color.lerp(end, AppColors.navy, 0.55)!,
-        ],
-      );
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color.lerp(start, AppColors.navy, 0.55)!,
+      Color.lerp(end, AppColors.navy, 0.55)!,
+    ],
+  );
 }

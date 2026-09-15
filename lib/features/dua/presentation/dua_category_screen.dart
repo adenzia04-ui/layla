@@ -48,8 +48,9 @@ class DuaCategoryScreen extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             section.subtitle!,
-                            style: AppType.bodySm
-                                .copyWith(color: AppColors.mistFaint),
+                            style: AppType.bodySm.copyWith(
+                              color: AppColors.mistFaint,
+                            ),
                           ),
                         ],
                         const SizedBox(height: 4),

@@ -35,6 +35,36 @@ abstract final class Fmt {
   /// "2026-08-20" — the Firestore document id for a prayer day.
   static String dayId(DateTime t) => _docId.format(t);
 
+  static final RegExp _dayIdShape = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+
+  /// A day id read back as a date, or null when it is not one.
+  ///
+  /// UTC deliberately. These are calendar dates, and day arithmetic on a local
+  /// `DateTime` crosses daylight saving: subtracting a day from local midnight
+  /// at a spring-forward boundary lands 23 hours earlier, which is the wrong
+  /// date. UTC has no such seam, and the result here is only ever formatted
+  /// back into a day id.
+  static DateTime? parseDayId(String? id) =>
+      id != null && _dayIdShape.hasMatch(id)
+      ? DateTime.tryParse('${id}T00:00:00Z')
+      : null;
+
+  /// The day id one day before [id], or null when [id] is not a day id.
+  static String? dayIdBefore(String? id) {
+    final DateTime? day = parseDayId(id);
+    return day == null ? null : dayId(day.subtract(const Duration(days: 1)));
+  }
+
+  /// Whole days from [from] to [to], or null when either is not a day id.
+  ///
+  /// Negative when [to] is the earlier of the two, so a caller can tell a
+  /// stale date from a future one rather than having both read as zero.
+  static int? daysBetweenDayIds(String? from, String? to) {
+    final DateTime? start = parseDayId(from);
+    final DateTime? end = parseDayId(to);
+    return start == null || end == null ? null : end.difference(start).inDays;
+  }
+
   /// "12 Safar 1448 AH"
   static String hijri(DateTime t) {
     final HijriCalendar h = HijriCalendar.fromDate(t);

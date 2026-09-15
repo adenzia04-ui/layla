@@ -18,10 +18,10 @@ class WidgetPrayer {
   final DateTime startsAt;
 
   Map<String, Object?> toMap() => <String, Object?>{
-        'key': key,
-        'label': label,
-        'epoch': startsAt.millisecondsSinceEpoch ~/ 1000,
-      };
+    'key': key,
+    'label': label,
+    'epoch': startsAt.millisecondsSinceEpoch ~/ 1000,
+  };
 }
 
 /// Everything the home-screen widgets and the Live Activity render, computed
@@ -48,6 +48,9 @@ class WidgetSnapshot {
     required this.totalToday,
     required this.locked,
     required this.lockedPrayerLabel,
+    this.confirmed = const <String>{},
+    this.tasbihToday = 0,
+    this.theme = 'midnight',
   });
 
   final String city;
@@ -73,6 +76,18 @@ class WidgetSnapshot {
   final bool locked;
   final String lockedPrayerLabel;
 
+  /// Keys of the prayers confirmed today.
+  ///
+  /// The counts say how many; the tracker widget has to draw *which*, and a
+  /// row of ticks that guessed would be worse than no widget at all.
+  final Set<String> confirmed;
+
+  /// Today's tasbih count, for the counter widget.
+  final int tasbihToday;
+
+  /// The colour set the widgets draw in — a [WidgetTheme] id.
+  final String theme;
+
   /// How far through the gap between the current and next prayer we are —
   /// what the curved gauge fills.
   double progressAt(DateTime now) {
@@ -83,22 +98,25 @@ class WidgetSnapshot {
   }
 
   Map<String, Object?> toMap() => <String, Object?>{
-        'city': city,
-        'hijri': hijri,
-        'latitude': latitude,
-        'longitude': longitude,
-        'prayers': prayers.map((WidgetPrayer p) => p.toMap()).toList(),
-        'nextKey': nextKey,
-        'nextEpoch': nextStartsAt.millisecondsSinceEpoch ~/ 1000,
-        'currentKey': currentKey,
-        'currentEpoch': currentStartedAt.millisecondsSinceEpoch ~/ 1000,
-        'streak': streak,
-        'completedToday': completedToday,
-        'totalToday': totalToday,
-        'locked': locked,
-        'lockedPrayerLabel': lockedPrayerLabel,
-        'updatedAt': DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      };
+    'city': city,
+    'hijri': hijri,
+    'latitude': latitude,
+    'longitude': longitude,
+    'prayers': prayers.map((WidgetPrayer p) => p.toMap()).toList(),
+    'nextKey': nextKey,
+    'nextEpoch': nextStartsAt.millisecondsSinceEpoch ~/ 1000,
+    'currentKey': currentKey,
+    'currentEpoch': currentStartedAt.millisecondsSinceEpoch ~/ 1000,
+    'streak': streak,
+    'completedToday': completedToday,
+    'totalToday': totalToday,
+    'locked': locked,
+    'lockedPrayerLabel': lockedPrayerLabel,
+    'confirmed': confirmed.toList(),
+    'tasbihToday': tasbihToday,
+    'theme': theme,
+    'updatedAt': DateTime.now().millisecondsSinceEpoch ~/ 1000,
+  };
 
   String toJson() => jsonEncode(toMap());
 
@@ -116,20 +134,31 @@ class WidgetSnapshot {
       other.streak == streak &&
       other.completedToday == completedToday &&
       other.locked == locked &&
-      other.lockedPrayerLabel == lockedPrayerLabel;
+      other.lockedPrayerLabel == lockedPrayerLabel &&
+      // Riverpod only tells the publisher about a new snapshot when it is
+      // unequal to the last one, so anything a widget draws must be in here.
+      // The theme was not, and a colour picked in Settings never left the
+      // phone's memory.
+      other.theme == theme &&
+      other.tasbihToday == tasbihToday &&
+      other.confirmed.length == confirmed.length &&
+      other.confirmed.containsAll(confirmed);
 
   @override
   int get hashCode => Object.hash(
-        city,
-        hijri,
-        nextKey,
-        nextStartsAt,
-        currentKey,
-        streak,
-        completedToday,
-        locked,
-        lockedPrayerLabel,
-      );
+    city,
+    hijri,
+    nextKey,
+    nextStartsAt,
+    currentKey,
+    streak,
+    completedToday,
+    locked,
+    lockedPrayerLabel,
+    theme,
+    tasbihToday,
+    confirmed.length,
+  );
 
   static List<WidgetPrayer> prayersFrom(PrayerSchedule schedule) =>
       <WidgetPrayer>[

@@ -12,6 +12,7 @@ import '../../../core/widgets/app_snackbar.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../application/auth_controller.dart';
 import 'widgets/auth_sheet.dart';
+import 'widgets/social_sign_in.dart';
 import 'widgets/guest_notice_sheet.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -36,18 +37,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     FocusScope.of(context).unfocus();
-    final bool ok = await ref.read(authControllerProvider.notifier).signIn(
-          email: _email.text,
-          password: _password.text,
-        );
+    final bool ok = await ref
+        .read(authControllerProvider.notifier)
+        .signIn(email: _email.text, password: _password.text);
     if (ok && mounted) context.go(Routes.home);
   }
 
   Future<void> _guest() async {
     final bool? confirmed = await showGuestNoticeSheet(context);
     if (confirmed != true) return;
-    final bool ok =
-        await ref.read(authControllerProvider.notifier).continueAsGuest();
+    final bool ok = await ref
+        .read(authControllerProvider.notifier)
+        .continueAsGuest();
     if (ok && mounted) context.go(Routes.home);
   }
 
@@ -55,8 +56,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final AsyncValue<void> state = ref.watch(authControllerProvider);
 
-    ref.listen<AsyncValue<void>>(authControllerProvider,
-        (AsyncValue<void>? previous, AsyncValue<void> next) {
+    ref.listen<AsyncValue<void>>(authControllerProvider, (
+      AsyncValue<void>? previous,
+      AsyncValue<void> next,
+    ) {
       if (next.hasError && !next.isLoading) context.showError(next.error!);
     });
 
@@ -115,17 +118,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 children: <Widget>[
                   const Expanded(child: Divider()),
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: Insets.md),
+                    padding: const EdgeInsets.symmetric(horizontal: Insets.md),
                     child: Text(
                       'or',
-                      style:
-                          AppType.bodySm.copyWith(color: AppColors.inkMuted),
+                      style: AppType.bodySm.copyWith(color: AppColors.inkMuted),
                     ),
                   ),
                   const Expanded(child: Divider()),
                 ],
               ),
+              const SizedBox(height: Insets.lg),
+              // The same pair the welcome screen offers. Somebody who came
+              // straight here — from a "sign in" link, or by backing out of
+              // signup — was previously shown email or nothing, and had to
+              // find their way back to the welcome screen to use the account
+              // they actually sign in with.
+              const SocialSignIn(onLight: true),
               const SizedBox(height: Insets.lg),
               TextButton.icon(
                 onPressed: state.isLoading ? null : _guest,

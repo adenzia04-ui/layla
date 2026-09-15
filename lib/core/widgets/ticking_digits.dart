@@ -78,14 +78,58 @@ class _ColonState extends State<_Colon> with SingleTickerProviderStateMixin {
     return FadeTransition(
       // Never all the way out. A colon blinking to nothing reads as a fault —
       // the gap where a character should be — where a dim one reads as a pulse.
-      opacity: Tween<double>(begin: 1, end: 0.28).animate(
-        CurvedAnimation(parent: _c, curve: Curves.easeInOut),
+      opacity: Tween<double>(
+        begin: 1,
+        end: 0.28,
+      ).animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut)),
+      // Two dots of our own, drawn over the font's colon made invisible.
+      // The glyph keeps its width and its place on the baseline, and still
+      // reads as ":" to anything that reads the clock as text; the dots sit
+      // centred on the digits' height, which the glyph never did at this
+      // size.
+      child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Text(':', style: widget.style.copyWith(color: Colors.transparent)),
+          Positioned.fill(
+            child: CustomPaint(painter: _ColonPainter(style: widget.style)),
+          ),
+        ],
       ),
-      child: Text(':', style: widget.style),
     );
   }
 }
 
+class _ColonPainter extends CustomPainter {
+  const _ColonPainter({required this.style});
+
+  final TextStyle style;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Measured, not guessed: where a digit's baseline and top actually fall
+    // in this font at this size. A guess put the dots above the middle.
+    final TextPainter probe = TextPainter(
+      text: TextSpan(text: '0', style: style),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final double baseline = probe.computeDistanceToActualBaseline(
+      TextBaseline.alphabetic,
+    );
+    final double top = baseline - (style.fontSize ?? 14) * 0.72;
+    final double mid = (baseline + top) / 2;
+    final double gap = (baseline - top) * 0.2;
+    final double r = (style.fontSize ?? 14) * 0.055;
+    final Paint p = Paint()..color = style.color ?? Colors.white;
+    canvas.drawCircle(Offset(size.width / 2, mid - gap), r, p);
+    canvas.drawCircle(Offset(size.width / 2, mid + gap), r, p);
+  }
+
+  @override
+  bool shouldRepaint(_ColonPainter old) => old.style != style;
+}
+
+/// One character of the clock, rolling when it changes.
 class _Glyph extends StatefulWidget {
   const _Glyph({
     super.key,
@@ -108,11 +152,9 @@ class _GlyphState extends State<_Glyph> with SingleTickerProviderStateMixin {
     duration: widget.duration,
   );
 
-  /// Assigned in `initState`, deliberately not as `late … = widget.char`. A
-  /// late initialiser runs on *first access*, and the first access is inside
-  /// `didUpdateWidget` — by which point `widget` is already the new value, so
-  /// the field initialised to the incoming character and compared equal to
-  /// itself. The animation silently never ran.
+  /// Assigned in `initState`, deliberately not as `late … = widget.char`: a
+  /// late initialiser runs on first access, and the first access is inside
+  /// `didUpdateWidget`, by which point `widget` is already the new value.
   late String _shown;
   late String _incoming;
 
@@ -121,13 +163,13 @@ class _GlyphState extends State<_Glyph> with SingleTickerProviderStateMixin {
     super.initState();
     _shown = widget.char;
     _incoming = widget.char;
-    _c.addStatusListener((AnimationStatus s) {
-      if (s != AnimationStatus.completed) return;
-      // Adopt the new glyph and wind back to rest. At value 1 the outgoing
-      // layer is fully faded and the incoming one has become the shown glyph,
-      // so leaving the controller there renders nothing at all.
-      setState(() => _shown = _incoming);
-      _c.value = 0;
+    _c.addStatusListener((AnimationStatus status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _shown = _incoming;
+          _c.reset();
+        });
+      }
     });
   }
 
@@ -135,6 +177,8 @@ class _GlyphState extends State<_Glyph> with SingleTickerProviderStateMixin {
   void didUpdateWidget(_Glyph old) {
     super.didUpdateWidget(old);
     if (widget.char == _incoming) return;
+    // Mid-roll, the one on its way in becomes the one on its way out.
+    if (_c.isAnimating) _shown = _incoming;
     _incoming = widget.char;
     _c.forward(from: 0);
   }
@@ -150,74 +194,41 @@ class _GlyphState extends State<_Glyph> with SingleTickerProviderStateMixin {
     return AnimatedBuilder(
       animation: _c,
       builder: (BuildContext context, _) {
-        final double t = Curves.easeInOutCubic.transform(_c.value);
-        final bool moving = t > 0.001 && t < 0.999;
-
-        // How far a digit travels. Enough to read as leaving the frame, not so
-        // far that it flies past the neighbouring characters.
-        // A shade under a full glyph height. Less than this and the two
-        // digits sit on top of each other halfway through, which reads as a
-        // smudge rather than as one replacing the other.
-        final double travel = (widget.style.fontSize ?? 20) * 0.95;
-
-        // Clipped to the character's own box, so digits appear and vanish at
-        // its edges like a wheel behind a window. Without this they simply
-        // float over whatever sits above and below — `Transform` moves paint,
-        // not layout — and a digit would slide across the prayer name.
+        if (!_c.isAnimating) return Text(_shown, style: widget.style);
+        final double t = Curves.easeOutCubic.transform(_c.value);
+        final double travel = (widget.style.fontSize ?? 14) * 0.9;
+        // Blur along the travel, strongest mid-flight: a wheel turning,
+        // not text being replaced.
+        final double blur = 4 * t * (1 - t) * 3;
+        Widget rolling(String ch, double dy, double opacity) => Positioned.fill(
+          child: Center(
+            child: Opacity(
+              opacity: opacity.clamp(0.0, 1.0),
+              child: Transform.translate(
+                offset: Offset(0, dy),
+                child: ImageFiltered(
+                  imageFilter: ui.ImageFilter.blur(sigmaY: blur),
+                  child: Text(ch, style: widget.style),
+                ),
+              ),
+            ),
+          ),
+        );
         return ClipRect(
           child: Stack(
             alignment: Alignment.center,
             children: <Widget>[
-              // Leaving: continues downward, blurring as it goes.
-              if (t < 1)
-                _layer(
-                  char: _shown,
-                  dy: t * travel,
-                  opacity: (1 - t) * (1 - t),
-                  blur: t,
-                  moving: moving,
-                ),
-              // Arriving: drops in from above and sharpens as it lands.
-              if (t > 0 && _incoming != _shown)
-                _layer(
-                  char: _incoming,
-                  dy: -(1 - t) * travel,
-                  opacity: t * t,
-                  blur: 1 - t,
-                  moving: moving,
-                ),
+              // Sizes the box, invisibly, so the roll has room.
+              Text(
+                _incoming,
+                style: widget.style.copyWith(color: Colors.transparent),
+              ),
+              rolling(_shown, t * travel, 1 - t),
+              rolling(_incoming, (t - 1) * travel, t),
             ],
           ),
         );
       },
-    );
-  }
-
-  Widget _layer({
-    required String char,
-    required double dy,
-    required double opacity,
-    required double blur,
-    required bool moving,
-  }) {
-    Widget text = Text(char, style: widget.style);
-
-    if (moving && blur > 0.02) {
-      // Along the direction of travel only. Blurring sideways as well would
-      // just make the digit look out of focus instead of in motion.
-      text = ImageFiltered(
-        imageFilter: ui.ImageFilter.blur(
-          sigmaX: 0.4 * blur,
-          sigmaY: 7 * blur,
-          tileMode: TileMode.decal,
-        ),
-        child: text,
-      );
-    }
-
-    return Opacity(
-      opacity: opacity.clamp(0.0, 1.0),
-      child: Transform.translate(offset: Offset(0, dy), child: text),
     );
   }
 }

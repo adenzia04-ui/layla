@@ -37,10 +37,10 @@ class WelcomeEmail {
           .timeout(const Duration(seconds: 8));
 
       if (res.statusCode != 200) {
-        debugPrint('Layla: welcome email refused (${res.statusCode})');
+        debugPrint('Layla Pro: welcome email refused (${res.statusCode})');
       }
     } on Object catch (error) {
-      debugPrint('Layla: welcome email not sent — $error');
+      debugPrint('Layla Pro: welcome email not sent — $error');
     }
   }
 }

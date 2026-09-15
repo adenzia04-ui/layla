@@ -42,7 +42,11 @@ class PrimaryButton extends StatelessWidget {
                 Icon(icon, size: 19),
                 const SizedBox(width: Insets.sm),
               ],
-              Text(label),
+              // Flexible, not a bare Text: at 1.3x Dynamic Type on a 375pt
+              // phone a long label ('I will pray when I am home') is wider
+              // than the button, and a Row with nothing shrinkable overflows.
+              // In release that overflow is invisible — it just clips.
+              Flexible(child: Text(label, textAlign: TextAlign.center)),
             ],
           );
 
@@ -80,7 +84,11 @@ class GhostButton extends StatelessWidget {
             Icon(icon, size: 19),
             const SizedBox(width: Insets.sm),
           ],
-          Text(label),
+          // Flexible, not a bare Text: at 1.3x Dynamic Type on a 375pt
+          // phone a long label ('I will pray when I am home') is wider
+          // than the button, and a Row with nothing shrinkable overflows.
+          // In release that overflow is invisible — it just clips.
+          Flexible(child: Text(label, textAlign: TextAlign.center)),
         ],
       ),
     );

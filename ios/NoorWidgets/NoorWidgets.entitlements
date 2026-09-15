@@ -6,7 +6,7 @@
 	     is added separately once the shield work lands. -->
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.SMAG.noor</string>
+		<string>group.com.adenzia.layla</string>
 	</array>
 </dict>
 </plist>

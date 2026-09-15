@@ -10,14 +10,34 @@ struct NoorPrayer: Identifiable, Hashable {
     var id: String { key }
 
     /// SF Symbol per prayer, echoing the icons used inside the app.
+    /// One glyph per prayer, chosen to read as the time of day rather than as
+    /// a generic icon: Fajr is still dark with the sun below the horizon, Asr
+    /// is the sun already low, Isha is night. Someone should be able to tell
+    /// which prayer a row is from the shape alone, before reading the word.
     var symbol: String {
         switch key {
-        case "fajr": return "sunrise"
-        case "dhuhr": return "sun.max"
-        case "asr": return "sun.min"
-        case "maghrib": return "sunset"
-        case "isha": return "moon.stars"
-        default: return "moon"
+        case "fajr": return "sparkles"
+        case "sunrise": return "sunrise.fill"
+        case "dhuhr": return "sun.max.fill"
+        case "asr": return "sun.min.fill"
+        case "maghrib": return "sunset.fill"
+        case "isha": return "moon.stars.fill"
+        case "tahajjud": return "moon.zzz.fill"
+        default: return "moon.fill"
+        }
+    }
+
+    /// The tint that goes with it — dawn gold through midday, cooling to the
+    /// blue-white of night.
+    var tint: Color {
+        switch key {
+        case "fajr": return Layl.goldSoft
+        case "sunrise": return Layl.gold
+        case "dhuhr": return Layl.gold
+        case "asr": return Layl.ember
+        case "maghrib": return Layl.ember
+        case "isha": return Layl.cream
+        default: return Layl.mist
         }
     }
 }
@@ -46,6 +66,16 @@ struct NoorSnapshot {
     let current: NoorPrayer?
     let tahajjudStart: Date?
 
+    /// Bearing to the Kaaba from here, clockwise from true north.
+    ///
+    /// Computed in the widget from the same vendored Adhan sources the app
+    /// uses, so the two cannot disagree about which way to face.
+    var qiblaBearing: Double {
+        Qibla(
+            coordinates: Coordinates(latitude: latitude, longitude: longitude)
+        ).direction
+    }
+
     var nextDate: Date { next.date }
     var currentDate: Date { current?.date ?? next.date.addingTimeInterval(-8 * 3600) }
     var nextKey: String { next.key }
@@ -64,6 +94,9 @@ struct NoorSnapshot {
 
     private static let order: [(key: String, label: String, prayer: Prayer)] = [
         ("fajr", "Fajr", .fajr),
+        // Sunrise is not a prayer, and is listed anyway: it closes Fajr, and a
+        // timetable that jumps from Fajr to Dhuhr reads as if a row is missing.
+        ("sunrise", "Shurooq", .sunrise),
         ("dhuhr", "Dhuhr", .dhuhr),
         ("asr", "Asr", .asr),
         ("maghrib", "Maghrib", .maghrib),
@@ -103,7 +136,10 @@ struct NoorSnapshot {
         }
         guard !list.isEmpty else { return nil }
 
-        var next = list.first { $0.date > now }
+        // Shurooq is shown in the timetable but is never "next": nobody is
+        // waiting to pray it, and a countdown labelled Shurooq would be
+        // counting down to nothing you have to do.
+        var next = list.first { $0.date > now && $0.key != "sunrise" }
         if next == nil {
             // Past Isha — the next prayer is tomorrow's Fajr.
             let tomorrow = calendar.dateComponents(
@@ -127,7 +163,9 @@ struct NoorSnapshot {
         }
         guard let next else { return nil }
 
-        let current = list.last { $0.date <= now && $0.key != next.key }
+        let current = list.last {
+            $0.date <= now && $0.key != next.key && $0.key != "sunrise"
+        }
 
         return NoorSnapshot(
             city: city,
@@ -152,21 +190,37 @@ struct NoorSnapshot {
     }
 
     /// Shown in the widget gallery, and before any location has arrived.
+    ///
+    /// Not Makkah any more. Times are always drawn in the *device's* timezone,
+    /// so Makkah's Fajr on a Malaysian clock rendered as "9:48 AM" — correct
+    /// arithmetic, nonsense to read, and the first thing anyone sees of this
+    /// widget is the gallery. The last known fix is used when there is one,
+    /// and failing that a point on the device's own meridian, which produces
+    /// times that at least belong to the day the reader is having.
     static var placeholder: NoorSnapshot {
-        compute(
-            latitude: 21.4225,
-            longitude: 39.8262,
-            city: "Makkah",
+        let cached = WidgetLocation.cached
+        let known = !(cached.latitude == 0 && cached.longitude == 0)
+            && cached.city != "Makkah"
+
+        let hours = Double(TimeZone.current.secondsFromGMT()) / 3600
+        let lat = known ? cached.latitude : 3.0
+        let lng = known ? cached.longitude : hours * 15
+        let name = known && !cached.city.isEmpty ? cached.city : "Your location"
+
+        return compute(
+            latitude: lat,
+            longitude: lng,
+            city: name,
             params: {
                 var p = CalculationMethod.muslimWorldLeague.params
                 p.madhab = .shafi
                 return p
             }()
         ) ?? NoorSnapshot(
-            city: "Makkah",
+            city: name,
             hijri: hijriString(for: Date()),
-            latitude: 21.4225,
-            longitude: 39.8262,
+            latitude: lat,
+            longitude: lng,
             prayers: [],
             next: NoorPrayer(
                 key: "fajr",

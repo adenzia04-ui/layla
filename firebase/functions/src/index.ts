@@ -72,6 +72,25 @@ export const onUserDeleted = functionsV1.auth.user().onDelete(async (user) => {
   const stories = await db.collection("stories").where("uid", "==", uid).get();
   await Promise.all(stories.docs.map((doc) => db.recursiveDelete(doc.ref)));
 
+  // Friends: the shared scoreboard, the code, and the entry on every
+  // friend's list — the client cannot delete the first two (rules refuse
+  // it), and a stale code would otherwise let strangers befriend a ghost.
+  const list = await db.collection(`friends/${uid}/list`).get();
+  await Promise.all(
+    list.docs.map((doc) =>
+      db.doc(`friends/${doc.id}/list/${uid}`).delete().catch(() => undefined),
+    ),
+  );
+  await db.recursiveDelete(db.doc(`friends/${uid}`));
+  await db.doc(`progress/${uid}`).delete().catch(() => undefined);
+  const codes = await db.collection("friend_codes").where("uid", "==", uid).get();
+  await Promise.all(codes.docs.map((doc) => doc.ref.delete()));
+  // The write-once marker that says this account claimed its code. The client
+  // can never remove it — that is what stops an account claiming a second
+  // code — so it would outlive the account and leave a uid that can never
+  // claim one again if that uid were ever reissued.
+  await db.doc(`friend_code_owners/${uid}`).delete().catch(() => undefined);
+
   await getStorage()
     .bucket()
     .deleteFiles({ prefix: `prayer_proofs/${uid}/` })

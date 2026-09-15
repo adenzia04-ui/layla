@@ -1,11 +1,15 @@
 name: noor
-description: "Layla — stay connected with your prayers."
+description: "Layla Pro — stay connected with your prayers."
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
-  flutter: '>=3.27.0'  # Color.withValues
+  # Raised from 3.6/3.27 by the live prayer-mat scanner: camera 0.12 is the
+  # first release with the fix for a CameraController updating its value after
+  # disposal, which is exactly the race a scanner that tears itself down
+  # mid-frame would hit.
+  sdk: '>=3.10.0 <4.0.0'
+  flutter: '>=3.38.0'  # camera 0.12; Color.withValues since 3.27
 
 dependencies:
   flutter:
@@ -34,6 +38,9 @@ dependencies:
   flutter_compass: ^0.8.0
   permission_handler: ^11.3.1
   image_picker: ^1.1.2
+  # The live viewfinder behind Step 2. image_picker stays for the mat-check
+  # test button in settings, which wants one photo and no scanner.
+  camera: ^0.12.0+2
   path_provider: ^2.1.4     # prayer-mat photos live on-device, not in the cloud
   wakelock_plus: ^1.2.8
 
@@ -51,8 +58,19 @@ dependencies:
   shared_preferences: ^2.3.2
   intl: ^0.19.0
   http: ^1.6.0
+  crypto: ^3.0.3
+  sign_in_with_apple: ^8.2.0
+  google_sign_in: ^7.2.0
+  share_plus: ^13.3.0
+  just_audio: ^0.10.6
+  flutter_tts: ^4.2.5
+  in_app_purchase: ^3.3.0
+  image: ^4.10.1
 
 dev_dependencies:
+  # Used by quran_passages_test to pin the fetched Arabic. Declared rather
+  # than leaned on transitively, so a dependency change cannot quietly remove
+  # the check that the Qur'anic text has not been edited.
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
@@ -65,6 +83,7 @@ flutter:
   assets:
     - assets/images/
     - assets/duas/
+    - assets/sounds/
     - assets/textures/
 
   # Bundled rather than fetched at runtime. google_fonts downloads on first
@@ -78,3 +97,18 @@ flutter:
     - family: PlayfairDisplay
       fonts:
         - asset: assets/fonts/PlayfairDisplay.ttf
+    # Outfit: names, titles, prayer names. A variable file, so the weight
+    # is set through the wght axis rather than by picking a static face.
+    - family: Outfit
+      fonts:
+        - asset: assets/fonts/Outfit.ttf
+    # Neither Inter nor Playfair carries a single Arabic glyph, so all
+    # Arabic was falling through to the iOS system face, which is not cut
+    # for Uthmani orthography — the superscript alefs and small high marks
+    # sat wrong. Amiri Quran is drawn for exactly this text.
+    - family: AmiriQuran
+      fonts:
+        - asset: assets/fonts/AmiriQuran-Regular.ttf
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf

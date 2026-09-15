@@ -92,9 +92,9 @@ class _ReportSheetState extends State<_ReportSheet> {
               PrimaryButton(
                 label: 'Send report',
                 icon: Icons.flag_rounded,
-                onPressed: () => Navigator.of(context).pop(
-                  ReportOutcome(reason: _reason, note: _note.text),
-                ),
+                onPressed: () => Navigator.of(
+                  context,
+                ).pop(ReportOutcome(reason: _reason, note: _note.text)),
               ),
               const SizedBox(height: Insets.sm),
               GhostButton(

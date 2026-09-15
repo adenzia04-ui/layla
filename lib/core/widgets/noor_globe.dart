@@ -18,6 +18,7 @@ class GlobeSky {
     required this.halo,
     required this.exposure,
     required this.nightLights,
+    this.stars = false,
   });
 
   /// Warms or cools the daylit surface.
@@ -35,6 +36,10 @@ class GlobeSky {
 
   /// How strongly the city-lights layer shows through.
   final double nightLights;
+
+  /// Whether to scatter a starfield behind the planet. Isha only — by then the
+  /// sky is dark enough for stars to be the truth rather than decoration.
+  final bool stars;
 
   /// The globe tracks the sky outside: gold and low at Maghrib, dark with
   /// city lights at Isha, cool blue at Fajr.
@@ -85,9 +90,12 @@ class GlobeSky {
           tint: Color(0xFF2C4A80),
           tintAmount: 0.55,
           rim: Color(0xFF9FB6D8),
-          halo: Color(0xFF1B3466),
+          // Brighter and bluer, so the limb glows the way it does from orbit
+          // rather than sitting flat against the night.
+          halo: Color(0xFF4C7FD6),
           exposure: 0.34,
           nightLights: 1.0,
+          stars: true,
         );
     }
   }
@@ -138,6 +146,11 @@ class NoorGlobe extends StatefulWidget {
   /// async, which a widget test's fake clock will not advance.
   static Future<void> preload() => _NoorGlobeState._ensureLoaded();
 
+  /// The decoded Earth textures, for anything else that draws a sphere —
+  /// null until [preload] has finished. Decoded once for the whole app.
+  static ({ui.Image? day, ui.Image? night}) get textures =>
+      (day: _NoorGlobeState._day, night: _NoorGlobeState._night);
+
   @override
   State<NoorGlobe> createState() => _NoorGlobeState();
 }
@@ -165,7 +178,7 @@ class _NoorGlobeState extends State<NoorGlobe>
     if (_day != null) return Future<void>.value();
     return _loading ??= () async {
       _day = await _decode('assets/textures/earth_day.jpg');
-      _night = await _decode('assets/textures/earth_night.png');
+      _night = await _decode('assets/textures/earth_night.jpg');
     }();
   }
 
@@ -215,6 +228,56 @@ class _NoorGlobeState extends State<NoorGlobe>
   }
 }
 
+/// Renders one frame of the globe to PNG bytes, for the home-screen widget.
+///
+/// The widget extension cannot draw this itself: the globe is a textured mesh
+/// built by Flutter's renderer from two JPEGs in the app bundle, and a widget
+/// gets neither the renderer nor the bundle. So the app draws a frame and
+/// hands the picture over the App Group, the same division of labour the map
+/// already uses.
+///
+/// [turn] is a full rotation over 0..1. The caller passes the fraction of the
+/// day elapsed rather than an animation value, so the globe a widget shows is
+/// turned to match the actual hour — it drifts through the day instead of
+/// looping every 140 seconds, which is the only kind of movement a widget can
+/// honestly have.
+Future<Uint8List?> renderGlobeFrame({
+  required double size,
+  required double turn,
+  PrayerId? prayer,
+  double? latitude,
+  double? longitude,
+}) async {
+  await _NoorGlobeState._ensureLoaded();
+  final ui.Image? day = _NoorGlobeState._day;
+  if (day == null) return null;
+
+  final ui.PictureRecorder recorder = ui.PictureRecorder();
+  final Canvas canvas = Canvas(recorder);
+  _GlobePainter(
+    day: day,
+    night: _NoorGlobeState._night,
+    turn: turn,
+    sky: GlobeSky.forPrayer(prayer),
+    latitude: latitude,
+    longitude: longitude,
+    // Bigger and centred, because in the widget the globe is the ground the
+    // text sits on rather than an ornament under a column of cards.
+    radiusFactor: 0.78,
+    centreY: 0.5,
+  ).paint(canvas, Size(size, size));
+
+  final ui.Image image = await recorder.endRecording().toImage(
+    size.round(),
+    size.round(),
+  );
+  final ByteData? bytes = await image.toByteData(
+    format: ui.ImageByteFormat.png,
+  );
+  image.dispose();
+  return bytes?.buffer.asUint8List();
+}
+
 class _GlobePainter extends CustomPainter {
   _GlobePainter({
     required this.day,
@@ -253,6 +316,12 @@ class _GlobePainter extends CustomPainter {
     final double radius = size.width * radiusFactor;
     final Offset centre = Offset(size.width / 2, size.height * centreY);
 
+    if (sky.stars) {
+      _stars(canvas, size, centre, radius);
+      // Before the atmosphere and the sphere, so the planet occludes a streak
+      // that runs behind it instead of it skating over the surface.
+      _meteor(canvas, size, centre, radius);
+    }
     _atmosphere(canvas, centre, radius);
 
     final ui.Image? texture = day;
@@ -271,21 +340,167 @@ class _GlobePainter extends CustomPainter {
     _rim(canvas, centre, radius);
   }
 
+  /// A fixed scatter of stars behind the planet.
+  ///
+  /// Generated once from a fixed seed and held in a static: the painter runs
+  /// every frame to turn the globe, and re-rolling the positions each time
+  /// would make the whole sky crawl. Real stars do not move; the Earth does.
+  static final List<({Offset at, double r, double alpha})> _starField =
+      _makeStars();
+
+  static List<({Offset at, double r, double alpha})> _makeStars() {
+    // Jittered grid rather than uniform random. Random points over an area
+    // this tall clump and leave bald patches — the first attempt put nothing
+    // at all in the top hundred pixels, which is exactly the strip of sky the
+    // dashboard actually shows.
+    final math.Random rng = math.Random(20260822);
+    const int cols = 14;
+    const int rows = 30;
+    final List<({Offset at, double r, double alpha})> out =
+        <({Offset at, double r, double alpha})>[];
+    for (int gy = 0; gy < rows; gy++) {
+      for (int gx = 0; gx < cols; gx++) {
+        // Not every cell gets one, or the grid becomes visible as a grid.
+        if (rng.nextDouble() < 0.30) continue;
+        final double roll = rng.nextDouble();
+        out.add((
+          at: Offset(
+            (gx + rng.nextDouble()) / cols,
+            (gy + rng.nextDouble()) / rows,
+          ),
+          r: roll > 0.90
+              ? 1.0 + rng.nextDouble() * 0.8
+              : 0.5 + rng.nextDouble() * 0.6,
+          alpha: roll > 0.90
+              ? 0.70 + rng.nextDouble() * 0.30
+              : 0.40 + rng.nextDouble() * 0.35,
+        ));
+      }
+    }
+    return out;
+  }
+
+  void _stars(Canvas canvas, Size size, Offset centre, double radius) {
+    final Paint paint = Paint();
+    for (final ({Offset at, double r, double alpha}) star in _starField) {
+      final Offset p = Offset(
+        star.at.dx * size.width,
+        star.at.dy * size.height,
+      );
+      // Only the planet itself is skipped. The bloom is translucent, so stars
+      // behind it still show faintly — which is what fills the sky instead of
+      // leaving a bare ring of black around the horizon.
+      if ((p - centre).distance < radius * 0.99) continue;
+      paint.color = AppColors.cream.withValues(alpha: star.alpha);
+      canvas.drawCircle(p, star.r, paint);
+    }
+  }
+
+  /// Streak slots per rotation. Seven across the 140-second spin puts a
+  /// shooting star through roughly every twenty seconds — often enough to
+  /// catch, rare enough to still feel like luck.
+  ///
+  /// Deliberately a division of the spin rather than a second controller:
+  /// `turn` already wraps cleanly, so the sequence loops with no seam and the
+  /// globe needs no extra clock to keep in step with.
+  static const int _kMeteorSlots = 7;
+
+  /// How much of a slot the streak is in flight. The remaining 92% is the empty
+  /// sky that makes the arrival worth noticing.
+  static const double _kMeteorFlight = 0.085;
+
+  /// Three paths taking turns. Coordinates are x across the full width, y as a
+  /// fraction of the sky strip above the globe — see [_meteor].
+  static const List<({Offset from, Offset to, double tail, double width})>
+  _meteorPaths = <({Offset from, Offset to, double tail, double width})>[
+    (from: Offset(0.05, 0.14), to: Offset(0.44, 0.82), tail: 0.15, width: 1.6),
+    (from: Offset(0.95, 0.20), to: Offset(0.56, 0.86), tail: 0.13, width: 1.4),
+    (from: Offset(0.60, 0.06), to: Offset(0.93, 0.72), tail: 0.12, width: 1.3),
+  ];
+
+  /// One shooting star, drawn only while its slot is in flight.
+  void _meteor(Canvas canvas, Size size, Offset centre, double radius) {
+    // The globe is wider than the viewport, so "open sky" is not the whole
+    // frame — it is the strip above the horizon. An earlier pass placed these
+    // in viewport coordinates and the planet swallowed every one: at mid-flight
+    // the head sat 220px from a centre with a 234px radius. Anchoring to the
+    // strip keeps them clear of the disc whatever the framing.
+    final double sky = centre.dy - radius;
+    if (sky < 12) return;
+
+    final double t = turn * _kMeteorSlots;
+    final double f = t - t.floorToDouble();
+    if (f > _kMeteorFlight) return;
+
+    final ({Offset from, Offset to, double tail, double width}) path =
+        _meteorPaths[t.floor() % _meteorPaths.length];
+    final double p = f / _kMeteorFlight;
+
+    // x spans the width; y is a fraction of the sky strip, not of the frame.
+    final Offset a = Offset(path.from.dx * size.width, path.from.dy * sky);
+    final Offset b = Offset(path.to.dx * size.width, path.to.dy * sky);
+    final Offset run = b - a;
+    final double len = run.distance;
+    if (len < 1) return;
+
+    // Decelerating — a meteor burns out, it does not coast to a stop.
+    final double e = 1 - math.pow(1 - p, 1.7).toDouble();
+    final Offset head = Offset.lerp(a, b, e)!;
+
+    // Short on entry, longest mid-flight, gone by burnout. The same envelope
+    // drives brightness, so the streak never blinks out at full strength.
+    final double envelope = math.sin(math.pi * p).clamp(0.0, 1.0).toDouble();
+    final Offset back =
+        head - (run / len) * (path.tail * size.width * envelope);
+
+    canvas.drawLine(
+      back,
+      head,
+      Paint()
+        ..strokeCap = StrokeCap.round
+        ..strokeWidth = path.width
+        ..shader = ui.Gradient.linear(back, head, <Color>[
+          AppColors.cream.withValues(alpha: 0),
+          AppColors.cream.withValues(alpha: envelope * 0.85),
+        ]),
+    );
+    // A brighter grain at the head, so it reads as a point of light dragging a
+    // trail rather than as a drawn line.
+    canvas.drawCircle(
+      head,
+      path.width * 0.9,
+      Paint()..color = AppColors.cream.withValues(alpha: envelope),
+    );
+  }
+
   void _atmosphere(Canvas canvas, Offset centre, double radius) {
+    // A wide, many-stopped falloff rather than a narrow band.
+    //
+    // The old gradient ran from transparent to full and back inside 13% of the
+    // radius, so the halo arrived and left too quickly to read as air — it drew
+    // a ring with two visible edges. Air has no edges: this climbs from nothing
+    // over half the radius and trails off past the horizon.
+    final double reach = radius * 1.26;
     canvas.drawCircle(
       centre,
-      radius * 1.13,
+      reach,
       Paint()
         ..shader = RadialGradient(
           colors: <Color>[
             Colors.transparent,
-            sky.halo.withValues(alpha: 0.26),
+            sky.halo.withValues(alpha: 0.03),
+            sky.halo.withValues(alpha: 0.10),
+            sky.halo.withValues(alpha: 0.20),
+            sky.halo.withValues(alpha: 0.24),
+            sky.halo.withValues(alpha: 0.13),
+            sky.halo.withValues(alpha: 0.04),
             Colors.transparent,
           ],
-          stops: const <double>[0.87, 0.94, 1],
-        ).createShader(
-          Rect.fromCircle(center: centre, radius: radius * 1.13),
-        ),
+          stops: const <double>[0.50, 0.64, 0.72, 0.777, 0.80, 0.88, 0.94, 1],
+        ).createShader(Rect.fromCircle(center: centre, radius: reach))
+        // Softens whatever banding survives the stops — a gradient this gentle
+        // quantises visibly on a dark background.
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, radius * 0.02),
     );
   }
 
@@ -338,9 +553,7 @@ class _GlobePainter extends CustomPainter {
       return (centre + Offset(x * radius, -y * radius), u * tw, vv * th, lit);
     }
 
-    void push(
-      (Offset, double, double, double) p,
-    ) {
+    void push((Offset, double, double, double) p) {
       positions[v] = p.$1.dx;
       texCoords[v] = p.$2;
       v++;
@@ -426,6 +639,7 @@ class _GlobePainter extends CustomPainter {
             Matrix4.identity().storage,
           )
           ..blendMode = BlendMode.plus
+          ..colorFilter = _kCityLights
           ..filterQuality = FilterQuality.medium,
       );
     }
@@ -435,16 +649,30 @@ class _GlobePainter extends CustomPainter {
 
   /// Vertex colour for the daylit pass: brightness plus the day's tint.
   int _shade(double brightness) {
-    final Color base = Color.lerp(
-      Colors.white,
-      sky.tint,
-      sky.tintAmount,
-    )!;
+    final Color base = Color.lerp(Colors.white, sky.tint, sky.tintAmount)!;
     final int r = (base.r * 255 * brightness).round().clamp(0, 255);
     final int g = (base.g * 255 * brightness).round().clamp(0, 255);
     final int b = (base.b * 255 * brightness).round().clamp(0, 255);
     return (0xFF << 24) | (r << 16) | (g << 8) | b;
   }
+
+  /// Gain and warmth for the city lights.
+  ///
+  /// The VIIRS night map is faint — its mean is 13/255 — so blended straight it
+  /// reads as a grey smudge rather than the lit coastlines you see from orbit.
+  /// This lifts it and pushes it amber, since sodium street lighting is warm
+  /// and the neutral source renders cities a dead white.
+  ///
+  /// The offsets are not decoration. Open ocean in this image sits at 5, not 0,
+  /// so a bare multiply would raise that floor to 13 and lay a grey film over
+  /// every dark sea under an additive blend. Each row subtracts its own gain
+  /// times that pedestal, putting unlit ground back at true black.
+  static const ColorFilter _kCityLights = ColorFilter.matrix(<double>[
+    2.60, 0, 0, 0, -13.0, //
+    0, 2.10, 0, 0, -10.5, //
+    0, 0, 1.35, 0, -6.75, //
+    0, 0, 0, 1, 0, //
+  ]);
 
   /// Vertex colour for the city-lights pass — only where the sun is not.
   int _lightsShade(double darkness) {

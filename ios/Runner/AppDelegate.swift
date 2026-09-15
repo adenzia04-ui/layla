@@ -29,6 +29,11 @@ import UIKit
             #else
             registerStubWidgets(with: controller)
             #endif
+
+            // No build flag: Vision ships with iOS, needs no extension target and
+            // no entitlement. Registering it inside the widgets conditional meant
+            // the mat check only existed in widget builds.
+            MatVisionBridge.register(with: controller)
         }
 
         return super.application(

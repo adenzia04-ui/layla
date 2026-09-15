@@ -20,17 +20,17 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     Widget frame(String value) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: Scaffold(
-            backgroundColor: AppColors.midnight,
-            body: Center(
-              child: TickingDigits(
-                value: value,
-                style: AppType.clock.copyWith(color: AppColors.cream),
-              ),
-            ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: AppColors.midnight,
+        body: Center(
+          child: TickingDigits(
+            value: value,
+            style: AppType.clock.copyWith(color: AppColors.cream),
           ),
-        );
+        ),
+      ),
+    );
 
     await tester.pumpWidget(frame('12:39'));
     await tester.pump();
@@ -59,20 +59,21 @@ void main() {
     );
   });
 
-  testWidgets('every character survives repeated changes',
-      (WidgetTester tester) async {
+  testWidgets('every character survives repeated changes', (
+    WidgetTester tester,
+  ) async {
     Widget frame(String v) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: Scaffold(
-            backgroundColor: AppColors.midnight,
-            body: Center(
-              child: TickingDigits(
-                value: v,
-                style: AppType.clock.copyWith(color: AppColors.cream),
-              ),
-            ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: AppColors.midnight,
+        body: Center(
+          child: TickingDigits(
+            value: v,
+            style: AppType.clock.copyWith(color: AppColors.cream),
           ),
-        );
+        ),
+      ),
+    );
 
     // Tick like a real clock. A single change cannot expose this: the fault
     // only appears once a glyph has *finished* animating, which is when the
@@ -94,57 +95,66 @@ void main() {
       expect(
         rendered,
         v,
-        reason: 'after settling on "$v" the widget rendered "$rendered" — '
+        reason:
+            'after settling on "$v" the widget rendered "$rendered" — '
             'a character vanished instead of coming to rest',
       );
     }
   });
 
-  testWidgets('the clock does not shift sideways as it ticks',
-      (WidgetTester tester) async {
+  testWidgets('the clock does not shift sideways as it ticks', (
+    WidgetTester tester,
+  ) async {
     // The bounce was never the animation — it was the type. Inter's
     // proportional digits make ":11" narrower than ":40", so the row's width
     // changed every second and `Center` slid the whole clock across.
     Widget frame(String clock, String secs) => MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: Scaffold(
-            backgroundColor: AppColors.midnight,
-            body: Center(
-              child: Row(
-                // Keyed: `TickingDigits` builds a Row of its own, so byType
-                // matches several.
-                key: const ValueKey<String>('clock-row'),
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: <Widget>[
-                  TickingDigits(
-                    value: clock,
-                    style: AppType.clock.copyWith(color: AppColors.cream),
-                  ),
-                  TickingDigits(
-                    value: secs,
-                    style: AppType.clockSuffix
-                        .copyWith(fontSize: 26, color: AppColors.cream),
-                  ),
-                ],
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: AppColors.midnight,
+        body: Center(
+          child: Row(
+            // Keyed: `TickingDigits` builds a Row of its own, so byType
+            // matches several.
+            key: const ValueKey<String>('clock-row'),
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: <Widget>[
+              TickingDigits(
+                value: clock,
+                style: AppType.clock.copyWith(color: AppColors.cream),
               ),
-            ),
+              TickingDigits(
+                value: secs,
+                style: AppType.clockSuffix.copyWith(
+                  fontSize: 26,
+                  color: AppColors.cream,
+                ),
+              ),
+            ],
           ),
-        );
+        ),
+      ),
+    );
 
     await tester.pumpWidget(frame('12:11', ':11'));
     await tester.pump(const Duration(milliseconds: 600));
-    final double narrow = tester.getRect(find.byKey(const ValueKey<String>('clock-row'))).width;
+    final double narrow = tester
+        .getRect(find.byKey(const ValueKey<String>('clock-row')))
+        .width;
 
     await tester.pumpWidget(frame('12:40', ':40'));
     await tester.pump(const Duration(milliseconds: 600));
-    final double wide = tester.getRect(find.byKey(const ValueKey<String>('clock-row'))).width;
+    final double wide = tester
+        .getRect(find.byKey(const ValueKey<String>('clock-row')))
+        .width;
 
     expect(
       (wide - narrow).abs(),
       lessThan(0.5),
-      reason: 'width changed by ${(wide - narrow).abs()}px between ":11" and '
+      reason:
+          'width changed by ${(wide - narrow).abs()}px between ":11" and '
           '":40" — the digits are not tabular, so the clock will slide',
     );
   });

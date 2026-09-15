@@ -44,7 +44,18 @@ enum WidgetMap {
                 from: CLLocation(latitude: latitude, longitude: longitude)
             ) / 1000
 
-        if moved < 100, let cached = load() {
+        // Whatever is cached is shown; a rebuild that waits on a map render
+        // is a rebuild WidgetKit may kill, and a killed rebuild is a blank
+        // widget. The map is only redrawn when the phone has really moved.
+        if let cached = load() {
+            if moved < 100 { return cached }
+            Task.detached(priority: .background) {
+                if let fresh = await render(latitude: latitude, longitude: longitude) {
+                    defaults.set(latitude, forKey: latKey)
+                    defaults.set(longitude, forKey: lngKey)
+                    save(fresh)
+                }
+            }
             return cached
         }
 
@@ -52,7 +63,7 @@ enum WidgetMap {
             latitude: latitude,
             longitude: longitude
         ) else {
-            return load()
+            return nil
         }
 
         defaults.set(latitude, forKey: latKey)
@@ -81,10 +92,24 @@ enum WidgetMap {
         options.showsBuildings = false
         options.pointOfInterestFilter = .excludingAll
 
-        return await withCheckedContinuation { continuation in
-            MKMapSnapshotter(options: options).start { snapshot, _ in
-                continuation.resume(returning: snapshot?.image)
+        // Five seconds, then give up: the widget's own budget is shorter than
+        // a map render on a sleepy network, and a missing map only means the
+        // painted sky shows instead.
+        return await withTaskGroup(of: UIImage?.self) { group in
+            group.addTask {
+                await withCheckedContinuation { continuation in
+                    MKMapSnapshotter(options: options).start { snapshot, _ in
+                        continuation.resume(returning: snapshot?.image)
+                    }
+                }
             }
+            group.addTask {
+                try? await Task.sleep(nanoseconds: 5_000_000_000)
+                return nil
+            }
+            let first = await group.next() ?? nil
+            group.cancelAll()
+            return first
         }
     }
 

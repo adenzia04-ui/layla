@@ -159,16 +159,8 @@ const List<DuaCategory> duaCategories = <DuaCategory>[
     icon: Icons.nightlight_round,
     sections: <DuaSection>[
       DuaSection(number: 28, title: 'Before Sleeping', page: 77),
-      DuaSection(
-        number: 29,
-        title: 'Stirring During the Night',
-        page: 88,
-      ),
-      DuaSection(
-        number: 30,
-        title: 'Fear of Sleeping or Loneliness',
-        page: 88,
-      ),
+      DuaSection(number: 29, title: 'Stirring During the Night', page: 88),
+      DuaSection(number: 30, title: 'Fear of Sleeping or Loneliness', page: 88),
       DuaSection(number: 31, title: 'Bad Dream or Nightmare', page: 89),
     ],
   ),
@@ -201,11 +193,7 @@ const List<DuaCategory> duaCategories = <DuaCategory>[
     sections: <DuaSection>[
       DuaSection(number: 34, title: 'Worry and Grief', page: 93),
       DuaSection(number: 35, title: 'Anguish', page: 94),
-      DuaSection(
-        number: 36,
-        title: 'Meeting an Adversary or Ruler',
-        page: 96,
-      ),
+      DuaSection(number: 36, title: 'Meeting an Adversary or Ruler', page: 96),
       DuaSection(number: 37, title: 'Oppression of Rulers', page: 97),
       DuaSection(number: 38, title: 'Against an Enemy', page: 99),
       DuaSection(number: 39, title: 'Fear of People’s Harm', page: 100),
@@ -218,8 +206,16 @@ const List<DuaCategory> duaCategories = <DuaCategory>[
       ),
       DuaSection(number: 43, title: 'When Something Is Difficult', page: 103),
       DuaSection(number: 44, title: 'After Committing a Sin', page: 103),
-      DuaSection(number: 45, title: 'Against the Devil’s Promptings', page: 104),
-      DuaSection(number: 46, title: 'When Something You Dislike Happens', page: 105),
+      DuaSection(
+        number: 45,
+        title: 'Against the Devil’s Promptings',
+        page: 104,
+      ),
+      DuaSection(
+        number: 46,
+        title: 'When Something You Dislike Happens',
+        page: 105,
+      ),
     ],
   ),
   DuaCategory(
@@ -233,11 +229,7 @@ const List<DuaCategory> duaCategories = <DuaCategory>[
       DuaSection(number: 97, title: 'Entering a Town or City', page: 142),
       DuaSection(number: 98, title: 'Entering a Market', page: 143),
       DuaSection(number: 99, title: 'When Your Vehicle Fails', page: 143),
-      DuaSection(
-        number: 100,
-        title: 'For Those You Leave Behind',
-        page: 144,
-      ),
+      DuaSection(number: 100, title: 'For Those You Leave Behind', page: 144),
       DuaSection(
         number: 101,
         title: 'The Resident’s Dua for the Traveller',
@@ -269,11 +261,7 @@ const List<DuaCategory> duaCategories = <DuaCategory>[
         title: 'For the Family Who Invite You to Break Your Fast',
         page: 128,
       ),
-      DuaSection(
-        number: 74,
-        title: 'Declining Food While Fasting',
-        page: 128,
-      ),
+      DuaSection(number: 74, title: 'Declining Food While Fasting', page: 128),
       DuaSection(
         number: 75,
         title: 'When Someone Is Rude While You Fast',
@@ -300,7 +288,11 @@ const List<DuaCategory> duaCategories = <DuaCategory>[
       DuaSection(number: 79, title: 'For the Groom', page: 131),
       DuaSection(number: 82, title: 'Against Anger', page: 133),
       DuaSection(number: 84, title: 'Sitting in a Gathering', page: 134),
-      DuaSection(number: 87, title: 'For Someone Who Does Good to You', page: 135),
+      DuaSection(
+        number: 87,
+        title: 'For Someone Who Does Good to You',
+        page: 135,
+      ),
       DuaSection(number: 108, title: 'Spreading the Salam', page: 150),
     ],
   ),

@@ -1,0 +1,22 @@
+name = "layla-mat-check"
+main = "src/mat_check.js"
+compatibility_date = "2026-08-25"
+
+# Without this the Worker deploys but is unreachable: the code uploads, the
+# secret sets, and the dashboard reports "No URLs enabled" with zero
+# invocations. Nothing errors — there is simply no address to call.
+workers_dev = true
+
+# Enabling workers.dev turns Preview URLs on by default, giving every version
+# its own public address. One endpoint is what is wanted here, so they are off.
+preview_urls = false
+
+# Public, and safe here: this is the same Firebase Web API key that ships in
+# the app. It only lets the Worker ask Google to resolve a user's token.
+[vars]
+FIREBASE_API_KEY = "AIzaSyBroSkqP0WkhPnJfZ5Kwfg2qUAu0oTi7OE"
+
+# ANTHROPIC_API_KEY is deliberately NOT here. Set it as a secret:
+#   npx wrangler secret put ANTHROPIC_API_KEY --config wrangler.mat.toml
+#
+# Anything in [vars] is committed and readable. The Anthropic key is money.

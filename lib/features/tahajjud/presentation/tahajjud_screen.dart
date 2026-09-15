@@ -10,7 +10,6 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_snackbar.dart';
-import '../../../core/widgets/mihrab_arch.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/state_views.dart';
 import '../../prayer_times/application/prayer_times_controller.dart';
@@ -27,11 +26,12 @@ class TahajjudScreen extends ConsumerWidget {
     final MapConsent? consent = await showMapConsentSheet(context);
     if (consent == null || !context.mounted) return;
 
-    final bool ok =
-        await ref.read(tahajjudControllerProvider.notifier).startPraying(
-              appearOnMap: consent.appearOnMap,
-              anonymous: consent.anonymous,
-            );
+    final bool ok = await ref
+        .read(tahajjudControllerProvider.notifier)
+        .startPraying(
+          appearOnMap: consent.appearOnMap,
+          anonymous: consent.anonymous,
+        );
     if (!context.mounted) return;
     if (ok) {
       context.showSuccess(
@@ -44,18 +44,19 @@ class TahajjudScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<TahajjudWindow> window =
-        ref.watch(tahajjudWindowProvider);
-    final DateTime now = ref.watch(clockProvider).value ?? DateTime.now();
-    final TahajjudPresence? session = ref.watch(mySessionProvider).value;
-    final int liveCount = ref.watch(tahajjudLiveCountProvider).value ?? 0;
+    final AsyncValue<TahajjudWindow> window = ref.watch(tahajjudWindowProvider);
+    final DateTime now = ref.watch(clockProvider).valueOrNull ?? DateTime.now();
+    final TahajjudPresence? session = ref.watch(mySessionProvider).valueOrNull;
+    final int liveCount = ref.watch(tahajjudLiveCountProvider).valueOrNull ?? 0;
     final bool use24h = ref.watch(prayerSettingsProvider).use24hClock;
     final bool prayedTonight =
-        ref.watch(todayPrayerDayProvider).value?.tahajjudPrayed ?? false;
+        ref.watch(todayPrayerDayProvider).valueOrNull?.tahajjudPrayed ?? false;
     final AsyncValue<void> action = ref.watch(tahajjudControllerProvider);
 
-    ref.listen<AsyncValue<void>>(tahajjudControllerProvider,
-        (AsyncValue<void>? previous, AsyncValue<void> next) {
+    ref.listen<AsyncValue<void>>(tahajjudControllerProvider, (
+      AsyncValue<void>? previous,
+      AsyncValue<void> next,
+    ) {
       if (next.hasError && !next.isLoading) context.showError(next.error!);
     });
 
@@ -108,7 +109,6 @@ class TahajjudScreen extends ConsumerWidget {
                   label: prayedTonight
                       ? 'I am praying Tahajjud again'
                       : 'I am Praying Tahajjud',
-                  icon: Icons.self_improvement_rounded,
                   busy: action.isLoading,
                   onPressed: () => _startPraying(context, ref),
                 ),
@@ -132,8 +132,12 @@ class TahajjudScreen extends ConsumerWidget {
                 onTap: () => context.push(Routes.stories),
                 child: Row(
                   children: <Widget>[
-                    const Icon(Icons.menu_book_rounded,
-                        color: AppColors.gold, size: 22,),
+                    // People with a heart between them: what others felt.
+                    const Icon(
+                      Icons.diversity_1_rounded,
+                      color: AppColors.gold,
+                      size: 22,
+                    ),
                     const SizedBox(width: Insets.md),
                     Expanded(
                       child: Column(
@@ -143,19 +147,24 @@ class TahajjudScreen extends ConsumerWidget {
                           const SizedBox(height: 2),
                           Text(
                             'What others felt after praying tonight.',
-                            style: AppType.bodySm
-                                .copyWith(color: AppColors.mistFaint),
+                            style: AppType.bodySm.copyWith(
+                              color: AppColors.mistFaint,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(Icons.chevron_right_rounded,
-                        color: AppColors.mistFaint,),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: AppColors.mistFaint,
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: Insets.xl),
-              _AboutTahajjud(nights: ref.watch(userStatsProvider).totalTahajjud),
+              _AboutTahajjud(
+                nights: ref.watch(userStatsProvider).totalTahajjud,
+              ),
             ],
           );
         },
@@ -164,7 +173,7 @@ class TahajjudScreen extends ConsumerWidget {
   }
 }
 
-class _WindowCard extends StatelessWidget {
+class _WindowCard extends StatefulWidget {
   const _WindowCard({
     required this.window,
     required this.now,
@@ -178,89 +187,279 @@ class _WindowCard extends StatelessWidget {
   final bool isOpen;
 
   @override
+  State<_WindowCard> createState() => _WindowCardState();
+}
+
+/// The night as an arc from Maghrib to Fajr, the last third of it gold,
+/// and a crescent where the night is now.
+///
+/// Was a box with a big number in it. The number stays — how long until
+/// the window, or how long is left in it — but it now sits under the shape
+/// of the night itself, so "the last third" is something you can see.
+class _WindowCardState extends State<_WindowCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _breath = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 3000),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _breath.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        gradient: PrayerPalette.tahajjud.gradient,
-        borderRadius: BorderRadius.circular(Radii.xl),
-        border: Border.all(color: isOpen ? AppColors.gold : AppColors.goldDim),
-      ),
-      child: Stack(
-        children: <Widget>[
-          const Positioned.fill(
-            child: Padding(
-              padding: EdgeInsets.only(top: 30),
-              child: MihrabGlow(color: AppColors.goldSoft, opacity: 0.18),
+    final TahajjudWindow w = widget.window;
+    final DateTime now = widget.now;
+    // The window is the last third, so the night began two windows earlier.
+    final Duration third = w.end.difference(w.start);
+    final DateTime maghrib = w.start.subtract(third * 2);
+    final Duration nightLength = w.end.difference(maghrib);
+    final double at = nightLength.inSeconds <= 0
+        ? 0
+        : (now.difference(maghrib).inSeconds / nightLength.inSeconds).clamp(
+            0.0,
+            1.0,
+          );
+
+    // Until the window: never "now". After Fajr the next window is tonight's,
+    // a day on, and the count says so instead of reading zero.
+    Duration until = w.timeUntil(now);
+    if (until.isNegative) until += const Duration(days: 1);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Icon(
+              widget.isOpen ? Icons.nightlight_round : Icons.bedtime_outlined,
+              size: 14,
+              color: AppColors.gold,
+            ),
+            const SizedBox(width: Insets.sm),
+            Text(
+              widget.isOpen
+                  ? 'THE LAST THIRD IS OPEN'
+                  : 'THE LAST THIRD TONIGHT',
+              style: AppType.label.copyWith(color: AppColors.gold),
+            ),
+          ],
+        ),
+        const SizedBox(height: Insets.md),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            Text(
+              widget.isOpen
+                  ? Fmt.countdown(w.remaining(now))
+                  : Fmt.countdown(until),
+              style: AppType.clock.copyWith(
+                color: AppColors.cream,
+                fontSize: 44,
+              ),
+            ),
+            const SizedBox(width: Insets.md),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                widget.isOpen ? 'left until Fajr' : 'until it opens',
+                style: AppType.bodySm.copyWith(color: AppColors.mist),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: Insets.sm),
+        SizedBox(
+          height: 110,
+          child: AnimatedBuilder(
+            animation: _breath,
+            builder: (BuildContext context, _) => CustomPaint(
+              size: Size.infinite,
+              painter: _NightArcPainter(
+                at: at,
+                open: widget.isOpen,
+                breath: Curves.easeInOut.transform(_breath.value),
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(Insets.xl),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  isOpen ? 'OPEN NOW' : 'OPENS TONIGHT',
-                  style: AppType.label.copyWith(color: AppColors.goldSoft),
-                ),
-                const SizedBox(height: Insets.lg),
-                Text(
-                  isOpen
-                      ? Fmt.countdown(window.remaining(now))
-                      : Fmt.countdown(window.timeUntil(now)),
-                  style: AppType.clock.copyWith(
-                    color: AppColors.cream,
-                    fontSize: 46,
-                  ),
-                ),
-                Text(
-                  isOpen ? 'remaining until Fajr' : 'until the window opens',
-                  style: AppType.bodySm.copyWith(color: AppColors.mist),
-                ),
-                const SizedBox(height: Insets.xl),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    _Endpoint(
-                      label: 'Last third begins',
-                      value: Fmt.time(window.start, use24h: use24h),
-                    ),
-                    Container(
-                      height: 32,
-                      width: 1,
-                      color: AppColors.goldDim.withValues(alpha: 0.5),
-                    ),
-                    _Endpoint(
-                      label: 'Fajr',
-                      value: Fmt.time(window.end, use24h: use24h),
-                    ),
-                  ],
-                ),
-              ],
+        ),
+        Row(
+          children: <Widget>[
+            _Endpoint(
+              label: 'Maghrib',
+              value: Fmt.time(maghrib, use24h: widget.use24h),
+              align: CrossAxisAlignment.start,
             ),
-          ),
-        ],
-      ),
+            const Spacer(),
+            _Endpoint(
+              label: 'Last third',
+              value: Fmt.time(w.start, use24h: widget.use24h),
+              align: CrossAxisAlignment.center,
+              gold: true,
+            ),
+            const Spacer(),
+            _Endpoint(
+              label: 'Fajr',
+              value: Fmt.time(w.end, use24h: widget.use24h),
+              align: CrossAxisAlignment.end,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
 
+class _NightArcPainter extends CustomPainter {
+  const _NightArcPainter({
+    required this.at,
+    required this.open,
+    required this.breath,
+  });
+
+  /// 0 at Maghrib, 1 at Fajr.
+  final double at;
+  final bool open;
+  final double breath;
+
+  Offset _p(double t, Size size) {
+    final Offset p0 = Offset(size.width * 0.04, size.height - 14);
+    final Offset p1 = Offset(size.width / 2, -size.height * 0.5);
+    final Offset p2 = Offset(size.width * 0.96, size.height - 14);
+    final double u = 1 - t;
+    return p0 * (u * u) + p1 * (2 * u * t) + p2 * (t * t);
+  }
+
+  Path _arc(Size size, double from, double to) {
+    final Path path = Path();
+    const int n = 48;
+    for (int i = 0; i <= n; i++) {
+      final Offset p = _p(from + (to - from) * i / n, size);
+      if (i == 0) {
+        path.moveTo(p.dx, p.dy);
+      } else {
+        path.lineTo(p.dx, p.dy);
+      }
+    }
+    return path;
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // The whole night, faint.
+    canvas.drawPath(
+      _arc(size, 0, 1),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..color = AppColors.navyLine,
+    );
+    // The last third, gold — glowing while it is open.
+    canvas.drawPath(
+      _arc(size, 2 / 3, 1),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..strokeCap = StrokeCap.round
+        ..color = AppColors.gold.withValues(
+          alpha: open ? 0.5 + breath * 0.3 : 0.55,
+        ),
+    );
+    if (open) {
+      canvas.drawPath(
+        _arc(size, 2 / 3, 1),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 10
+          ..strokeCap = StrokeCap.round
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8)
+          ..color = AppColors.gold.withValues(alpha: 0.18 + breath * 0.12),
+      );
+    }
+    // Ticks at the thirds.
+    for (final double t in <double>[1 / 3, 2 / 3]) {
+      final Offset c = _p(t, size);
+      canvas.drawCircle(c, 2.5, Paint()..color = AppColors.mistFaint);
+    }
+    // Stars along the top of the night.
+    final Paint star = Paint()..color = AppColors.cream.withValues(alpha: 0.35);
+    for (final (double x, double y, double r)
+        in const <(double, double, double)>[
+          (0.18, 0.12, 1.2),
+          (0.32, 0.04, 0.9),
+          (0.57, 0.02, 1.3),
+          (0.71, 0.1, 0.9),
+          (0.86, 0.22, 1.1),
+          (0.45, 0.16, 0.7),
+        ]) {
+      canvas.drawCircle(Offset(x * size.width, y * size.height), r, star);
+    }
+    // The crescent, where the night is now.
+    final Offset c = _p(at, size);
+    canvas.drawCircle(
+      c,
+      13 + breath * 3,
+      Paint()
+        ..shader = RadialGradient(
+          colors: <Color>[
+            AppColors.goldSoft.withValues(alpha: 0.45),
+            AppColors.goldSoft.withValues(alpha: 0),
+          ],
+        ).createShader(Rect.fromCircle(center: c, radius: 16)),
+    );
+    // A crescent is one disc with another taken out of it — a real
+    // difference, not an even-odd fill, which left a sliver wherever the
+    // second disc reached past the first and made the moon a lumpy thing.
+    final Path moon = Path.combine(
+      PathOperation.difference,
+      Path()..addOval(Rect.fromCircle(center: c, radius: 7)),
+      Path()..addOval(
+        Rect.fromCircle(center: c + const Offset(3, -1.2), radius: 6),
+      ),
+    );
+    canvas.drawPath(moon, Paint()..color = AppColors.goldSoft);
+  }
+
+  @override
+  bool shouldRepaint(_NightArcPainter old) =>
+      old.at != at || old.open != open || old.breath != breath;
+}
+
 class _Endpoint extends StatelessWidget {
-  const _Endpoint({required this.label, required this.value});
+  const _Endpoint({
+    required this.label,
+    required this.value,
+    required this.align,
+    this.gold = false,
+  });
 
   final String label;
   final String value;
+  final CrossAxisAlignment align;
+  final bool gold;
 
   @override
   Widget build(BuildContext context) => Column(
-        children: <Widget>[
-          Text(
-            label.toUpperCase(),
-            style: AppType.label.copyWith(color: AppColors.mistFaint),
-          ),
-          const SizedBox(height: 4),
-          Text(value, style: AppType.numeral.copyWith(color: AppColors.cream)),
-        ],
-      );
+    crossAxisAlignment: align,
+    children: <Widget>[
+      Text(
+        label.toUpperCase(),
+        style: AppType.label.copyWith(
+          color: gold ? AppColors.gold : AppColors.mistFaint,
+        ),
+      ),
+      const SizedBox(height: 4),
+      Text(
+        value,
+        style: AppType.numeral.copyWith(
+          color: gold ? AppColors.goldSoft : AppColors.cream,
+        ),
+      ),
+    ],
+  );
 }
 
 class _ActiveSessionCard extends StatelessWidget {
@@ -348,8 +547,8 @@ class _LiveMapCard extends StatelessWidget {
                   liveCount == 0
                       ? 'Nobody is praying right now.'
                       : liveCount == 1
-                          ? '1 person is praying right now.'
-                          : '$liveCount people are praying right now.',
+                      ? '1 person is praying right now.'
+                      : '$liveCount people are praying right now.',
                   style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
                 ),
               ],
@@ -376,7 +575,7 @@ class _AboutTahajjud extends StatelessWidget {
           Text('About this window', style: AppType.titleMd),
           const SizedBox(height: Insets.sm),
           Text(
-            'Layla divides the night — from Maghrib to Fajr — into three parts '
+            'Layla Pro divides the night — from Maghrib to Fajr — into three parts '
             'and shows the last one. Tahajjud is voluntary, so it is recorded '
             'without the photo step and never affects your five-prayer streak.',
             style: AppType.bodySm.copyWith(color: AppColors.mist, height: 1.5),
@@ -384,13 +583,14 @@ class _AboutTahajjud extends StatelessWidget {
           const SizedBox(height: Insets.lg),
           Row(
             children: <Widget>[
-              const Icon(Icons.nights_stay_outlined,
-                  size: 18, color: AppColors.goldDim,),
+              const Icon(
+                Icons.nights_stay_outlined,
+                size: 18,
+                color: AppColors.goldDim,
+              ),
               const SizedBox(width: Insets.sm),
               Text(
-                nights == 1
-                    ? '1 night recorded'
-                    : '$nights nights recorded',
+                nights == 1 ? '1 night recorded' : '$nights nights recorded',
                 style: AppType.bodySm.copyWith(color: AppColors.mist),
               ),
             ],

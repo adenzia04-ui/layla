@@ -63,7 +63,8 @@ class AuthSheet extends StatelessWidget {
                           left: Insets.xxl,
                           right: Insets.xxl,
                           top: Insets.xl,
-                          bottom: MediaQuery.viewInsetsOf(context).bottom +
+                          bottom:
+                              MediaQuery.viewInsetsOf(context).bottom +
                               Insets.xxl,
                         ),
                         child: Column(
@@ -88,8 +89,9 @@ class AuthSheet extends StatelessWidget {
                               const SizedBox(height: Insets.sm),
                               Text(
                                 subtitle!,
-                                style: AppType.body
-                                    .copyWith(color: AppColors.inkMuted),
+                                style: AppType.body.copyWith(
+                                  color: AppColors.inkMuted,
+                                ),
                               ),
                             ],
                             const SizedBox(height: Insets.xxl),
@@ -118,12 +120,12 @@ class NoorWordmark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        'noor',
-        style: AppType.displayMd.copyWith(
-          fontSize: size,
-          color: color,
-          fontStyle: FontStyle.italic,
-          letterSpacing: 1,
-        ),
-      );
+    'noor',
+    style: AppType.displayMd.copyWith(
+      fontSize: size,
+      color: color,
+      fontStyle: FontStyle.italic,
+      letterSpacing: 1,
+    ),
+  );
 }

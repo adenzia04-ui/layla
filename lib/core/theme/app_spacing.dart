@@ -26,8 +26,9 @@ abstract final class Radii {
   static const double pill = 999;
 
   static const BorderRadius card = BorderRadius.all(Radius.circular(lg));
-  static const BorderRadius sheet =
-      BorderRadius.vertical(top: Radius.circular(xl));
+  static const BorderRadius sheet = BorderRadius.vertical(
+    top: Radius.circular(xl),
+  );
   static const BorderRadius chip = BorderRadius.all(Radius.circular(pill));
 }
 
@@ -40,4 +41,26 @@ abstract final class Motion {
   static const Curve enter = Curves.easeOutCubic;
   static const Curve exit = Curves.easeInCubic;
   static const Curve emphasis = Curves.easeOutBack;
+}
+
+/// How much of their normal size the vertical gaps on a non-scrolling screen
+/// should take, given the room actually available.
+///
+/// Tasbih and Qibla are the only two screens in Layla Pro that do not scroll — a
+/// bead strand and a compass, both meant to sit still under your thumb. That
+/// is a deliberate choice, but it removes the escape hatch every other screen
+/// has, so when the window is too short something must yield. The Expanded
+/// regions absorb what they can; past that these gaps are the only slack left
+/// between a tidy layout and a clipped button, and a clipped button is silent
+/// in a release build — Flutter paints the overflow stripes only in debug.
+///
+/// Divided by the text scale because Dynamic Type, not screen size, is what
+/// actually runs these screens out of room. Measured: every phone at 1.0x had
+/// space to spare, while at 1.3x an SE overran Tasbih by 81px and Qibla by 45,
+/// and a 13 mini overran Tasbih by 20. The constants are calibrated to those
+/// numbers and held there by responsive_layout_test.dart — retune them by
+/// running that, not by eye.
+double fitGap(BuildContext context, BoxConstraints constraints) {
+  final double textScale = MediaQuery.textScalerOf(context).scale(16) / 16;
+  return ((constraints.maxHeight / textScale - 500) / 170).clamp(0.15, 1.0);
 }

@@ -39,8 +39,46 @@ class NightScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final Widget body = Padding(padding: padding, child: child);
 
+    // The back button, a title and any actions sit inside the page, at the
+    // page's own margin, the way the Mood screen lays out its row. They used
+    // to go through an AppBar, whose 56-point leading slot put the button
+    // further left and lower than every screen that drew its own.
+    final Widget? header = title == null && leading == null && actions == null
+        ? null
+        : Padding(
+            padding: EdgeInsets.only(
+              left: padding.left,
+              right: padding.right,
+              top: Insets.sm,
+            ),
+            child: Row(
+              children: <Widget>[
+                if (leading != null) leading!,
+                if (title != null) ...<Widget>[
+                  if (leading != null) const SizedBox(width: Insets.md),
+                  Expanded(child: Text(title!, style: AppType.displaySm)),
+                ] else
+                  const Spacer(),
+                ...?actions,
+              ],
+            ),
+          );
+    final Widget content = header == null
+        ? body
+        : scrollable
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[header, body],
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              header,
+              Expanded(child: body),
+            ],
+          );
+
     return Scaffold(
-      extendBodyBehindAppBar: true,
       backgroundColor: AppColors.midnight,
       // Any FAB gets the same clearance as pinned content, so a future screen
       // does not quietly hide its own button behind the floating tab bar.
@@ -51,15 +89,6 @@ class NightScaffold extends StatelessWidget {
                 bottom: MediaQuery.paddingOf(context).bottom,
               ),
               child: floatingActionButton,
-            ),
-      appBar: title == null && leading == null && actions == null
-          ? null
-          : AppBar(
-              title: title == null
-                  ? null
-                  : Text(title!, style: AppType.displaySm),
-              leading: leading,
-              actions: actions,
             ),
       body: Stack(
         children: <Widget>[
@@ -82,7 +111,7 @@ class NightScaffold extends StatelessWidget {
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.paddingOf(context).bottom + Insets.xxl,
                     ),
-                    child: body,
+                    child: content,
                   )
                 // Non-scrolling screens need the same clearance. Tasbih pushes
                 // its Reset and Count buttons down with a `Spacer`, and with no
@@ -97,7 +126,7 @@ class NightScaffold extends StatelessWidget {
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.paddingOf(context).bottom,
                     ),
-                    child: body,
+                    child: content,
                   ),
           ),
         ],

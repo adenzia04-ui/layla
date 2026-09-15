@@ -13,8 +13,10 @@ import '../../../core/widgets/app_snackbar.dart';
 import '../../../core/widgets/mihrab_arch.dart';
 import '../../../core/widgets/ornament_backdrop.dart';
 import '../../prayer_times/application/prayer_times_controller.dart';
+import '../../premium/application/premium_store.dart';
 import '../application/prayer_lock_controller.dart';
 import '../domain/prayer_session.dart';
+import 'scan_flow.dart';
 
 /// The 30-minute prayer window, full screen.
 ///
@@ -53,7 +55,7 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
   @override
   Widget build(BuildContext context) {
     final PrayerSession? session = ref.watch(activeSessionProvider);
-    final DateTime now = ref.watch(clockProvider).value ?? DateTime.now();
+    final DateTime now = ref.watch(clockProvider).valueOrNull ?? DateTime.now();
     final bool use24h = ref.watch(prayerSettingsProvider).use24hClock;
 
     // The window closed (or the prayer was confirmed) while we were here.
@@ -98,17 +100,20 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
                     children: <Widget>[
                       Text(
                         'PRAYER FOCUS',
-                        style: AppType.label
-                            .copyWith(color: palette.onSurface),
+                        style: AppType.label.copyWith(color: palette.onSurface),
                       ),
                       const Spacer(),
-                      Icon(session.prayer.icon,
-                          size: 30, color: palette.onSurface,),
+                      Icon(
+                        session.prayer.icon,
+                        size: 30,
+                        color: palette.onSurface,
+                      ),
                       const SizedBox(height: Insets.md),
                       Text(
                         session.prayer.label,
-                        style: AppType.displayXl
-                            .copyWith(color: palette.onSurface),
+                        style: AppType.displayXl.copyWith(
+                          color: palette.onSurface,
+                        ),
                       ),
                       Text(
                         'began at '
@@ -131,8 +136,9 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
                         const SizedBox(height: Insets.md),
                         Text(
                           'Your apps stay paused',
-                          style: AppType.displaySm
-                              .copyWith(color: palette.onSurface),
+                          style: AppType.displaySm.copyWith(
+                            color: palette.onSurface,
+                          ),
                         ),
                         Text(
                           'until this prayer is confirmed',
@@ -163,8 +169,9 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
                           value: session.isOverdueAt(now)
                               ? null
                               : session.progress(now),
-                          backgroundColor:
-                              palette.onSurface.withValues(alpha: 0.18),
+                          backgroundColor: palette.onSurface.withValues(
+                            alpha: 0.18,
+                          ),
                           color: palette.onSurface,
                         ),
                       ),
@@ -172,75 +179,123 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
                       if (session.awaitingProof)
                         _AwaitingProofNotice(palette: palette),
                       const SizedBox(height: Insets.lg),
+                      // Three ways out, and every one of them lifts the
+                      // shield.
+                      //
+                      // It used to be two-and-a-half: confirm with a photo,
+                      // mark it missed, or step back to Layla Pro with the apps
+                      // still paused. That third one was the problem — someone
+                      // driving, at work, or away from a mat had no honest
+                      // move. Their choices were to lie and press "I have
+                      // prayed", or to record a miss that had not happened and
+                      // break a streak. An app that makes honesty the
+                      // expensive option teaches people to stop being honest
+                      // with it.
                       PrimaryButton(
-                        label: session.awaitingProof
-                            ? 'Upload prayer mat photo'
-                            : 'I Have Prayed',
-                        icon: session.awaitingProof
-                            ? Icons.photo_camera_rounded
+                        label: !ref.watch(isProProvider)
+                            ? 'I have prayed'
+                            : session.awaitingProof
+                            ? 'Scan your prayer mat'
+                            : 'I have prayed',
+                        icon: session.awaitingProof && ref.watch(isProProvider)
+                            ? Icons.center_focus_strong_rounded
                             : Icons.check_rounded,
-                        onPressed: () => context.push(
-                          Routes.focusConfirm(session.prayer.key),
-                        ),
+                        // The camera opens over this screen; once the mat is
+                        // scanned, Home.
+                        onPressed: ref.watch(isProProvider)
+                            ? () async {
+                                final bool ok = await confirmWithScan(
+                                  context,
+                                  ref,
+                                  session,
+                                );
+                                if (ok && context.mounted) {
+                                  context.go(Routes.home);
+                                }
+                              }
+                            : () async {
+                                final bool ok = await ref
+                                    .read(prayerLockControllerProvider.notifier)
+                                    .confirmWithoutProof(session);
+                                if (ok && context.mounted) {
+                                  context
+                                    ..showSuccess(
+                                      '${session.prayer.label} confirmed. '
+                                      'May it be accepted.',
+                                    )
+                                    ..go(Routes.home);
+                                }
+                              },
                       ),
                       const SizedBox(height: Insets.sm),
-                      SizedBox(
-                        height: 46,
-                        // While the window is running, Step 1 commits you to
-                        // finishing. Once it has passed you can always get back
-                        // into Noor — your apps stay paused either way.
-                        child: session.awaitingProof &&
-                                !session.isOverdueAt(now)
-                            ? Center(
-                                child: Text(
-                                  'This prayer stays unconfirmed until the '
-                                  'photo is saved.',
-                                  textAlign: TextAlign.center,
-                                  style: AppType.bodySm.copyWith(
-                                    color: palette.onSurface
-                                        .withValues(alpha: 0.7),
-                                  ),
-                                ),
-                              )
-                            : TextButton(
-                                onPressed: () {
-                                  ref
-                                      .read(prayerLockControllerProvider
-                                          .notifier,)
-                                      .dismissForNow(session);
-                                  context.go(Routes.home);
-                                },
-                                style: TextButton.styleFrom(
-                                  foregroundColor: palette.onSurface
-                                      .withValues(alpha: 0.8),
-                                ),
-                                child: const Text(
-                                  'Use Layla — my apps stay paused',
-                                ),
+
+                      // Step 1 is a commitment: once "I am praying now" has
+                      // been pressed, the photo is the only way on, and this
+                      // option is not offered.
+                      if (!session.awaitingProof) ...<Widget>[
+                        SizedBox(
+                          height: 46,
+                          child: TextButton(
+                            onPressed: () async {
+                              final bool ok = await ref
+                                  .read(prayerLockControllerProvider.notifier)
+                                  .deferUntilHome(session);
+                              if (!context.mounted) return;
+                              if (ok) {
+                                context.go(Routes.home);
+                              } else {
+                                context.showMessage(
+                                  'That could not be saved. Your apps stay '
+                                  'paused until it is.',
+                                );
+                              }
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: palette.onSurface.withValues(
+                                alpha: 0.85,
                               ),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          final bool confirmed = await _confirmMissed(context);
-                          if (!confirmed || !context.mounted) return;
-                          final bool ok = await ref
-                              .read(prayerLockControllerProvider.notifier)
-                              .markMissed(session);
-                          if (!context.mounted) return;
-                          if (ok) {
-                            context.go(Routes.home);
-                          } else {
-                            context.showMessage(
-                              'That could not be saved. Your apps stay paused '
-                              'until it is.',
-                            );
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.rose,
+                            ),
+                            child: const Text('I will pray when I am home'),
+                          ),
                         ),
-                        child: const Text('I missed this prayer'),
-                      ),
+                        TextButton(
+                          onPressed: () async {
+                            final bool confirmed = await _confirmMissed(
+                              context,
+                            );
+                            if (!confirmed || !context.mounted) return;
+                            final bool ok = await ref
+                                .read(prayerLockControllerProvider.notifier)
+                                .markMissed(session);
+                            if (!context.mounted) return;
+                            if (ok) {
+                              context.go(Routes.home);
+                            } else {
+                              context.showMessage(
+                                'That could not be saved. Your apps stay '
+                                'paused until it is.',
+                              );
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.rose,
+                          ),
+                          child: const Text('I did not pray this one'),
+                        ),
+                      ] else
+                        SizedBox(
+                          height: 46,
+                          child: Center(
+                            child: Text(
+                              'This prayer stays unconfirmed until the photo '
+                              'is saved.',
+                              textAlign: TextAlign.center,
+                              style: AppType.bodySm.copyWith(
+                                color: palette.onSurface.withValues(alpha: 0.7),
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -269,12 +324,15 @@ class _AwaitingProofNotice extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          const Icon(Icons.pending_actions_rounded,
-              color: AppColors.amber, size: 20,),
+          const Icon(
+            Icons.pending_actions_rounded,
+            color: AppColors.amber,
+            size: 20,
+          ),
           const SizedBox(width: Insets.md),
           Expanded(
             child: Text(
-              'Step 1 done. One step left: a photo of your prayer mat.',
+              'Step 1 done. One step left: scan your prayer mat.',
               style: AppType.bodySm.copyWith(color: AppColors.cream),
             ),
           ),
@@ -283,7 +341,6 @@ class _AwaitingProofNotice extends StatelessWidget {
     );
   }
 }
-
 
 /// Marking a prayer missed breaks the streak and cannot be undone, so it asks
 /// once. The wording states the cost plainly rather than softening it — a user

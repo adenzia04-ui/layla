@@ -20,19 +20,17 @@ class PrayerSettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final PrayerSettings settings = ref.watch(prayerSettingsProvider);
-    final PrayerSettingsRepository repo =
-        ref.watch(prayerSettingsRepositoryProvider);
+    final PrayerSettingsRepository repo = ref.watch(
+      prayerSettingsRepositoryProvider,
+    );
 
     return NightScaffold(
       scrollable: true,
       ornamentHeight: 180,
       title: 'Prayer settings',
-      leading: Padding(
-        padding: const EdgeInsets.all(Insets.sm),
-        child: CircleIconButton(
-          icon: Icons.arrow_back_ios_new_rounded,
-          onPressed: () => context.pop(),
-        ),
+      leading: CircleIconButton(
+        icon: Icons.arrow_back_ios_new_rounded,
+        onPressed: () => context.pop(),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,9 +172,7 @@ class _AdjustmentRow extends StatelessWidget {
           SizedBox(
             width: 52,
             child: Text(
-              minutes == 0
-                  ? '0'
-                  : '${minutes > 0 ? '+' : ''}$minutes',
+              minutes == 0 ? '0' : '${minutes > 0 ? '+' : ''}$minutes',
               textAlign: TextAlign.center,
               style: AppType.numeral.copyWith(
                 color: minutes == 0 ? AppColors.mist : AppColors.gold,

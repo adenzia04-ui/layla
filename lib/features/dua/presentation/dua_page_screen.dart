@@ -24,7 +24,7 @@ class DuaPageScreen extends StatefulWidget {
 class _DuaPageScreenState extends State<DuaPageScreen> {
   late final PageRange _range =
       duaSectionPages[widget.section.number] ??
-          (start: widget.section.page, end: widget.section.page);
+      (start: widget.section.page, end: widget.section.page);
   late final PageController _controller = PageController();
   late int _current = _range.start;
 

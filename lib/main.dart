@@ -39,7 +39,7 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } on Object catch (error, stackTrace) {
-    debugPrint('Layla: Firebase failed to start — $error\n$stackTrace');
+    debugPrint('Layla Pro: Firebase failed to start — $error\n$stackTrace');
     runApp(SetupRequiredApp(error: error));
     return;
   }
@@ -64,14 +64,12 @@ Future<void> main() async {
 
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
-    debugPrint('Layla: uncaught framework error — ${details.exception}');
+    debugPrint('Layla Pro: uncaught framework error — ${details.exception}');
   };
 
   runApp(
     ProviderScope(
-      overrides: <Override>[
-        sharedPrefsProvider.overrideWithValue(prefs),
-      ],
+      overrides: <Override>[sharedPrefsProvider.overrideWithValue(prefs)],
       child: const NoorApp(),
     ),
   );

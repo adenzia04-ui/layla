@@ -25,36 +25,30 @@ void main() {
             backgroundColor: AppColors.midnight,
             extendBody: true,
             body: const SizedBox.expand(),
-            bottomNavigationBar: BottomBarPreview(
-              index: 0,
-              onTap: taps.add,
-            ),
+            bottomNavigationBar: BottomBarPreview(index: 0, onTap: taps.add),
           ),
         ),
       ),
     );
     await tester.pump(const Duration(milliseconds: 600));
 
-    for (final String label in <String>[
-      'Home',
-      'Tahajjud',
-      'Qibla',
-      'Tasbih + Dua',
-      'Profile',
-    ]) {
+    for (final String label in <String>['Home', 'Tahajjud', 'Soul']) {
       await tester.tap(find.text(label), warnIfMissed: false);
       await tester.pump();
     }
 
     expect(
       taps,
-      <int>[0, 1, 2, 3, 4],
-      reason: 'taps that reached the bar: $taps — a tab that records nothing '
+      <int>[0, 1, 2],
+      reason:
+          'taps that reached the bar: $taps — a tab that records nothing '
           'is being swallowed before it gets there',
     );
   });
 
-  testWidgets('dragging the bar moves the selection', (WidgetTester tester) async {
+  testWidgets('dragging the bar moves the selection', (
+    WidgetTester tester,
+  ) async {
     tester.view.physicalSize = const Size(393 * 3, 200 * 3);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.resetPhysicalSize);
@@ -76,8 +70,17 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 600));
 
-    // Drag from the first tab across to the last.
-    final Rect bar = tester.getRect(find.byType(BottomBarPreview));
+    // Drag from the first tab across to the last. The bar is a pill
+    // narrower than the screen, so measure the pill — the part that takes
+    // the drag — rather than the full-width slot it floats in.
+    final Rect bar = tester.getRect(
+      find
+          .descendant(
+            of: find.byType(BottomBarPreview),
+            matching: find.byType(GestureDetector),
+          )
+          .first,
+    );
     final Offset start = Offset(bar.left + bar.width * 0.1, bar.center.dy);
     final Offset end = Offset(bar.left + bar.width * 0.92, bar.center.dy);
 
@@ -91,9 +94,14 @@ void main() {
     expect(
       picked,
       isNotEmpty,
-      reason: 'dragging across the bar selected nothing — the lens is not '
+      reason:
+          'dragging across the bar selected nothing — the lens is not '
           'following the finger',
     );
-    expect(picked.last, 4, reason: 'released over the last tab but got ${picked.last}');
+    expect(
+      picked.last,
+      2,
+      reason: 'released over the last tab but got ${picked.last}',
+    );
   });
 }

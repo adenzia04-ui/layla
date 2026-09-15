@@ -6,23 +6,41 @@ import 'prayer.dart';
 /// The calculation methods Noor exposes. Kept to the widely-used set rather
 /// than every option `adhan` supports, so the settings screen stays readable.
 enum CalcMethod {
-  muslimWorldLeague('muslim_world_league', 'Muslim World League',
-      'Fajr 18° · Isha 17° — a common global default',),
-  karachi('karachi', 'University of Islamic Sciences, Karachi',
-      'Fajr 18° · Isha 18° — South Asia',),
-  ummAlQura('umm_al_qura', 'Umm al-Qura, Makkah',
-      'Fajr 18.5° · Isha 90 min after Maghrib — Saudi Arabia',),
-  egyptian('egyptian', 'Egyptian General Authority',
-      'Fajr 19.5° · Isha 17.5° — Egypt, Africa',),
-  northAmerica('north_america', 'ISNA (North America)',
-      'Fajr 15° · Isha 15° — North America',),
+  muslimWorldLeague(
+    'muslim_world_league',
+    'Muslim World League',
+    'Fajr 18° · Isha 17° — a common global default',
+  ),
+  karachi(
+    'karachi',
+    'University of Islamic Sciences, Karachi',
+    'Fajr 18° · Isha 18° — South Asia',
+  ),
+  ummAlQura(
+    'umm_al_qura',
+    'Umm al-Qura, Makkah',
+    'Fajr 18.5° · Isha 90 min after Maghrib — Saudi Arabia',
+  ),
+  egyptian(
+    'egyptian',
+    'Egyptian General Authority',
+    'Fajr 19.5° · Isha 17.5° — Egypt, Africa',
+  ),
+  northAmerica(
+    'north_america',
+    'ISNA (North America)',
+    'Fajr 15° · Isha 15° — North America',
+  ),
   dubai('dubai', 'Dubai', 'Fajr 18.2° · Isha 18.2° — UAE'),
   qatar('qatar', 'Qatar', 'Fajr 18° · Isha 90 min after Maghrib'),
   kuwait('kuwait', 'Kuwait', 'Fajr 18° · Isha 17.5°'),
   singapore('singapore', 'Singapore', 'Fajr 20° · Isha 18° — Southeast Asia'),
   turkey('turkey', 'Diyanet (Turkey)', 'Fajr 18° · Isha 17°'),
-  moonsighting('moon_sighting_committee', 'Moonsighting Committee',
-      'Seasonal adjustment — higher latitudes',);
+  moonsighting(
+    'moon_sighting_committee',
+    'Moonsighting Committee',
+    'Seasonal adjustment — higher latitudes',
+  );
 
   const CalcMethod(this.key, this.label, this.description);
 
@@ -31,32 +49,35 @@ enum CalcMethod {
   final String description;
 
   adhan.CalculationParameters get parameters => switch (this) {
-        CalcMethod.muslimWorldLeague =>
-          adhan.CalculationMethod.muslim_world_league.getParameters(),
-        CalcMethod.karachi => adhan.CalculationMethod.karachi.getParameters(),
-        CalcMethod.ummAlQura =>
-          adhan.CalculationMethod.umm_al_qura.getParameters(),
-        CalcMethod.egyptian => adhan.CalculationMethod.egyptian.getParameters(),
-        CalcMethod.northAmerica =>
-          adhan.CalculationMethod.north_america.getParameters(),
-        CalcMethod.dubai => adhan.CalculationMethod.dubai.getParameters(),
-        CalcMethod.qatar => adhan.CalculationMethod.qatar.getParameters(),
-        CalcMethod.kuwait => adhan.CalculationMethod.kuwait.getParameters(),
-        CalcMethod.singapore => adhan.CalculationMethod.singapore.getParameters(),
-        CalcMethod.turkey => adhan.CalculationMethod.turkey.getParameters(),
-        CalcMethod.moonsighting =>
-          adhan.CalculationMethod.moon_sighting_committee.getParameters(),
-      };
+    CalcMethod.muslimWorldLeague =>
+      adhan.CalculationMethod.muslim_world_league.getParameters(),
+    CalcMethod.karachi => adhan.CalculationMethod.karachi.getParameters(),
+    CalcMethod.ummAlQura => adhan.CalculationMethod.umm_al_qura.getParameters(),
+    CalcMethod.egyptian => adhan.CalculationMethod.egyptian.getParameters(),
+    CalcMethod.northAmerica =>
+      adhan.CalculationMethod.north_america.getParameters(),
+    CalcMethod.dubai => adhan.CalculationMethod.dubai.getParameters(),
+    CalcMethod.qatar => adhan.CalculationMethod.qatar.getParameters(),
+    CalcMethod.kuwait => adhan.CalculationMethod.kuwait.getParameters(),
+    CalcMethod.singapore => adhan.CalculationMethod.singapore.getParameters(),
+    CalcMethod.turkey => adhan.CalculationMethod.turkey.getParameters(),
+    CalcMethod.moonsighting =>
+      adhan.CalculationMethod.moon_sighting_committee.getParameters(),
+  };
 
   static CalcMethod fromKey(String? key) => CalcMethod.values.firstWhere(
-        (CalcMethod m) => m.key == key,
-        orElse: () => CalcMethod.muslimWorldLeague,
-      );
+    (CalcMethod m) => m.key == key,
+    orElse: () => CalcMethod.muslimWorldLeague,
+  );
 }
 
 /// Asr calculation: Shafi/Maliki/Hanbali use one shadow length, Hanafi two.
 enum MadhabOption {
-  shafi('shafi', 'Shafi, Maliki, Hanbali', 'Asr when a shadow equals its object'),
+  shafi(
+    'shafi',
+    'Shafi, Maliki, Hanbali',
+    'Asr when a shadow equals its object',
+  ),
   hanafi('hanafi', 'Hanafi', 'Asr when a shadow is twice its object');
 
   const MadhabOption(this.key, this.label, this.description);
@@ -69,9 +90,9 @@ enum MadhabOption {
       this == MadhabOption.hanafi ? adhan.Madhab.hanafi : adhan.Madhab.shafi;
 
   static MadhabOption fromKey(String? key) => MadhabOption.values.firstWhere(
-        (MadhabOption m) => m.key == key,
-        orElse: () => MadhabOption.shafi,
-      );
+    (MadhabOption m) => m.key == key,
+    orElse: () => MadhabOption.shafi,
+  );
 }
 
 /// What the shield covers when a prayer window opens.
@@ -97,9 +118,9 @@ enum BlockScope {
   bool get needsSelection => this != BlockScope.everything;
 
   static BlockScope fromKey(String? key) => BlockScope.values.firstWhere(
-        (BlockScope s) => s.key == key,
-        orElse: () => BlockScope.everything,
-      );
+    (BlockScope s) => s.key == key,
+    orElse: () => BlockScope.everything,
+  );
 }
 
 /// Everything that changes the computed times, plus the per-prayer toggles.
@@ -115,6 +136,10 @@ class PrayerSettings {
     this.use24hClock = false,
     this.blockScope = BlockScope.everything,
     this.blocking = const <String, bool>{},
+    this.remindBefore = true,
+    this.beforeMinutes = 10,
+    this.remindAfter = true,
+    this.afterMinutes = 30,
   });
 
   final CalcMethod method;
@@ -140,6 +165,23 @@ class PrayerSettings {
   /// Missing = on, so enabling the feature blocks all five by default.
   final Map<String, bool> blocking;
 
+  /// A nudge ahead of the adhan, so the ten minutes before it are not spent
+  /// halfway into something else.
+  final bool remindBefore;
+  final int beforeMinutes;
+
+  /// A second call once the window has been open a while and nothing has been
+  /// confirmed. Cancelled the moment the prayer is confirmed — a notification
+  /// saying "you still have not prayed Asr" arriving after someone has prayed
+  /// it is worse than no notification at all.
+  final bool remindAfter;
+  final int afterMinutes;
+
+  /// The minute options offered. Fixed rather than free-form: three choices
+  /// are decided in a second, a spinner is not.
+  static const List<int> beforeChoices = <int>[5, 10, 15];
+  static const List<int> afterChoices = <int>[15, 30, 45];
+
   int adjustmentFor(PrayerId id) => adjustments[id.key] ?? 0;
   bool notifies(PrayerId id) => notifications[id.key] ?? true;
 
@@ -147,10 +189,13 @@ class PrayerSettings {
   bool blocks(PrayerId id) => blocking[id.key] ?? true;
 
   /// "3 of 5" for the settings header.
-  int get blockingCount =>
-      PrayerId.obligatory.where(blocks).length;
+  int get blockingCount => PrayerId.obligatory.where(blocks).length;
 
   PrayerSettings copyWith({
+    bool? remindBefore,
+    int? beforeMinutes,
+    bool? remindAfter,
+    int? afterMinutes,
     CalcMethod? method,
     MadhabOption? madhab,
     Map<String, int>? adjustments,
@@ -160,30 +205,42 @@ class PrayerSettings {
     bool? use24hClock,
     BlockScope? blockScope,
     Map<String, bool>? blocking,
-  }) =>
-      PrayerSettings(
-        method: method ?? this.method,
-        madhab: madhab ?? this.madhab,
-        adjustments: adjustments ?? this.adjustments,
-        notifications: notifications ?? this.notifications,
-        lockEnabled: lockEnabled ?? this.lockEnabled,
-        tahajjudVisible: tahajjudVisible ?? this.tahajjudVisible,
-        use24hClock: use24hClock ?? this.use24hClock,
-        blockScope: blockScope ?? this.blockScope,
-        blocking: blocking ?? this.blocking,
-      );
+  }) => PrayerSettings(
+    method: method ?? this.method,
+    madhab: madhab ?? this.madhab,
+    adjustments: adjustments ?? this.adjustments,
+    notifications: notifications ?? this.notifications,
+    lockEnabled: lockEnabled ?? this.lockEnabled,
+    tahajjudVisible: tahajjudVisible ?? this.tahajjudVisible,
+    use24hClock: use24hClock ?? this.use24hClock,
+    blockScope: blockScope ?? this.blockScope,
+    blocking: blocking ?? this.blocking,
+    remindBefore: remindBefore ?? this.remindBefore,
+    beforeMinutes: beforeMinutes ?? this.beforeMinutes,
+    remindAfter: remindAfter ?? this.remindAfter,
+    afterMinutes: afterMinutes ?? this.afterMinutes,
+  );
 
   Map<String, Object?> toMap() => <String, Object?>{
-        'calculationMethod': method.key,
-        'madhab': madhab.key,
-        'adjustments': adjustments,
-        'notifications': notifications,
-        'lockEnabled': lockEnabled,
-        'tahajjudVisible': tahajjudVisible,
-        'use24hClock': use24hClock,
-        'blockScope': blockScope.key,
-        'blocking': blocking,
-      };
+    'calculationMethod': method.key,
+    'madhab': madhab.key,
+    'adjustments': adjustments,
+    'notifications': notifications,
+    'lockEnabled': lockEnabled,
+    'tahajjudVisible': tahajjudVisible,
+    'use24hClock': use24hClock,
+    'blockScope': blockScope.key,
+    'blocking': blocking,
+    'remindBefore': remindBefore,
+    'beforeMinutes': beforeMinutes,
+    'remindAfter': remindAfter,
+    'afterMinutes': afterMinutes,
+  };
+
+  static int _oneOf(Object? raw, List<int> allowed, int fallback) {
+    final int? v = (raw as num?)?.toInt();
+    return v != null && allowed.contains(v) ? v : fallback;
+  }
 
   factory PrayerSettings.fromMap(Map<String, Object?>? map) {
     if (map == null) return const PrayerSettings();
@@ -214,6 +271,13 @@ class PrayerSettings {
                 .entries)
           e.key: e.value as bool? ?? true,
       },
+      remindBefore: map['remindBefore'] as bool? ?? true,
+      // Clamped to the offered choices. A value from an older build, or a
+      // hand-edited document, must not schedule a reminder at some hour the
+      // settings screen cannot show or undo.
+      beforeMinutes: _oneOf(map['beforeMinutes'], beforeChoices, 10),
+      remindAfter: map['remindAfter'] as bool? ?? true,
+      afterMinutes: _oneOf(map['afterMinutes'], afterChoices, 30),
     );
   }
 }

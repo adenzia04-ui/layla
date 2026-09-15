@@ -83,9 +83,7 @@ class NextPrayerHero extends StatelessWidget {
           borderRadius: BorderRadius.circular(Radii.xl),
           border: onEarth
               ? null
-              : Border.all(
-                  color: AppColors.navyLine.withValues(alpha: 0.7),
-                ),
+              : Border.all(color: AppColors.navyLine.withValues(alpha: 0.7)),
         ),
         child: Stack(
           children: <Widget>[
@@ -97,11 +95,7 @@ class NextPrayerHero extends StatelessWidget {
               Positioned.fill(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 46),
-                  child: MihrabGlow(
-                    color: ink,
-                    opacity: 0.22,
-                    shoulder: 0.5,
-                  ),
+                  child: MihrabGlow(color: ink, opacity: 0.22, shoulder: 0.5),
                 ),
               ),
             Padding(
@@ -127,10 +121,7 @@ class NextPrayerHero extends StatelessWidget {
                               'Begins ${Fmt.time(next.start, use24h: use24h)}'
                               '${nextIsTomorrow ? ' tomorrow' : ''}',
                               style: AppType.bodySm
-                                  .copyWith(
-                                    color: ink
-                                        .withValues(alpha: 0.9),
-                                  )
+                                  .copyWith(color: ink.withValues(alpha: 0.9))
                                   .lift(onEarth),
                             ),
                           ],
@@ -144,8 +135,7 @@ class NextPrayerHero extends StatelessWidget {
                             Icon(
                               Icons.place_outlined,
                               size: 14,
-                              color:
-                                  ink.withValues(alpha: 0.75),
+                              color: ink.withValues(alpha: 0.75),
                             ),
                             const SizedBox(width: 4),
                             Flexible(
@@ -154,10 +144,7 @@ class NextPrayerHero extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.right,
                                 style: AppType.bodySm
-                                    .copyWith(
-                                      color: ink
-                                          .withValues(alpha: 0.9),
-                                    )
+                                    .copyWith(color: ink.withValues(alpha: 0.9))
                                     .lift(onEarth),
                               ),
                             ),
@@ -185,7 +172,7 @@ class NextPrayerHero extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 7),
                           child: TickingDigits(
                             value: Fmt.seconds(now),
-                              // Clearly readable, but still well under the 54pt
+                            // Clearly readable, but still well under the 54pt
                             // clock — the seconds mark that time is moving,
                             // they are not the thing you read.
                             style: AppType.clockSuffix
@@ -224,9 +211,7 @@ class NextPrayerHero extends StatelessWidget {
                             ? AppColors.midnight.withValues(alpha: 0.42)
                             : ink.withValues(alpha: 0.16),
                         borderRadius: Radii.chip,
-                        border: Border.all(
-                          color: ink.withValues(alpha: 0.24),
-                        ),
+                        border: Border.all(color: ink.withValues(alpha: 0.24)),
                       ),
                       child: Text(
                         until.isNegative
@@ -239,10 +224,7 @@ class NextPrayerHero extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: Insets.xl),
-                  Divider(
-                    color: ink.withValues(alpha: 0.18),
-                    height: 1,
-                  ),
+                  Divider(color: ink.withValues(alpha: 0.18), height: 1),
                   const SizedBox(height: Insets.md),
                   Row(
                     children: <Widget>[
@@ -318,17 +300,13 @@ class _Neighbour extends StatelessWidget {
         Text(
           Fmt.time(slot!.start, use24h: use24h),
           style: AppType.numeral
-              .copyWith(
-                fontSize: 15,
-                color: ink.withValues(alpha: 0.88),
-              )
+              .copyWith(fontSize: 15, color: ink.withValues(alpha: 0.88))
               .lift(onEarth),
         ),
       ],
     );
   }
 }
-
 
 /// Adds the lift shadow only in `onEarth` mode, so the flat card keeps its
 /// clean type.

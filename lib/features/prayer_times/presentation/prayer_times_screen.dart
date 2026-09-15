@@ -26,14 +26,16 @@ class PrayerTimesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<PrayerSchedule> schedule =
-        ref.watch(prayerScheduleProvider);
+    final AsyncValue<PrayerSchedule> schedule = ref.watch(
+      prayerScheduleProvider,
+    );
     final AsyncValue<PrayerMoment> moment = ref.watch(prayerMomentProvider);
-    final DateTime now = ref.watch(clockProvider).value ?? DateTime.now();
+    final DateTime now = ref.watch(clockProvider).valueOrNull ?? DateTime.now();
     final PrayerSettings settings = ref.watch(prayerSettingsProvider);
-    final PrayerDay day = ref.watch(todayPrayerDayProvider).value ??
+    final PrayerDay day =
+        ref.watch(todayPrayerDayProvider).valueOrNull ??
         PrayerDay.empty(Fmt.dayId(now));
-    final String place = ref.watch(placeProvider).value?.label ?? '';
+    final String place = ref.watch(placeProvider).valueOrNull?.label ?? '';
 
     return Scaffold(
       backgroundColor: AppColors.midnight,
@@ -48,7 +50,7 @@ class PrayerTimesScreen extends ConsumerWidget {
             SliverToBoxAdapter(
               child: _CurvedHeader(
                 schedule: s,
-                moment: moment.value,
+                moment: moment.valueOrNull,
                 now: now,
                 place: place,
                 use24h: settings.use24hClock,
@@ -94,12 +96,12 @@ class PrayerTimesScreen extends ConsumerWidget {
                               onToggleNotification: slot.id == PrayerId.sunrise
                                   ? null
                                   : () => ref
-                                      .read(prayerSettingsRepositoryProvider)
-                                      .setNotification(
-                                        settings,
-                                        slot.id,
-                                        enabled: !settings.notifies(slot.id),
-                                      ),
+                                        .read(prayerSettingsRepositoryProvider)
+                                        .setNotification(
+                                          settings,
+                                          slot.id,
+                                          enabled: !settings.notifies(slot.id),
+                                        ),
                             ),
                           _TahajjudRow(
                             window: s.tahajjud,
@@ -144,8 +146,7 @@ class _CurvedHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final PrayerSlot? current = schedule.currentAt(now);
-    final PrayerPalette palette =
-        (current?.id ?? PrayerId.fajr).palette;
+    final PrayerPalette palette = (current?.id ?? PrayerId.fajr).palette;
 
     return ClipPath(
       clipper: _DomeClipper(),
@@ -170,21 +171,24 @@ class _CurvedHeader extends StatelessWidget {
                         CircleIconButton(
                           icon: Icons.arrow_back_ios_new_rounded,
                           onPressed: () => context.pop(),
-                          background:
-                              palette.onSurface.withValues(alpha: 0.16),
+                          background: palette.onSurface.withValues(alpha: 0.16),
                           foreground: palette.onSurface,
                         ),
                         const Spacer(),
                         if (place.isNotEmpty)
                           Row(
                             children: <Widget>[
-                              Icon(Icons.place_outlined,
-                                  size: 14, color: palette.onSurface,),
+                              Icon(
+                                Icons.place_outlined,
+                                size: 14,
+                                color: palette.onSurface,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 place,
-                                style: AppType.bodySm
-                                    .copyWith(color: palette.onSurface),
+                                style: AppType.bodySm.copyWith(
+                                  color: palette.onSurface,
+                                ),
                               ),
                             ],
                           ),
@@ -193,8 +197,9 @@ class _CurvedHeader extends StatelessWidget {
                     const SizedBox(height: Insets.lg),
                     Text(
                       'Prayer times',
-                      style: AppType.displayLg
-                          .copyWith(color: palette.onSurface),
+                      style: AppType.displayLg.copyWith(
+                        color: palette.onSurface,
+                      ),
                     ),
                     const SizedBox(height: Insets.xs),
                     Text(
@@ -226,8 +231,9 @@ class _CurvedHeader extends StatelessWidget {
                         child: Text(
                           '${moment!.next.id.label} in '
                           '${Fmt.countdown(moment!.untilNext(now))}',
-                          style: AppType.numeral
-                              .copyWith(color: palette.onSurface),
+                          style: AppType.numeral.copyWith(
+                            color: palette.onSurface,
+                          ),
                         ),
                       ),
                   ],
@@ -295,9 +301,7 @@ class _PrayerRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: Insets.md),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: AppColors.navyLine.withValues(alpha: 0.5),
-          ),
+          bottom: BorderSide(color: AppColors.navyLine.withValues(alpha: 0.5)),
         ),
       ),
       child: Row(
@@ -368,8 +372,11 @@ class _PrayerRow extends StatelessWidget {
           if (!isSunrise && status == PrayerStatus.completed)
             const Padding(
               padding: EdgeInsets.only(right: Insets.sm),
-              child: Icon(Icons.check_circle,
-                  size: 16, color: AppColors.emerald,),
+              child: Icon(
+                Icons.check_circle,
+                size: 16,
+                color: AppColors.emerald,
+              ),
             ),
           Text(
             Fmt.time(slot.start, use24h: use24h),
@@ -384,9 +391,7 @@ class _PrayerRow extends StatelessWidget {
               color: notifies ? AppColors.gold : AppColors.mistFaint,
               tooltip: notifies ? 'Turn reminder off' : 'Turn reminder on',
               icon: Icon(
-                notifies
-                    ? Icons.volume_up_rounded
-                    : Icons.volume_off_rounded,
+                notifies ? Icons.volume_up_rounded : Icons.volume_off_rounded,
               ),
             )
           else
@@ -432,8 +437,11 @@ class _TahajjudRow extends StatelessWidget {
                   color: active ? AppColors.gold : AppColors.goldDim,
                 ),
               ),
-              child: const Icon(Icons.bedtime_rounded,
-                  size: 17, color: AppColors.goldSoft,),
+              child: const Icon(
+                Icons.bedtime_rounded,
+                size: 17,
+                color: AppColors.goldSoft,
+              ),
             ),
             const SizedBox(width: Insets.md),
             Expanded(
@@ -455,16 +463,22 @@ class _TahajjudRow extends StatelessWidget {
             if (prayed)
               const Padding(
                 padding: EdgeInsets.only(right: Insets.sm),
-                child:
-                    Icon(Icons.check_circle, size: 16, color: AppColors.emerald),
+                child: Icon(
+                  Icons.check_circle,
+                  size: 16,
+                  color: AppColors.emerald,
+                ),
               ),
             Text(
               Fmt.time(window.start, use24h: use24h),
               style: AppType.numeral.copyWith(color: AppColors.goldSoft),
             ),
             const SizedBox(width: Insets.md),
-            const Icon(Icons.chevron_right_rounded,
-                size: 20, color: AppColors.mistFaint,),
+            const Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: AppColors.mistFaint,
+            ),
           ],
         ),
       ),
@@ -481,15 +495,20 @@ class _MethodFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        const Icon(Icons.calculate_outlined,
-            size: 15, color: AppColors.mistFaint,),
+        const Icon(
+          Icons.calculate_outlined,
+          size: 15,
+          color: AppColors.mistFaint,
+        ),
         const SizedBox(width: Insets.sm),
         Expanded(
           child: Text(
             'Calculated with ${settings.method.label} · '
             '${settings.madhab.label} for Asr',
-            style: AppType.bodySm
-                .copyWith(fontSize: 11, color: AppColors.mistFaint),
+            style: AppType.bodySm.copyWith(
+              fontSize: 11,
+              color: AppColors.mistFaint,
+            ),
           ),
         ),
       ],

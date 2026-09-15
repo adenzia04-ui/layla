@@ -17,9 +17,9 @@ enum StoryMood {
   final IconData icon;
 
   static StoryMood fromKey(String? key) => StoryMood.values.firstWhere(
-        (StoryMood m) => m.key == key,
-        orElse: () => StoryMood.reflective,
-      );
+    (StoryMood m) => m.key == key,
+    orElse: () => StoryMood.reflective,
+  );
 }
 
 enum StoryStatus {
@@ -34,9 +34,9 @@ enum StoryStatus {
   final String key;
 
   static StoryStatus fromKey(String? key) => StoryStatus.values.firstWhere(
-        (StoryStatus s) => s.key == key,
-        orElse: () => StoryStatus.published,
-      );
+    (StoryStatus s) => s.key == key,
+    orElse: () => StoryStatus.published,
+  );
 }
 
 @immutable
@@ -89,17 +89,17 @@ class Story {
   }
 
   Story copyWith({int? likeCount, bool? likedByMe}) => Story(
-        id: id,
-        uid: uid,
-        authorName: authorName,
-        body: body,
-        mood: mood,
-        createdAt: createdAt,
-        status: status,
-        likeCount: likeCount ?? this.likeCount,
-        isAnonymous: isAnonymous,
-        likedByMe: likedByMe ?? this.likedByMe,
-      );
+    id: id,
+    uid: uid,
+    authorName: authorName,
+    body: body,
+    mood: mood,
+    createdAt: createdAt,
+    status: status,
+    likeCount: likeCount ?? this.likeCount,
+    isAnonymous: isAnonymous,
+    likedByMe: likedByMe ?? this.likedByMe,
+  );
 }
 
 /// Why a story was reported. Kept short and specific so moderation decisions

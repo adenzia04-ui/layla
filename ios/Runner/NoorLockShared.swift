@@ -13,7 +13,7 @@ import ManagedSettings
 enum NoorLock {
 
     /// Must match the App Group added to all three targets' entitlements.
-    static let appGroup = "group.com.SMAG.noor"
+    static let appGroup = "group.com.adenzia.layla"
 
     /// The store the shield is written to. Naming it keeps Noor's shield
     /// separate from anything else the user has configured in Screen Time.
@@ -87,6 +87,8 @@ enum NoorLock {
     /// and starting a minute in the past is what makes the interval already
     /// open, so `intervalDidStart` fires now rather than tomorrow.
     @available(iOS 16.0, *)
+    private static let testEndKey = "noor.lock.testEndsAt"
+
     static func startTestWindow() -> Date {
         let center = DeviceActivityCenter()
         let name = DeviceActivityName(activityPrefix + "selftest")
@@ -110,7 +112,106 @@ enum NoorLock {
         } catch {
             NSLog("Noor: self-test window could not start — \(error)")
         }
+
+        // And raise it here, now, rather than waiting to be told.
+        //
+        // Everything else in this file leaves shielding to the DeviceActivity
+        // extension, which is right for a real prayer: the window opens in the
+        // future, iOS fires intervalDidStart, the shield goes up whether or not
+        // Layla is running. The self-test is the one case where that does not
+        // work — its interval is backdated a minute so it is already open, and
+        // iOS does not reliably announce the start of an interval that began in
+        // the past. So the test scheduled a window, reported success, and
+        // shielded nothing, which is the worst possible behaviour for the one
+        // button whose entire job is to prove the blocker works.
+        applyShield()
+        defaults?.set(end.timeIntervalSince1970, forKey: testEndKey)
+
         return end
+    }
+
+    /// Schedules a window two minutes out and does **not** shield directly.
+    ///
+    /// The 15-minute self-test proves the shield works; it cannot prove iOS
+    /// will raise it on its own, because it applies the shield itself. This
+    /// one exercises the path a real prayer uses and nothing else: a window
+    /// starting in the future, iOS waking the DeviceActivity extension at the
+    /// boundary, the extension calling applyShield. If apps go dark two
+    /// minutes from now with Layla closed, Fajr will work. If they do not, the
+    /// trigger is broken and the self-test would never have told you.
+    static func startTriggerTest() -> Date {
+        let center = DeviceActivityCenter()
+        let name = DeviceActivityName(activityPrefix + "triggertest")
+        center.stopMonitoring([name])
+
+        let start = Date().addingTimeInterval(2 * 60)
+        let end = start.addingTimeInterval(5 * 60)
+        let calendar = Calendar.current
+
+        rememberLabels([name.rawValue: "Trigger test"])
+
+        let schedule = DeviceActivitySchedule(
+            intervalStart: calendar.dateComponents(
+                [.hour, .minute],
+                from: start
+            ),
+            intervalEnd: calendar.dateComponents([.hour, .minute], from: end),
+            repeats: false
+        )
+
+        do {
+            try center.startMonitoring(name, during: schedule)
+        } catch {
+            NSLog("Noor: trigger test could not start — \(error)")
+        }
+        defaults?.set(end.timeIntervalSince1970, forKey: testEndKey)
+        return start
+    }
+
+    /// What the self-test actually managed to do.
+    ///
+    /// Three attempts at this bug were spent reasoning about which of these
+    /// was false. Reading them back costs nothing and settles it: the store is
+    /// queried *after* the shield is applied, so "shielded" is what iOS thinks
+    /// is true, not what the code hoped.
+    static func selfTestReport() -> [String: Any] {
+        let store = ManagedSettingsStore(named: storeName)
+        var authorised = false
+        if #available(iOS 16.0, *) {
+            authorised =
+                AuthorizationCenter.shared.authorizationStatus == .approved
+        }
+
+        let categories = store.shield.applicationCategories != nil
+        let apps = store.shield.applications?.count ?? 0
+        let hasGroup = defaults != nil
+
+        return [
+            "authorised": authorised,
+            "scope": blockScope,
+            "appGroup": hasGroup,
+            "shieldCategories": categories,
+            "shieldApps": apps,
+            "selection": hasSelection,
+            "registered": DeviceActivityCenter().activities.count,
+        ]
+    }
+
+    /// Drops a self-test shield that has outlived its window.
+    ///
+    /// The extension's intervalDidEnd is the normal release and fires at a
+    /// future time, so it is reliable in a way intervalDidStart was not. This
+    /// is the belt to that pair of braces: a shield that covers every app is
+    /// not something to leave standing on the strength of one callback, so the
+    /// app checks on every foreground and clears it if the time has passed.
+    static func releaseExpiredTestShield() {
+        guard let ends = defaults?.double(forKey: testEndKey), ends > 0 else {
+            return
+        }
+        if Date().timeIntervalSince1970 >= ends {
+            defaults?.removeObject(forKey: testEndKey)
+            clearShield()
+        }
     }
 
     // MARK: - The shield

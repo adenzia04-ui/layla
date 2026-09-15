@@ -13,6 +13,9 @@ struct NoorEntry: TimelineEntry {
     /// Whatever the app last published through the App Group. Nil on a fresh
     /// install, or when nobody has signed in — widgets must still render.
     var shared: NoorSharedStore.State?
+
+    /// The globe frame the app last drew, if it has drawn one.
+    var globeImage: UIImage?
 }
 
 /// Timeline provider for every Noor widget.
@@ -40,7 +43,9 @@ struct NoorProvider: AppIntentTimelineProvider {
                 latitude: snapshot.latitude,
                 longitude: snapshot.longitude
             ),
-            shared: NoorSharedStore.read()
+            shared: NoorSharedStore.read(),
+            globeImage: NoorSharedStore.readGlobe()
+                .flatMap(UIImage.init(data:))
         )
     }
 
@@ -56,17 +61,36 @@ struct NoorProvider: AppIntentTimelineProvider {
         let shared = NoorSharedStore.read()
         let now = Date()
 
-        // Wake at each remaining prayer boundary, plus a backstop so the widget
-        // recovers even on a day the app is never opened.
+        // Wake at each remaining prayer boundary for a week, plus a
+        // backstop. A timeline that ended at Isha left nothing to show for
+        // someone who slept through the night and woke at Maghrib: WidgetKit
+        // had to rebuild from scratch, and a rebuild it killed for taking too
+        // long was a blank widget.
+        // A week of boundaries. WidgetKit needs a finite list, so this is as
+        // near to "always" as it allows: a phone can sit untouched for days
+        // and still have a correct entry to show when it wakes, and the
+        // rollover at the end of the list starts the next week.
         var dates = snapshot.prayers.map(\.date).filter { $0 > now }
+        for day in 1...6 {
+            let later = build(configuration, context, now: now.addingTimeInterval(Double(day) * 86_400))
+            dates += later.prayers.map(\.date).filter { $0 > now }
+        }
         dates.append(now.addingTimeInterval(60 * 60 * 6))
 
-        let entries = ([now] + dates.sorted().prefix(6)).map {
+        // Decoded once, not per entry: seven timeline entries each holding
+        // their own copy of the same PNG is how a widget gets itself killed
+        // for memory.
+        let globe = NoorSharedStore.readGlobe().flatMap(UIImage.init(data:))
+
+        // Each entry carries the snapshot for its own moment, so an entry after
+        // midnight knows tomorrow's Fajr is next rather than yesterday's Isha.
+        let entries = ([now] + dates.sorted().prefix(48)).map { date in
             NoorEntry(
-                date: $0,
-                snapshot: snapshot,
+                date: date,
+                snapshot: date == now ? snapshot : build(configuration, context, now: date),
                 mapImage: map,
-                shared: shared
+                shared: shared,
+                globeImage: globe
             )
         }
         return Timeline(entries: entries, policy: .atEnd)
@@ -76,15 +100,24 @@ struct NoorProvider: AppIntentTimelineProvider {
     /// last one we cached so a slow fix never blanks the widget.
     private func build(
         _ configuration: NoorWidgetConfig,
-        _ context: Context
+        _ context: Context,
+        now: Date = Date()
     ) -> NoorSnapshot {
-        let place = WidgetLocation.current()
+        // The app's own fix first — see NoorSharedStore.State.latitude.
+        let shared = NoorSharedStore.read()
+        let place: (latitude: Double, longitude: Double, city: String) = {
+            if let s = shared, s.latitude != 0 || s.longitude != 0 {
+                return (s.latitude, s.longitude, s.city)
+            }
+            return WidgetLocation.current()
+        }()
 
         return NoorSnapshot.compute(
             latitude: place.latitude,
             longitude: place.longitude,
             city: place.city.isEmpty ? "Your location" : place.city,
-            params: configuration.calculationParameters
+            params: configuration.calculationParameters,
+            now: now
         ) ?? .placeholder
     }
 }

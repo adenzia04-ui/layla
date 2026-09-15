@@ -24,18 +24,16 @@ class StoryDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<Story?> story = ref.watch(storyProvider(storyId));
-    final bool liked = ref.watch(hasLikedProvider(storyId)).value ?? false;
+    final bool liked =
+        ref.watch(hasLikedProvider(storyId)).valueOrNull ?? false;
     final String? myUid = ref.watch(authRepositoryProvider).uid;
 
     return NightScaffold(
       scrollable: true,
       ornamentHeight: 200,
-      leading: Padding(
-        padding: const EdgeInsets.all(Insets.sm),
-        child: CircleIconButton(
-          icon: Icons.arrow_back_ios_new_rounded,
-          onPressed: () => context.pop(),
-        ),
+      leading: CircleIconButton(
+        icon: Icons.arrow_back_ios_new_rounded,
+        onPressed: () => context.pop(),
       ),
       child: story.when(
         loading: () => const SizedBox(height: 400, child: LoadingView()),
@@ -115,15 +113,14 @@ class StoryDetailScreen extends ConsumerWidget {
                   },
                   icon: const Icon(Icons.delete_outline_rounded, size: 18),
                   label: const Text('Delete my story'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.rose,
-                  ),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.rose),
                 )
               else
                 TextButton.icon(
                   onPressed: () async {
-                    final ReportOutcome? outcome =
-                        await showReportSheet(context);
+                    final ReportOutcome? outcome = await showReportSheet(
+                      context,
+                    );
                     if (outcome == null || !context.mounted) return;
                     final bool ok = await ref
                         .read(storyControllerProvider.notifier)
@@ -138,8 +135,7 @@ class StoryDetailScreen extends ConsumerWidget {
                   },
                   icon: const Icon(Icons.flag_outlined, size: 18),
                   label: const Text('Report this story'),
-                  style:
-                      TextButton.styleFrom(foregroundColor: AppColors.mist),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.mist),
                 ),
               const SizedBox(height: Insets.xl),
               const StoriesDisclaimer(),

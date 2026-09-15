@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../domain/widget_snapshot.dart';
 
-final Provider<WidgetBridge> widgetBridgeProvider =
-    Provider<WidgetBridge>((Ref ref) => const WidgetBridge());
+final Provider<WidgetBridge> widgetBridgeProvider = Provider<WidgetBridge>(
+  (Ref ref) => const WidgetBridge(),
+);
 
 /// Drives the Live Activity, and nudges the home-screen widgets to redraw.
 ///
@@ -14,8 +15,9 @@ final Provider<WidgetBridge> widgetBridgeProvider =
 class WidgetBridge {
   const WidgetBridge();
 
-  static const MethodChannel _channel =
-      MethodChannel('com.noorapp.noor/widgets');
+  static const MethodChannel _channel = MethodChannel(
+    'com.noorapp.noor/widgets',
+  );
 
   /// Hands the widgets the little they cannot work out alone — the streak and
   /// today's confirmed count — and redraws them.
@@ -24,27 +26,35 @@ class WidgetBridge {
   /// location and their own configuration using the same Adhan maths as the
   /// app, so the two cannot drift. Anything behind the user's login has to
   /// travel through the App Group instead.
-  Future<void> publishSnapshot(WidgetSnapshot snapshot) =>
-      _invoke('publishSnapshot', <String, Object?>{
-        'snapshot': snapshot.toJson(),
-      });
+  Future<void> publishSnapshot(WidgetSnapshot snapshot) => _invoke(
+    'publishSnapshot',
+    <String, Object?>{'snapshot': snapshot.toJson()},
+  );
 
   /// Nudges WidgetKit to rebuild its timelines without changing shared state.
+  /// Hands the widget a freshly drawn globe frame.
+  ///
+  /// Bytes rather than a path: the app's documents directory is not readable
+  /// from the extension, so the picture has to cross into the App Group and
+  /// only the native side can put it there.
+  Future<void> publishGlobe(Uint8List png) =>
+      _invoke('publishGlobe', <String, Object?>{'png': png});
+
   Future<void> reloadWidgets() => _invoke('reloadWidgets');
 
   // ── Live Activity ────────────────────────────────────────────────────
 
   /// Starts (or updates) the Lock Screen / Dynamic Island activity for the
   /// prayer window.
-  Future<void> startLiveActivity(WidgetSnapshot snapshot) =>
-      _invoke('startLiveActivity', <String, Object?>{
-        'snapshot': snapshot.toJson(),
-      });
+  Future<void> startLiveActivity(WidgetSnapshot snapshot) => _invoke(
+    'startLiveActivity',
+    <String, Object?>{'snapshot': snapshot.toJson()},
+  );
 
-  Future<void> updateLiveActivity(WidgetSnapshot snapshot) =>
-      _invoke('updateLiveActivity', <String, Object?>{
-        'snapshot': snapshot.toJson(),
-      });
+  Future<void> updateLiveActivity(WidgetSnapshot snapshot) => _invoke(
+    'updateLiveActivity',
+    <String, Object?>{'snapshot': snapshot.toJson()},
+  );
 
   Future<void> endLiveActivity() => _invoke('endLiveActivity');
 
@@ -55,7 +65,7 @@ class WidgetBridge {
     try {
       return await _channel.invokeMethod<T>(method, args);
     } on PlatformException catch (error) {
-      debugPrint('Layla: widget "$method" failed — ${error.message}');
+      debugPrint('Layla Pro: widget "$method" failed — ${error.message}');
       return null;
     } on MissingPluginException {
       return null;

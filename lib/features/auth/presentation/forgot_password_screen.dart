@@ -20,8 +20,7 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
       _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState
-    extends ConsumerState<ForgotPasswordScreen> {
+class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   bool _sent = false;
@@ -45,8 +44,10 @@ class _ForgotPasswordScreenState
   Widget build(BuildContext context) {
     final AsyncValue<void> state = ref.watch(authControllerProvider);
 
-    ref.listen<AsyncValue<void>>(authControllerProvider,
-        (AsyncValue<void>? previous, AsyncValue<void> next) {
+    ref.listen<AsyncValue<void>>(authControllerProvider, (
+      AsyncValue<void>? previous,
+      AsyncValue<void> next,
+    ) {
       if (next.hasError && !next.isLoading) context.showError(next.error!);
     });
 
@@ -54,21 +55,21 @@ class _ForgotPasswordScreenState
       title: _sent ? 'Check your email' : 'Reset your password',
       subtitle: _sent
           ? 'If an account exists for ${_email.text.trim()}, a reset link is '
-              'on its way. It expires in an hour.'
+                'on its way. It expires in an hour.'
           : 'Enter your email and we will send you a link to set a new '
-              'password.',
+                'password.',
       heroFlex: 4,
       sheetFlex: 6,
       onBack: () => context.pop(),
       children: <Widget>[
         if (_sent) ...<Widget>[
-          const Icon(Icons.mark_email_read_outlined,
-              size: 44, color: AppColors.emerald,),
-          const SizedBox(height: Insets.xl),
-          PrimaryButton(
-            label: 'Back to login',
-            onPressed: () => context.pop(),
+          const Icon(
+            Icons.mark_email_read_outlined,
+            size: 44,
+            color: AppColors.emerald,
           ),
+          const SizedBox(height: Insets.xl),
+          PrimaryButton(label: 'Back to login', onPressed: () => context.pop()),
           const SizedBox(height: Insets.sm),
           TextButton(
             onPressed: state.isLoading ? null : _submit,
@@ -99,8 +100,7 @@ class _ForgotPasswordScreenState
                 Text(
                   'Guest accounts have no email, so they cannot be reset.',
                   textAlign: TextAlign.center,
-                  style:
-                      AppType.bodySm.copyWith(color: AppColors.inkMuted),
+                  style: AppType.bodySm.copyWith(color: AppColors.inkMuted),
                 ),
               ],
             ),

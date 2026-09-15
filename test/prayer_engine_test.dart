@@ -28,7 +28,8 @@ void main() {
         expect(
           schedule.slots[i].start.isAfter(schedule.slots[i - 1].start),
           isTrue,
-          reason: '${schedule.slots[i].id.label} must come after '
+          reason:
+              '${schedule.slots[i].id.label} must come after '
               '${schedule.slots[i - 1].id.label}',
         );
       }
@@ -57,9 +58,10 @@ void main() {
         settings: const PrayerSettings(adjustments: <String, int>{'fajr': 7}),
       );
       expect(
-        shifted.slotFor(PrayerId.fajr).start.difference(
-              plain.slotFor(PrayerId.fajr).start,
-            ),
+        shifted
+            .slotFor(PrayerId.fajr)
+            .start
+            .difference(plain.slotFor(PrayerId.fajr).start),
         const Duration(minutes: 7),
       );
     });
@@ -74,14 +76,16 @@ void main() {
 
     test('currentAt is null before Fajr and returns Isha late at night', () {
       final PrayerSchedule schedule = build();
-      final DateTime beforeFajr =
-          schedule.slotFor(PrayerId.fajr).start.subtract(
-                const Duration(minutes: 10),
-              );
+      final DateTime beforeFajr = schedule
+          .slotFor(PrayerId.fajr)
+          .start
+          .subtract(const Duration(minutes: 10));
       expect(schedule.currentAt(beforeFajr), isNull);
 
-      final DateTime afterIsha =
-          schedule.slotFor(PrayerId.isha).start.add(const Duration(minutes: 30));
+      final DateTime afterIsha = schedule
+          .slotFor(PrayerId.isha)
+          .start
+          .add(const Duration(minutes: 30));
       expect(schedule.currentAt(afterIsha)?.id, PrayerId.isha);
       expect(schedule.nextAt(afterIsha), isNull);
     });

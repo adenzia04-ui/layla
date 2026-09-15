@@ -49,10 +49,10 @@ void main() {
               day: const PrayerDay(
                 dateId: '2026-08-21',
                 records: <PrayerId, PrayerRecord>{
-                  PrayerId.fajr:
-                      PrayerRecord(status: PrayerStatus.completed),
-                  PrayerId.dhuhr:
-                      PrayerRecord(status: PrayerStatus.awaitingProof),
+                  PrayerId.fajr: PrayerRecord(status: PrayerStatus.completed),
+                  PrayerId.dhuhr: PrayerRecord(
+                    status: PrayerStatus.awaitingProof,
+                  ),
                 },
               ),
             ),

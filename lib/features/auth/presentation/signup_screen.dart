@@ -44,8 +44,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     FocusScope.of(context).unfocus();
 
-    final AuthController controller =
-        ref.read(authControllerProvider.notifier);
+    final AuthController controller = ref.read(authControllerProvider.notifier);
     final bool isGuest = ref.read(authRepositoryProvider).isGuest;
 
     final bool ok = isGuest
@@ -65,7 +64,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       ..showSuccess(
         isGuest
             ? 'Account created — your streak has been kept.'
-            : 'Welcome to Layla, ${_name.text.trim().split(' ').first}.',
+            : 'Welcome to Layla Pro, ${_name.text.trim().split(' ').first}.',
       )
       ..go(Routes.home);
   }
@@ -75,8 +74,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     final AsyncValue<void> state = ref.watch(authControllerProvider);
     final bool isGuest = ref.watch(authRepositoryProvider).isGuest;
 
-    ref.listen<AsyncValue<void>>(authControllerProvider,
-        (AsyncValue<void>? previous, AsyncValue<void> next) {
+    ref.listen<AsyncValue<void>>(authControllerProvider, (
+      AsyncValue<void>? previous,
+      AsyncValue<void> next,
+    ) {
       if (next.hasError && !next.isLoading) context.showError(next.error!);
     });
 
@@ -137,7 +138,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               const SizedBox(height: Insets.lg),
               Text(
                 'By continuing you agree to keep this a respectful space for '
-                'everyone who uses Layla.',
+                'everyone who uses Layla Pro.',
                 textAlign: TextAlign.center,
                 style: AppType.bodySm.copyWith(color: AppColors.inkMuted),
               ),

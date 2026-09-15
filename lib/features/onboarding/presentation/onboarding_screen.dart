@@ -28,7 +28,7 @@ class _Page {
 
 const List<_Page> _pages = <_Page>[
   _Page(
-    title: 'Welcome to Layla',
+    title: 'Welcome to Layla Pro',
     body: 'Stay connected with your prayers and strengthen your daily worship.',
     icon: Icons.auto_awesome_rounded,
   ),
@@ -51,7 +51,8 @@ const List<_Page> _pages = <_Page>[
   ),
   _Page(
     title: 'Worship, remembered',
-    body: 'Keep the dhikr flowing and rise for the quietest hours of the night.',
+    body:
+        'Keep the dhikr flowing and rise for the quietest hours of the night.',
     icon: Icons.nights_stay_rounded,
     features: <({IconData icon, String label, String detail})>[
       (
@@ -103,7 +104,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _finish() async {
     await ref.read(prefsProvider).setOnboardingComplete(true);
-    if (mounted) context.go(Routes.login);
+    if (mounted) context.go(Routes.welcome);
   }
 
   void _next() {
@@ -248,8 +249,9 @@ class _OnboardingPage extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             f.detail,
-                            style: AppType.bodySm
-                                .copyWith(color: AppColors.mistFaint),
+                            style: AppType.bodySm.copyWith(
+                              color: AppColors.mistFaint,
+                            ),
                           ),
                         ],
                       ),

@@ -95,16 +95,16 @@ class _MapConsentSheetState extends State<_MapConsentSheet> {
             PrimaryButton(
               label: 'Show me on the map',
               icon: Icons.public_rounded,
-              onPressed: () => Navigator.of(context).pop(
-                MapConsent(appearOnMap: true, anonymous: _anonymous),
-              ),
+              onPressed: () => Navigator.of(
+                context,
+              ).pop(MapConsent(appearOnMap: true, anonymous: _anonymous)),
             ),
             const SizedBox(height: Insets.sm),
             GhostButton(
               label: 'Log it privately instead',
-              onPressed: () => Navigator.of(context).pop(
-                const MapConsent(appearOnMap: false, anonymous: true),
-              ),
+              onPressed: () => Navigator.of(
+                context,
+              ).pop(const MapConsent(appearOnMap: false, anonymous: true)),
             ),
           ],
         ),

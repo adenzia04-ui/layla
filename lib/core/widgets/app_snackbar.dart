@@ -12,15 +12,15 @@ extension SnackbarX on BuildContext {
       _show(this, message, AppColors.emeraldDeep, Icons.check_rounded);
 
   void showError(Object error) {
-    final String message =
-        error is AppFailure ? error.message : AppFailure.from(error).message;
+    final String message = error is AppFailure
+        ? error.message
+        : AppFailure.from(error).message;
     _show(this, message, const Color(0xFF6E2733), Icons.error_outline_rounded);
   }
 }
 
 void _show(BuildContext context, String message, Color color, IconData icon) {
-  final ScaffoldMessengerState? messenger =
-      ScaffoldMessenger.maybeOf(context);
+  final ScaffoldMessengerState? messenger = ScaffoldMessenger.maybeOf(context);
   if (messenger == null) return;
   messenger
     ..hideCurrentSnackBar()

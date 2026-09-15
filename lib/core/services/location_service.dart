@@ -31,17 +31,17 @@ class NoorPlace {
   }
 
   Map<String, Object?> toMap() => <String, Object?>{
-        'lat': lat,
-        'lng': lng,
-        'city': city,
-        'country': country,
-      };
+    'lat': lat,
+    'lng': lng,
+    'city': city,
+    'country': country,
+  };
 }
 
 final Provider<LocationService> locationServiceProvider =
     Provider<LocationService>(
-  (Ref ref) => LocationService(ref.watch(prefsProvider)),
-);
+      (Ref ref) => LocationService(ref.watch(prefsProvider)),
+    );
 
 /// Resolves the device position, with a cached fallback so the dashboard can
 /// always render something — prayer times must never show a blank screen.
@@ -87,7 +87,7 @@ class LocationService {
     }
     if (permission == LocationPermission.denied) {
       throw const AppFailure(
-        'Layla needs your location to calculate prayer times and Qibla.',
+        'Layla Pro needs your location to calculate prayer times and Qibla.',
         code: 'location-denied',
       );
     }
@@ -102,8 +102,10 @@ class LocationService {
     String city = '';
     String country = '';
     if (reverseGeocode) {
-      final ({String city, String country}) named =
-          await _describe(position.latitude, position.longitude);
+      final ({String city, String country}) named = await _describe(
+        position.latitude,
+        position.longitude,
+      );
       city = named.city;
       country = named.country;
     }
