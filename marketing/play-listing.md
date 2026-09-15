@@ -99,3 +99,34 @@ globe, Friends, Mood, Duas and the names.
     Location: approximate only, used for prayer times, the Qibla and the
       Tahajjud globe, never sold or shared.
     Photos: the prayer-mat photo is judged on the device and is never uploaded.
+
+## In-app products to create in Play Console
+
+The app asks the store for these three ids. They are the same strings the App
+Store uses, so both platforms stay in step. Create them before the first
+release or the paywall will show its fallback prices and every purchase will
+fail.
+
+    Subscriptions
+      layla_pro_monthly    Monthly   USD 3.99   base plan, monthly, auto-renew
+      layla_pro_yearly     Yearly    USD 24.99  base plan, yearly, auto-renew
+
+    One-time product
+      layla_pro_lifetime   Lifetime  USD 59.99  non-consumable
+
+Google Play also requires a licence-testing account before purchases can be
+tried without being charged: Play Console → Setup → License testing.
+
+## Before the first upload
+
+    1. Play Console account, USD 25 once, and identity verification.
+    2. Create the app: Layla Pro, Lifestyle, free with in-app purchases.
+    3. Upload build/app/outputs/bundle/release/app-release.aab to internal
+       testing first.
+    4. Keep Play App Signing ON. The upload key is
+       ~/Documents/layla-keys/layla-upload.jks and its password is in
+       android/key.properties. Back both up somewhere that is not this Mac.
+    5. Fill in the data safety form with the answers above.
+    6. Content rating questionnaire: the app has no ads and no user-generated
+       content beyond the Tahajjud stories, which are short text lines a user
+       writes about their own night.

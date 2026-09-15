@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config/platform_features.dart';
 import '../../../core/services/notification_service.dart';
 import 'widgets/sound_picker.dart';
 import '../../../core/theme/app_colors.dart';
@@ -239,26 +240,31 @@ class NotificationSettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const SizedBox(height: Insets.xl),
-          const SectionHeader(label: 'Lock Screen'),
-          NightCard(
-            padding: const EdgeInsets.symmetric(horizontal: Insets.lg),
-            child: SwitchListTile.adaptive(
-              value: ref.watch(liveActivityEnabledProvider),
-              onChanged: (bool value) => ref
-                  .read(liveActivityEnabledProvider.notifier)
-                  .set(enabled: value),
-              activeThumbColor: AppColors.gold,
-              contentPadding: EdgeInsets.zero,
-              title: Text('Live Activity', style: AppType.titleSm),
-              subtitle: Text(
-                'The next prayer and a live countdown on the Lock Screen and '
-                'in the Dynamic Island. Its ticking uses some battery; turn it '
-                'off and it disappears straight away.',
-                style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
+          // The Live Activity is an iOS thing. Android's nearest relative
+          // is an ongoing notification, which is not built, so the switch is
+          // not offered there.
+          if (Have.liveActivity) ...<Widget>[
+            const SizedBox(height: Insets.xl),
+            const SectionHeader(label: 'Lock Screen'),
+            NightCard(
+              padding: const EdgeInsets.symmetric(horizontal: Insets.lg),
+              child: SwitchListTile.adaptive(
+                value: ref.watch(liveActivityEnabledProvider),
+                onChanged: (bool value) => ref
+                    .read(liveActivityEnabledProvider.notifier)
+                    .set(enabled: value),
+                activeThumbColor: AppColors.gold,
+                contentPadding: EdgeInsets.zero,
+                title: Text('Live Activity', style: AppType.titleSm),
+                subtitle: Text(
+                  'The next prayer and a live countdown on the Lock Screen '
+                  'and in the Dynamic Island. Its ticking uses some battery; '
+                  'turn it off and it disappears straight away.',
+                  style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
+                ),
               ),
             ),
-          ),
+          ],
           const SizedBox(height: Insets.xl),
           const SectionHeader(label: 'Pausing other apps'),
           lock.when(

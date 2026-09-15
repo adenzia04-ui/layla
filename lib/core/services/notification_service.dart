@@ -25,14 +25,31 @@ class NotificationService {
   NotificationTapHandler? _onTap;
   bool _ready = false;
 
-  // Channel ids — keep in sync with android/app/src/main/AndroidManifest.xml.
-  // The `_adhan` suffix is not decoration. Android freezes a channel's sound
-  // when the channel is created and ignores every later change, so adding the
-  // adhan meant retiring the old ids — an existing install would otherwise
-  // keep playing the default tone forever.
-  static const String _reminderChannel = 'prayer_reminders_adhan';
-  static const String _focusChannel = 'prayer_focus_adhan';
-  static const String _tahajjudChannel = 'tahajjud_adhan';
+  // Channel ids carry the sound's name, and that is not decoration. Android
+  // freezes a channel's sound when the channel is created and ignores every
+  // later change, so the only way to honour the tone someone picked in
+  // Reminders is to schedule on a different channel. Picking "Chime" used to
+  // do nothing at all on Android: the three channels were created with the
+  // adhan and kept it for the life of the install.
+  //
+  // Only the chosen sound's channels exist at any time; [refreshAndroidSound]
+  // removes the others, so Android's notification settings do not fill up
+  // with a row per tone.
+  static const List<String> _channelBases = <String>[
+    'prayer_reminders',
+    'prayer_focus',
+    'tahajjud',
+  ];
+  static const List<String> _soundNames = <String>[
+    'adhan',
+    'chime',
+    'bell',
+    'soft',
+  ];
+
+  String get _reminderChannel => 'prayer_reminders_$androidSound';
+  String get _focusChannel => 'prayer_focus_$androidSound';
+  String get _tahajjudChannel => 'tahajjud_$androidSound';
 
   /// A short, verified line for each prayer, shown instead of the generic
   /// "tap to start" body.
@@ -71,8 +88,13 @@ class NotificationService {
   /// person can choose a quieter tone in Reminders settings, and the choice
   /// is applied here before anything is scheduled. See NotificationSounds.
   static String iosSound = 'adhan.caf';
-  static const RawResourceAndroidNotificationSound _adhanAndroid =
-      RawResourceAndroidNotificationSound('adhan');
+
+  /// The bare `res/raw` name Android plays. Set from [ReminderSound] the same
+  /// way [iosSound] is, and used to build both the channel id and the sound.
+  static String androidSound = 'adhan';
+
+  RawResourceAndroidNotificationSound get _androidTone =>
+      RawResourceAndroidNotificationSound(androidSound);
 
   /// Base offsets keep ids from colliding across features.
   static const int _prayerIdBase = 1000;
@@ -125,6 +147,29 @@ class NotificationService {
     _ready = true;
   }
 
+  /// Rebuilds the Android channels around the tone that is chosen now, and
+  /// deletes the ones belonging to every other tone.
+  ///
+  /// Called whenever the reminder sound changes. The scheduled notifications
+  /// are re-queued separately (the sound picker invalidates the schedule), so
+  /// by the time the next prayer comes round both the channel and the pending
+  /// notification agree on which file to play.
+  Future<void> refreshAndroidSound() async {
+    if (!Platform.isAndroid) return;
+    final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (android == null) return;
+    for (final String base in _channelBases) {
+      for (final String sound in _soundNames) {
+        if (sound == androidSound) continue;
+        await android.deleteNotificationChannel('${base}_$sound');
+      }
+    }
+    await _createAndroidChannels();
+  }
+
   Future<void> _createAndroidChannels() async {
     final AndroidFlutterLocalNotificationsPlugin? android = _plugin
         .resolvePlatformSpecificImplementation<
@@ -133,31 +178,31 @@ class NotificationService {
     if (android == null) return;
 
     await android.createNotificationChannel(
-      const AndroidNotificationChannel(
+      AndroidNotificationChannel(
         _reminderChannel,
         'Prayer reminders',
         description: 'A reminder when each prayer time begins.',
         importance: Importance.high,
-        sound: _adhanAndroid,
+        sound: _androidTone,
       ),
     );
     await android.createNotificationChannel(
-      const AndroidNotificationChannel(
+      AndroidNotificationChannel(
         _focusChannel,
         'Prayer focus',
         description:
             'Opens the prayer focus screen at the start of a prayer window.',
         importance: Importance.max,
-        sound: _adhanAndroid,
+        sound: _androidTone,
       ),
     );
     await android.createNotificationChannel(
-      const AndroidNotificationChannel(
+      AndroidNotificationChannel(
         _tahajjudChannel,
         'Tahajjud',
         description: 'An optional reminder for the last third of the night.',
         importance: Importance.defaultImportance,
-        sound: _adhanAndroid,
+        sound: _androidTone,
       ),
     );
   }
@@ -211,7 +256,7 @@ class NotificationService {
           // it. Requires USE_FULL_SCREEN_INTENT; see PRAYER_LOCK_LIMITATIONS.md.
           fullScreenIntent: openFocusScreen,
           styleInformation: const DefaultStyleInformation(true, true),
-          sound: _adhanAndroid,
+          sound: _androidTone,
         ),
         iOS: DarwinNotificationDetails(
           interruptionLevel: InterruptionLevel.timeSensitive,
@@ -235,12 +280,12 @@ class NotificationService {
       _prayerWords['tahajjud']!,
       tz.TZDateTime.from(at, tz.local),
       NotificationDetails(
-        android: const AndroidNotificationDetails(
+        android: AndroidNotificationDetails(
           _tahajjudChannel,
           'Tahajjud',
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
-          sound: _adhanAndroid,
+          sound: _androidTone,
         ),
         iOS: DarwinNotificationDetails(sound: iosSound),
       ),
@@ -265,12 +310,12 @@ class NotificationService {
       'This is what you will hear when a prayer begins.',
       tz.TZDateTime.now(tz.local).add(delay),
       NotificationDetails(
-        android: const AndroidNotificationDetails(
+        android: AndroidNotificationDetails(
           _reminderChannel,
           'Prayer reminders',
           importance: Importance.high,
           priority: Priority.high,
-          sound: _adhanAndroid,
+          sound: _androidTone,
         ),
         iOS: DarwinNotificationDetails(
           interruptionLevel: InterruptionLevel.timeSensitive,
@@ -324,13 +369,13 @@ class NotificationService {
       _prayerWords[pick.id]!,
       tz.TZDateTime.now(tz.local).add(delay),
       NotificationDetails(
-        android: const AndroidNotificationDetails(
+        android: AndroidNotificationDetails(
           _focusChannel,
           'Prayer focus',
           importance: Importance.max,
           priority: Priority.high,
           category: AndroidNotificationCategory.alarm,
-          sound: _adhanAndroid,
+          sound: _androidTone,
         ),
         iOS: DarwinNotificationDetails(
           interruptionLevel: InterruptionLevel.timeSensitive,
@@ -369,15 +414,16 @@ class NotificationService {
           ? 'A moment to get ready.'
           : 'It is not too late — the window is still open.',
       tz.TZDateTime.from(at, tz.local),
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           _reminderChannel,
           'Prayer reminders',
           importance: Importance.high,
           priority: Priority.high,
-          styleInformation: DefaultStyleInformation(true, true),
+          sound: _androidTone,
+          styleInformation: const DefaultStyleInformation(true, true),
         ),
-        iOS: DarwinNotificationDetails(
+        iOS: const DarwinNotificationDetails(
           interruptionLevel: InterruptionLevel.timeSensitive,
         ),
       ),

@@ -11,6 +11,7 @@ import '../../prayer_times/application/prayer_times_controller.dart';
 import '../../prayer_times/domain/prayer.dart';
 import '../../streaks/application/streak_controller.dart';
 import '../../streaks/domain/prayer_day.dart';
+import '../../../core/config/platform_features.dart';
 import '../../../core/widgets/noor_globe.dart';
 import '../data/widget_bridge.dart';
 import '../domain/widget_snapshot.dart';
@@ -87,6 +88,13 @@ widgetSnapshotProvider = Provider<WidgetSnapshot?>((Ref ref) {
 
 /// Pushes each new snapshot across to iOS. Watched once from the app shell.
 final Provider<void> widgetSyncProvider = Provider<void>((Ref ref) {
+  // Nothing on the other side of the channel on Android: no widget
+  // extension, no Live Activity. Every call below would be swallowed as a
+  // missing plugin, but the globe frame is rendered before it is sent, so
+  // leaving this to fail quietly would burn a 640px render every twenty
+  // minutes for a picture nobody can see.
+  if (!Have.homeScreenWidgets) return;
+
   final WidgetSnapshot? snapshot = ref.watch(widgetSnapshotProvider);
   if (snapshot == null) return;
 

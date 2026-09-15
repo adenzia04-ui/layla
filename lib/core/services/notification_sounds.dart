@@ -15,16 +15,22 @@ import 'prefs_service.dart';
 /// for people who pray in an office, a shared house, or beside a sleeping
 /// child: a chime, a single bell, and a soft swell, none of them a jingle.
 enum ReminderSound {
-  adhan('Adhan', 'The call to prayer', 'adhan.caf'),
-  chime('Chime', 'Two clear notes', 'chime.wav'),
-  bell('Bell', 'One deep strike', 'bell.wav'),
-  soft('Soft', 'A quiet swell, no attack', 'soft.wav');
+  adhan('Adhan', 'The call to prayer', 'adhan.caf', 'adhan'),
+  chime('Chime', 'Two clear notes', 'chime.wav', 'chime'),
+  bell('Bell', 'One deep strike', 'bell.wav', 'bell'),
+  soft('Soft', 'A quiet swell, no attack', 'soft.wav', 'soft');
 
-  const ReminderSound(this.label, this.hint, this.file);
+  const ReminderSound(this.label, this.hint, this.file, this.androidRaw);
 
   final String label;
   final String hint;
   final String file;
+
+  /// The bare name of the copy in `android/app/src/main/res/raw`. Android
+  /// plays notification sounds from resources, not from Flutter assets, so
+  /// each tone ships twice — once for the preview the app plays itself, once
+  /// where the system can reach it.
+  final String androidRaw;
 
   /// Where the app plays it from, for the preview.
   String get asset => 'assets/sounds/$file';
@@ -49,7 +55,7 @@ class ReminderSoundStore extends Notifier<ReminderSound> {
   @override
   ReminderSound build() {
     final ReminderSound sound = ReminderSound.byName(_prefs.getString(_key));
-    NotificationService.iosSound = sound.file;
+    _apply(sound);
     // Best-effort: the file is copied where iOS looks for it. Nothing here
     // can fail loudly — a missing file means iOS plays its default tone.
     NotificationSounds.install(sound);
@@ -59,9 +65,18 @@ class ReminderSoundStore extends Notifier<ReminderSound> {
   Future<void> set(ReminderSound sound) async {
     if (sound == state) return;
     await NotificationSounds.install(sound);
-    NotificationService.iosSound = sound.file;
+    _apply(sound);
     state = sound;
     await _prefs.setString(_key, sound.name);
+    // Android cannot change a live channel's sound, so the channels are
+    // rebuilt around the new one. Without this the picker moves and every
+    // reminder keeps playing the tone chosen first.
+    await NotificationService.instance.refreshAndroidSound();
+  }
+
+  void _apply(ReminderSound sound) {
+    NotificationService.iosSound = sound.file;
+    NotificationService.androidSound = sound.androidRaw;
   }
 }
 

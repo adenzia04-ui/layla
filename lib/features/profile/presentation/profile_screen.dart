@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config/platform_features.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -174,11 +175,14 @@ class ProfileScreen extends ConsumerWidget {
                   label: 'Prayer calculation',
                   onTap: () => context.go(Routes.prayerSettings),
                 ),
-                _MenuRow(
-                  icon: Icons.palette_outlined,
-                  label: 'Widgets & colours',
-                  onTap: () => context.push(Routes.widgetTheme),
-                ),
+                // Android has no widget extension to colour, so the row
+                // that leads to one is not shown there.
+                if (Have.homeScreenWidgets)
+                  _MenuRow(
+                    icon: Icons.palette_outlined,
+                    label: 'Widgets & colours',
+                    onTap: () => context.push(Routes.widgetTheme),
+                  ),
                 _MenuRow(
                   icon: Icons.local_fire_department_outlined,
                   label: 'Prayer streak',

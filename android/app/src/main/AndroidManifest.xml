@@ -71,6 +71,25 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Friend invites. The share sheet hands out layla://add?code=…
+                 and the website's add.html falls back to it, so without this
+                 filter every invite a Layla Pro user sends to an Android
+                 phone lands nowhere. Matches the iOS CFBundleURLSchemes
+                 entry. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="layla" />
+            </intent-filter>
+
+            <!-- Flutter reads the launch intent's data itself; this is what
+                 turns that on. Same switch as FlutterDeepLinkingEnabled in
+                 the iOS Info.plist. -->
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="true" />
         </activity>
 
         <!-- Keeps the prayer window alive when the soft lock is enabled. -->
