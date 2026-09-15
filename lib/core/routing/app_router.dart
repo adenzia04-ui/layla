@@ -43,6 +43,7 @@ import '../../features/tasbih/presentation/tasbih_screen.dart';
 import '../../features/streaks/presentation/streak_screen.dart';
 import '../../shell/app_shell.dart';
 import 'invite_link.dart';
+import 'tab_navigators.dart';
 import 'routes.dart';
 
 final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>(
@@ -184,6 +185,7 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
             ) => AppShell(navigationShell: navigationShell),
         branches: <StatefulShellBranch>[
           StatefulShellBranch(
+            navigatorKey: tabNavigatorKeys[0],
             routes: <RouteBase>[
               GoRoute(
                 path: Routes.home,
@@ -291,6 +293,7 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
             ],
           ),
           StatefulShellBranch(
+            navigatorKey: tabNavigatorKeys[1],
             routes: <RouteBase>[
               GoRoute(
                 path: Routes.tahajjud,
@@ -336,6 +339,7 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
             ],
           ),
           StatefulShellBranch(
+            navigatorKey: tabNavigatorKeys[2],
             routes: <RouteBase>[
               GoRoute(
                 path: Routes.tasbih,

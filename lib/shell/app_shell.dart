@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/routing/tab_navigators.dart';
 import '../core/services/notification_sounds.dart';
 import '../core/widgets/liquid_glass.dart';
 import '../core/theme/app_colors.dart';
@@ -42,6 +43,30 @@ class AppShell extends ConsumerWidget {
           label: 'Soul',
         ),
       ];
+
+  /// Switches to a tab, and taps on the tab you are already on take you back
+  /// to the top of it.
+  ///
+  /// Both halves are needed. `initialLocation: true` clears the pages the
+  /// router put on the branch; `popUntil` clears the ones pushed with
+  /// `Navigator.push`, which the router never hears about. Duas is three
+  /// such screens deep, so before this, tapping Soul from inside it did
+  /// nothing whatsoever — the only way back was the system back button, once
+  /// per screen.
+  void _openTab(int index) {
+    final bool again = index == navigationShell.currentIndex;
+    if (again) {
+      final NavigatorState? nav = index < tabNavigatorKeys.length
+          ? tabNavigatorKeys[index].currentState
+          : null;
+      // `canPop` keeps this from touching a tab already at its root, where
+      // popUntil would be a no-op anyway but the check says why.
+      if (nav != null && nav.canPop()) {
+        nav.popUntil((Route<dynamic> route) => route.isFirst);
+      }
+    }
+    navigationShell.goBranch(index, initialLocation: again);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -138,11 +163,7 @@ class AppShell extends ConsumerWidget {
           ),
           _BottomBar(
             index: navigationShell.currentIndex,
-            onTap: (int index) => navigationShell.goBranch(
-              index,
-              // Tapping the current tab again pops it back to its root.
-              initialLocation: index == navigationShell.currentIndex,
-            ),
+            onTap: (int index) => _openTab(index),
           ),
         ],
       ),
