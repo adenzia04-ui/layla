@@ -8,19 +8,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/prefs_service.dart';
 import '../domain/premium_plan.dart';
 
-/// Whether this phone has Layla Pro Premium.
+/// Hands every paid feature to everyone, for testing on our own phones.
 ///
-/// UNLOCKED FOR TESTING: every feature is open to everyone until launch, and
-/// the paywall stays reachable from Profile only as a preview. To switch the
-/// gates back on, return `ref.watch(premiumProvider).isPro` here.
-final Provider<bool> isProProvider = Provider<bool>((Ref ref) => true);
+/// Off unless a build asks for it:
+///
+///     flutter build ios --release --dart-define=LAYLA_UNLOCK_ALL=true
+///
+/// The default matters more than it looks. It used to be the other way
+/// round — `isProProvider` simply returned `true` and the styles flag was a
+/// `const true` — which meant the one build nobody must get wrong, the one
+/// uploaded to a store, was the build that had to remember to turn something
+/// off. Forgetting cost every purchase the app would ever have made.
+/// Forgetting now costs nothing: a build without the flag is the strict one.
+const bool kUnlockAllForTesting = bool.fromEnvironment('LAYLA_UNLOCK_ALL');
+
+/// Whether this phone has Layla Pro Premium.
+final Provider<bool> isProProvider = Provider<bool>(
+  (Ref ref) => kUnlockAllForTesting || ref.watch(premiumProvider).isPro,
+);
 
 /// Whether the paid colour sets and counter faces can be chosen.
 ///
-/// TESTING: true for everyone until launch, like the scan above. The locks
-/// still show on the paid ones so the offer can be seen, but a tap goes
-/// through. To switch the gate on, set [kStylesOpenForTesting] to false.
-const bool kStylesOpenForTesting = true;
+/// The locks still show on the paid ones so the offer can be seen; under a
+/// testing build a tap goes through anyway.
+const bool kStylesOpenForTesting = kUnlockAllForTesting;
 
 final Provider<bool> styleUnlockedProvider = Provider<bool>(
   (Ref ref) => kStylesOpenForTesting || ref.watch(premiumProvider).isPro,
