@@ -26,13 +26,10 @@ void main() {
     test('every tone ships as an Android raw resource', () {
       const String raw = 'android/app/src/main/res/raw';
       for (final ReminderSound sound in ReminderSound.values) {
-        final bool present = Directory(raw)
-            .listSync()
-            .whereType<File>()
-            .any(
-              (File f) =>
-                  f.uri.pathSegments.last.split('.').first == sound.androidRaw,
-            );
+        final bool present = Directory(raw).listSync().whereType<File>().any(
+          (File f) =>
+              f.uri.pathSegments.last.split('.').first == sound.androidRaw,
+        );
         expect(
           present,
           isTrue,
@@ -42,6 +39,32 @@ void main() {
         );
       }
     });
+
+    test(
+      'the Android preview file exists and is a WAV, not a CoreAudio file',
+      () {
+        // The adhan ships to iOS as .caf, which Android cannot decode. The
+        // preview used to play the iOS file on both, so on Android the one
+        // tone that matters was silent while the other three worked.
+        for (final ReminderSound sound in ReminderSound.values) {
+          final File preview = File('assets/sounds/${sound.androidRaw}.wav');
+          expect(
+            preview.existsSync(),
+            isTrue,
+            reason:
+                '${sound.name}: ${preview.path} is missing, so the Android '
+                'preview would fall back to a file it cannot play',
+          );
+          // 'RIFF' — a real WAV, not something renamed to one.
+          expect(preview.readAsBytesSync().sublist(0, 4), <int>[
+            0x52,
+            0x49,
+            0x46,
+            0x46,
+          ], reason: '${preview.path} is not a RIFF/WAV file');
+        }
+      },
+    );
 
     test('raw names carry no extension, which Android would reject', () {
       for (final ReminderSound sound in ReminderSound.values) {

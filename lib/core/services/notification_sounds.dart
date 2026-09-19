@@ -33,7 +33,16 @@ enum ReminderSound {
   final String androidRaw;
 
   /// Where the app plays it from, for the preview.
-  String get asset => 'assets/sounds/$file';
+  ///
+  /// Not simply `file`: the adhan ships to iOS as a CoreAudio `.caf`, which
+  /// is what iOS wants for a notification sound and what Android cannot
+  /// decode at all. Previewing it on Android played nothing — the other three
+  /// tones are WAV and worked, so only the adhan, the one that matters, was
+  /// silent. Android gets the WAV copy that the notification channel already
+  /// uses.
+  String get asset => Platform.isAndroid
+      ? 'assets/sounds/$androidRaw.wav'
+      : 'assets/sounds/$file';
 
   static ReminderSound byName(String? name) => ReminderSound.values.firstWhere(
     (ReminderSound s) => s.name == name,

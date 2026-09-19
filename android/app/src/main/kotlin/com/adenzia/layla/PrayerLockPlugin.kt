@@ -15,6 +15,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Process
 import android.provider.Settings
+import android.util.Log
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -30,6 +31,7 @@ import io.flutter.plugin.common.MethodChannel
 object PrayerLockPlugin {
 
     private const val CHANNEL = "com.noorapp.noor/prayer_lock"
+    private const val TAG = "LaylaPrayerLock"
 
     fun register(activity: Activity, engine: FlutterEngine) {
         MethodChannel(engine.dartExecutor.binaryMessenger, CHANNEL)
@@ -53,10 +55,7 @@ object PrayerLockPlugin {
             )
 
             "requestUsageAccess" -> {
-                activity.startActivity(
-                    Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                )
+                openUsageAccess(activity)
                 result.success(null)
             }
 
@@ -209,6 +208,39 @@ object PrayerLockPlugin {
         }
     } catch (error: Exception) {
         null
+    }
+
+    /**
+     * Lands on Layla's own row in Usage access, not the list of every app.
+     *
+     * `ACTION_USAGE_ACCESS_SETTINGS` opens a screen that on a Samsung runs to
+     * a couple of hundred entries, alphabetical, with no search — so the
+     * "Grant" button dropped somebody into a haystack and left them there.
+     * Passing the package as data is honoured by Samsung One UI, Pixel and
+     * most OEMs and opens the single toggle.
+     *
+     * It is not part of the documented contract, so every step falls back:
+     * the app's row, then the plain list, then the app's own settings page.
+     * One of the three exists on every Android.
+     */
+    private fun openUsageAccess(activity: Activity) {
+        val direct = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+            .setData(Uri.parse("package:${activity.packageName}"))
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val list = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val appPage = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            .setData(Uri.parse("package:${activity.packageName}"))
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        for (intent in listOf(direct, list, appPage)) {
+            try {
+                activity.startActivity(intent)
+                return
+            } catch (error: Exception) {
+                Log.w(TAG, "usage access screen refused: $intent", error)
+            }
+        }
     }
 
     fun hasUsageAccess(context: Context): Boolean {
