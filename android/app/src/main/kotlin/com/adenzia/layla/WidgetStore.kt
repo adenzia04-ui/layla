@@ -37,6 +37,7 @@ object WidgetStore {
         val completedToday: Int,
         val totalToday: Int,
         val streak: Int,
+        val theme: String,
         val updatedAtSeconds: Long,
     ) {
         /**
@@ -83,6 +84,7 @@ object WidgetStore {
                 completedToday = root.optInt("completedToday"),
                 totalToday = root.optInt("totalToday", 5),
                 streak = root.optInt("streak"),
+                theme = root.optString("theme", "midnight"),
                 updatedAtSeconds = root.optLong("updatedAt"),
             )
         } catch (error: Exception) {

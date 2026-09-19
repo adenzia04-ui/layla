@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/routing/routes.dart';
+import '../../../core/config/platform_features.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -55,9 +56,12 @@ class _WidgetThemeScreenState extends ConsumerState<WidgetThemeScreen> {
         children: <Widget>[
           const SizedBox(height: Insets.lg),
           Text(
-            'Every widget on your Home Screen and Lock Screen follows one '
-            'set. Tap a stone to see it.',
-            style: AppType.body.copyWith(color: AppColors.mist),
+            Have.liveActivity
+                ? 'Every widget on your Home Screen and Lock Screen follows '
+                      'one set. Tap a stone to see it.'
+                : 'Every Layla Pro widget on your Home screen follows one '
+                      'set. Tap a stone to see it.',
+            style: AppType.bodySm.copyWith(color: AppColors.mist, height: 1.5),
           ),
           const SizedBox(height: Insets.xl),
           _HomeScreenPreview(theme: shown),

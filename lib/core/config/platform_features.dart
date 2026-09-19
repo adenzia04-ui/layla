@@ -20,10 +20,10 @@ abstract final class Have {
   /// and the Lock Screen — but on both there is something to configure.
   static bool get homeScreenWidgets => Platform.isIOS || Platform.isAndroid;
 
-  /// The colour sets. iOS redraws every widget in the chosen palette; the
-  /// Android widgets are drawn in Midnight and nothing else yet, so offering
-  /// nine stones there would be offering eight that do nothing.
-  static bool get widgetColourSets => Platform.isIOS;
+  /// The colour sets. Both platforms honour them now: the nine palettes are
+  /// generated for Android straight from the iOS table, so a stone tapped on
+  /// either phone draws the same widget.
+  static bool get widgetColourSets => homeScreenWidgets;
 
   /// The Lock Screen / Dynamic Island countdown. Android's nearest relative
   /// is an ongoing notification, which is not the same thing and is not

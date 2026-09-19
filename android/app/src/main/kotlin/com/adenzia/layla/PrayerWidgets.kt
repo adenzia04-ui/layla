@@ -35,6 +35,13 @@ private object WidgetPainter {
         val snapshot = WidgetStore.read(context)
         val now = System.currentTimeMillis() / 1000
 
+        val palette = WidgetPalettes.named(snapshot?.theme)
+        views.setInt(R.id.widget_root, "setBackgroundResource", palette.background)
+        views.setTextColor(R.id.next_label, palette.gold)
+        views.setTextColor(R.id.next_name, palette.cream)
+        views.setTextColor(R.id.next_countdown, palette.cream)
+        views.setTextColor(R.id.next_time, palette.mist)
+
         if (snapshot == null) {
             views.setTextViewText(R.id.next_label, "Layla Pro")
             views.setTextViewText(R.id.next_name, "Open the app")
@@ -77,6 +84,15 @@ private object WidgetPainter {
         val views = RemoteViews(context.packageName, layout)
         val snapshot = WidgetStore.read(context)
         val now = System.currentTimeMillis() / 1000
+
+        val palette = WidgetPalettes.named(snapshot?.theme)
+        views.setInt(R.id.widget_root, "setBackgroundResource", palette.background)
+        views.setTextColor(R.id.header_today, palette.gold)
+        views.setTextColor(R.id.header_hijri, palette.cream)
+        views.setTextColor(R.id.header_city, palette.mist)
+        views.setTextColor(R.id.until_label, palette.mist)
+        views.setTextColor(R.id.next_countdown, palette.cream)
+        if (!compact) views.setTextColor(R.id.footer, palette.mist)
 
         if (snapshot == null) {
             views.setTextViewText(R.id.header_today, "Layla Pro")
@@ -123,11 +139,18 @@ private object WidgetPainter {
             val isNext = prayer.key == snapshot.nextKey && !stale
             views.setTextViewText(NAMES[slot], prayer.label)
             views.setTextViewText(TIMES[slot], clock(context, prayer.startsAtSeconds))
-            views.setTextColor(TIMES[slot], if (isNext) GOLD else CREAM)
+            views.setTextColor(
+                NAMES[slot],
+                if (isNext) palette.cream else palette.mist,
+            )
+            views.setTextColor(
+                TIMES[slot],
+                if (isNext) palette.gold else palette.cream,
+            )
             views.setInt(
                 CELLS[slot],
                 "setBackgroundResource",
-                if (isNext) R.drawable.widget_cell_next else R.drawable.widget_cell,
+                if (isNext) palette.cellNext else palette.cell,
             )
         }
 
@@ -145,9 +168,6 @@ private object WidgetPainter {
         openApp(context, views)
         return views
     }
-
-    private const val GOLD = 0xFFD9B26A.toInt()
-    private const val CREAM = 0xFFF6F1E7.toInt()
 
     private val CELLS = intArrayOf(
         R.id.cell0, R.id.cell1, R.id.cell2,
