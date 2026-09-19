@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- updatePeriodMillis is 0 because there is nothing here that ticks: the
+     bearing to the Kaaba does not change while the phone sits still, and the
+     app pushes a redraw when the stored position does. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/widget_qibla"
+    android:previewLayout="@layout/widget_qibla"
+    android:description="@string/widget_qibla_description"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

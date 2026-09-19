@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Three doors into the dua library, as on the iPhone: "all of them" is the
+     least useful door when what someone wants at 6am is the morning adhkar.
+
+     The colours here are only the Midnight placeholder the widget picker
+     shows; DuasWidget paints the chosen set over every one of them, and the
+     symbols arrive as bitmaps, so before the first draw the cells are empty. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFD9B26A"
+        android:textSize="10sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.13"
+        android:text="Duas" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/door_morning"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="6dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:background="@drawable/widget_cell">
+
+            <ImageView
+                android:id="@+id/morning_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/morning_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:maxLines="2"
+                android:textColor="#FFF6F1E7"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:text="Morning &amp;\nEvening" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/door_praise"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="6dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:background="@drawable/widget_cell">
+
+            <ImageView
+                android:id="@+id/praise_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/praise_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:maxLines="2"
+                android:textColor="#FFF6F1E7"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:text="Praising\nAllah" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/door_all"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="6dp"
+            android:background="@drawable/widget_cell">
+
+            <ImageView
+                android:id="@+id/all_icon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/all_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:maxLines="2"
+                android:textColor="#FFF6F1E7"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:text="All\nDuas" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

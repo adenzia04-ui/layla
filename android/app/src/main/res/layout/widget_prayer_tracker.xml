@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The five, and which of them are confirmed.
+
+     Every colour below is the Midnight-looking placeholder the widget picker
+     shows before the first draw; PrayerTrackerWidget repaints all of them
+     from the chosen set, one of which is light with dark ink. The data
+     fields are left blank rather than filled with a plausible day, because
+     the picker's preview is not a real one. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tracker_title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textColor="#FFE2B96A"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.09"
+            android:text="Today's prayers" />
+
+        <TextView
+            android:id="@+id/tracker_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFF6F1E7"
+            android:textSize="11sp"
+            android:text=" " />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tracker_track"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/tracker_cell0"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginEnd="3dp"
+            android:padding="5dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/tracker_mark0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="14sp" android:text="○" />
+            <TextView android:id="@+id/tracker_name0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="9sp" android:textAllCaps="true" android:letterSpacing="0.05" android:singleLine="true" android:text="Fajr" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tracker_cell1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginEnd="3dp"
+            android:padding="5dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/tracker_mark1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="14sp" android:text="○" />
+            <TextView android:id="@+id/tracker_name1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="9sp" android:textAllCaps="true" android:letterSpacing="0.05" android:singleLine="true" android:text="Dhuhr" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tracker_cell2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginEnd="3dp"
+            android:padding="5dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/tracker_mark2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="14sp" android:text="○" />
+            <TextView android:id="@+id/tracker_name2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="9sp" android:textAllCaps="true" android:letterSpacing="0.05" android:singleLine="true" android:text="Asr" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tracker_cell3"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginEnd="3dp"
+            android:padding="5dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/tracker_mark3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="14sp" android:text="○" />
+            <TextView android:id="@+id/tracker_name3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="9sp" android:textAllCaps="true" android:letterSpacing="0.05" android:singleLine="true" android:text="Maghrib" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/tracker_cell4"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="5dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/tracker_mark4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="14sp" android:text="○" />
+            <TextView android:id="@+id/tracker_name4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#B3F6F1E7" android:textSize="9sp" android:textAllCaps="true" android:letterSpacing="0.05" android:singleLine="true" android:text="Isha" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tracker_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:textColor="#B3F6F1E7"
+        android:textSize="12sp"
+        android:text=" " />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tracker_streak"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textColor="#B3F6F1E7"
+            android:textSize="10sp"
+            android:singleLine="true"
+            android:text=" " />
+
+        <TextView
+            android:id="@+id/tracker_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#73F6F1E7"
+            android:textSize="10sp"
+            android:singleLine="true"
+            android:text=" " />
+    </LinearLayout>
+</LinearLayout>

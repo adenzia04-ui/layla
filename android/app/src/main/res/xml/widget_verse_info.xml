@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- updatePeriodMillis is 0 like the others, and for a better reason than
+     theirs: the floor Android enforces is thirty minutes, so a periodic
+     update would wake the device forty-eight times a day to catch a boundary
+     that passes twice. The colour set arrives on the app's push, as
+     everywhere else, and the twelve-hour turnover is an alarm VerseWidget
+     books for itself at the next noon or midnight — see VerseRollover. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_verse"
+    android:previewLayout="@layout/widget_verse"
+    android:description="@string/widget_verse_description"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

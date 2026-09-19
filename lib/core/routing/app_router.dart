@@ -33,6 +33,7 @@ import '../../features/stories/presentation/story_detail_screen.dart';
 import '../../features/tahajjud/presentation/tahajjud_map_screen.dart';
 import '../../features/tahajjud/presentation/tahajjud_screen.dart';
 import '../../features/dua/presentation/tasbih_dua_home_screen.dart';
+import 'widget_links.dart';
 import '../../features/circles/presentation/circle_screen.dart';
 import '../../features/friends/application/invite.dart'
     show pendingInviteProvider;
@@ -86,6 +87,21 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
       if (IncomingInvite.matches(state.uri)) {
         if (location != Routes.splash) return null;
         return invites.onInvite(state.uri, cold: _startingUp(router));
+      }
+
+      // A tap on a home-screen widget. Same shape as the invite above: no
+      // path, so go_router has folded it onto the splash and only the whole
+      // uri still says where it meant to go.
+      final String? fromWidget = widgetLinkTarget(state.uri);
+      if (fromWidget != null) {
+        if (_startingUp(router)) {
+          // Cold start. The splash has to establish whether this person has
+          // onboarded and whether they are signed in before anywhere is a
+          // safe place to land, so the destination waits for it.
+          ref.read(pendingWidgetLinkProvider.notifier).state = fromWidget;
+          return null;
+        }
+        return fromWidget;
       }
 
       // The splash screen decides for itself where to go next.

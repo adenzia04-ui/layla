@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Half an hour, which is the floor: Android silently ignores anything
+     smaller. The other widgets sit at 0 and rely on the app pushing a redraw,
+     and that is still the path that matters here — the count should move the
+     moment the Tasbih screen moves it, not up to thirty minutes later.
+
+     But a push cannot cover this widget on its own. The number is scoped to
+     one day and the day turns over at midnight with the app closed, so
+     nothing is running to push anything; without a period of its own the
+     widget would keep yesterday's total on screen until somebody happened to
+     open Layla Pro. A slow tick is what flips it to "Out of date".
+
+     Note the push does not exist yet: PrayerWidgets.refreshAll redraws only
+     the two original prayer widgets, so until TasbihWidget is added there
+     this period is the *only* thing that redraws it. -->
+<!-- TODO: add TasbihWidget to PrayerWidgets.refreshAll so publishSnapshot
+     repaints it, then this period is the safety net it was meant to be. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/widget_tasbih"
+    android:previewLayout="@layout/widget_tasbih"
+    android:description="@string/widget_tasbih_description"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

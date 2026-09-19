@@ -127,9 +127,7 @@ class PremiumStore extends Notifier<PremiumState> {
       );
       state = state.copyWith(
         storeReady: true,
-        products: <String, ProductDetails>{
-          for (final ProductDetails p in res.productDetails) p.id: p,
-        },
+        products: cheapestPerPlan(res.productDetails),
       );
       if (res.notFoundIDs.isNotEmpty) {
         debugPrint(
@@ -139,6 +137,30 @@ class PremiumStore extends Notifier<PremiumState> {
     } catch (e) {
       debugPrint('Layla Pro: store unavailable ($e)');
     }
+  }
+
+  /// One product per plan, keyed by id, keeping the cheapest where the store
+  /// offers several.
+  ///
+  /// The App Store answers one product per identifier. Google Play answers one
+  /// per *offer*: a subscription with a base plan and an introductory price
+  /// comes back twice under the same id, at two different prices. Collapsing
+  /// that with a plain map comprehension keeps whichever Play happened to send
+  /// last, so the paywall could quote the standard price to somebody Play was
+  /// about to charge the intro price, or the reverse — and which one it did
+  /// was not ours to predict. Cheapest is both deterministic and the one a new
+  /// subscriber is actually charged first; Play's own sheet then spells out
+  /// what happens afterwards.
+  @visibleForTesting
+  static Map<String, ProductDetails> cheapestPerPlan(
+    List<ProductDetails> found,
+  ) {
+    final Map<String, ProductDetails> best = <String, ProductDetails>{};
+    for (final ProductDetails p in found) {
+      final ProductDetails? seen = best[p.id];
+      if (seen == null || p.rawPrice < seen.rawPrice) best[p.id] = p;
+    }
+    return best;
   }
 
   Future<void> _onPurchases(List<PurchaseDetails> purchases) async {

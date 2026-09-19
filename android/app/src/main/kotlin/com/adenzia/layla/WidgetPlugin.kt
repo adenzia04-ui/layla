@@ -52,6 +52,13 @@ object WidgetPlugin {
                 result.success(true)
             }
 
+            // The `layla://` url this launch began with, if a widget tap
+            // began it. See MainActivity.launchLink for why Flutter's own
+            // deep linking cannot answer this one.
+            "consumeLaunchLink" -> result.success(
+                (activity as? MainActivity)?.consumeLaunchLink(),
+            )
+
             // iOS-only, and silence is the honest answer. The Dart side
             // already treats a missing implementation as "not here"; these
             // exist so a call does not read as a failure in the log.

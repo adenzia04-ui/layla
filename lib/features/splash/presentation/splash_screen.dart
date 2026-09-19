@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/routing/routes.dart';
+import '../../../core/routing/widget_links.dart';
+import '../../widgets/data/widget_bridge.dart';
 import '../../../core/services/prefs_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -88,7 +90,32 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     }
 
     final bool signedIn = ref.read(authRepositoryProvider).currentUser != null;
-    context.go(signedIn ? Routes.home : Routes.welcome);
+    if (!signedIn) {
+      context.go(Routes.welcome);
+      return;
+    }
+
+    // A home-screen widget started the app and asked for somewhere in
+    // particular. It could not be honoured until now, because until now it
+    // was not known whether this person had onboarded or was signed in.
+    //
+    // Two places to look. The router catches the link when the framework
+    // hands it over, which it does reliably once the app is already running;
+    // on a cold start it does not hand it over at all, and only the launch
+    // intent still has it.
+    String? fromWidget = ref.read(pendingWidgetLinkProvider);
+    if (fromWidget == null) {
+      final String? link = await ref.read(widgetBridgeProvider).consumeLaunchLink();
+      if (link != null) fromWidget = widgetLinkTarget(Uri.parse(link));
+      if (!mounted) return;
+    }
+    if (fromWidget != null) {
+      ref.read(pendingWidgetLinkProvider.notifier).state = null;
+      context.go(fromWidget);
+      return;
+    }
+
+    context.go(Routes.home);
   }
 
   @override

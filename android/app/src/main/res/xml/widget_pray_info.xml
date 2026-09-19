@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Two columns by three rows, and both ways of saying so now agree.
+     minWidth/minHeight are what launchers before Android 12 size cells from
+     (they round up by (size + 30) / 70); targetCellWidth/Height are what 12
+     and later place from. 110dp x 180dp is 2x3 by that formula, which is what
+     the target cells say too. It used to claim two rows while asking for the
+     height of three, so the same widget came out 2x3 on Android 11 and 2x2 on
+     12 — and at two rows the layout overflowed a root that centres itself,
+     which cut the Pray button, the one thing this widget is for, in half.
+
+     Three rows because that is what the drawing needs: 24dp of padding, the
+     44dp ring, the prayer name at 20sp, a line of time and date that runs to
+     two lines while the app has nothing to show, and the 32dp button — about
+     175dp in its tallest state. Two cells is 110dp, and nothing survives
+     being shrunk to that without losing the ring or the button.
+
+     updatePeriodMillis is half an hour because what this widget shows moves
+     with the clock, not with the app: which prayer is next changes at Dhuhr
+     whether or not anyone has opened Layla Pro that day, and refreshAll only
+     runs when the app does — which is exactly when nobody is looking at the
+     home screen. Half an hour is the floor the system honours, and it is not
+     an exact alarm: it lands the next time the phone is awake.
+ -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="180dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="3"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_pray"
+    android:previewLayout="@layout/widget_pray"
+    android:resizeMode="horizontal|vertical"
+    android:description="@string/widget_pray_description"
+    android:widgetCategory="home_screen" />

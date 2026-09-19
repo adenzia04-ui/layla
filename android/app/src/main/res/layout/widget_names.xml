@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One of the ninety-nine, drawn as the iPhone draws it: the caps label and
+     the count above, then the name, its transliteration and its meaning.
+     The colours below are only the Midnight-looking placeholder the widget
+     picker shows; the painter applies the chosen set at runtime. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/names_title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textColor="#FFD9B26A"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.13"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Name of Allah" />
+
+        <TextView
+            android:id="@+id/names_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#FFD9B26A"
+            android:textSize="11sp"
+            android:maxLines="1"
+            android:text="1 of 99" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- The same line at two sizes, one of them hidden. iOS shrinks this
+             text to fit; RemoteViews cannot set a text size at all, so the
+             choice has to be made between views that already exist. -->
+        <TextView
+            android:id="@+id/names_arabic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#FFD9B26A"
+            android:textSize="30sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="الرَّحْمَنُ" />
+
+        <TextView
+            android:id="@+id/names_arabic_long"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#FFD9B26A"
+            android:textSize="20sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:visibility="gone"
+            android:text=" " />
+
+        <TextView
+            android:id="@+id/names_translit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:textColor="#FFF6F1E7"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Ar-Rahman" />
+
+        <TextView
+            android:id="@+id/names_meaning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:textColor="#FF96A5BE"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="The Most Merciful" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/names_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="#FF96A5BE"
+        android:textSize="10sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:visibility="gone"
+        android:text=" " />
+</LinearLayout>

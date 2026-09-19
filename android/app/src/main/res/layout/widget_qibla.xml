@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The dial, its ticks and the needle arrive as one bitmap: RemoteViews has
+     no way to stroke a circle or rotate a view, so anything curved has to be
+     drawn and pushed across.
+
+     Every colour below is replaced at runtime from the chosen set. These are
+     Midnight, and they exist only for the widget picker, which shows this
+     layout before the painter has ever run.
+
+     The three text lines are match_parent + centre rather than wrap_content
+     so that maxLines="1" and ellipsize="end" can do their job: a 2x2 cell can
+     be dragged down to the 110dp minimum, which leaves about 86dp between the
+     paddings, and a hard cut mid-word there reads as a bug rather than as
+     text that did not fit. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="@drawable/widget_bg"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/qibla_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="#FFE2B96A"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.13"
+        android:textAllCaps="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Qibla" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp">
+
+        <ImageView
+            android:id="@+id/qibla_dial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:contentDescription="Qibla dial" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/qibla_bearing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="#FFF6F1E7"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="—" />
+
+    <TextView
+        android:id="@+id/qibla_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:gravity="center"
+        android:textColor="#73F6F1E7"
+        android:textSize="11sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Tap to align" />
+</LinearLayout>

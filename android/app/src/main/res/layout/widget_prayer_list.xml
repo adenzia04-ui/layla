@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The day as a list rather than a strip: the countdown and the dates above,
+     then a row per prayer with the next one lit and the ones behind us dimmed.
+
+     The colours here are the Midnight set, and they are only what the widget
+     picker shows before the first draw — the painter re-colours every view
+     from the chosen palette, and one of the nine sets is light with dark ink. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/pl_next_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFD9B26A"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.13"
+                    android:maxLines="1"
+                    android:text="Next" />
+
+                <TextView
+                    android:id="@+id/pl_next_name"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:textColor="#FFD9B26A"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="Fajr" />
+            </LinearLayout>
+
+            <Chronometer
+                android:id="@+id/pl_countdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFF6F1E7"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:maxLines="1" />
+
+            <!-- Shown instead of the countdown when there is nothing to count
+                 down to: no snapshot at all, one written yesterday, or one
+                 that arrived without a next prayer in it. Never shown at the
+                 same time as the Chronometer above — the painter's note() and
+                 countdown() are the only two things that set either. -->
+            <TextView
+                android:id="@+id/pl_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="#FF96A5BE"
+                android:textSize="12sp"
+                android:maxLines="2"
+                android:visibility="gone"
+                android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/pl_hijri"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFF6F1E7"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text=" " />
+
+            <TextView
+                android:id="@+id/pl_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FF96A5BE"
+                android:textSize="11sp"
+                android:maxLines="1"
+                android:text=" " />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/pl_row0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/pl_row0_name" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textColor="#FF96A5BE" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:text=" " />
+            <TextView android:id="@+id/pl_row0_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:textColor="#FFF6F1E7" android:textSize="13sp" android:maxLines="1" android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pl_row1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/pl_row1_name" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textColor="#FF96A5BE" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:text=" " />
+            <TextView android:id="@+id/pl_row1_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:textColor="#FFF6F1E7" android:textSize="13sp" android:maxLines="1" android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pl_row2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/pl_row2_name" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textColor="#FF96A5BE" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:text=" " />
+            <TextView android:id="@+id/pl_row2_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:textColor="#FFF6F1E7" android:textSize="13sp" android:maxLines="1" android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pl_row3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/pl_row3_name" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textColor="#FF96A5BE" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:text=" " />
+            <TextView android:id="@+id/pl_row3_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:textColor="#FFF6F1E7" android:textSize="13sp" android:maxLines="1" android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pl_row4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/pl_row4_name" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textColor="#FF96A5BE" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:text=" " />
+            <TextView android:id="@+id/pl_row4_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:textColor="#FFF6F1E7" android:textSize="13sp" android:maxLines="1" android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pl_row5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:background="@drawable/widget_cell">
+            <TextView android:id="@+id/pl_row5_name" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textColor="#FF96A5BE" android:textSize="13sp" android:textStyle="bold" android:maxLines="1" android:ellipsize="end" android:text=" " />
+            <TextView android:id="@+id/pl_row5_time" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:textColor="#FFF6F1E7" android:textSize="13sp" android:maxLines="1" android:text=" " />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

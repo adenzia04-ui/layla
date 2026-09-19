@@ -1,7 +1,7 @@
 name: noor
 description: "Layla Pro — stay connected with your prayers."
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   # Raised from 3.6/3.27 by the live prayer-mat scanner: camera 0.12 is the
@@ -65,6 +65,9 @@ dependencies:
   just_audio: ^0.10.6
   flutter_tts: ^4.2.5
   in_app_purchase: ^3.3.0
+
+  # So the Profile footer can state which build this actually is.
+  package_info_plus: ^10.2.1
   image: ^4.10.1
 
 dev_dependencies:

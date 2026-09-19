@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nothing here counts down and nothing here expires during the day: the
+     name turns over once, at midnight. So the redraw is pushed rather than
+     polled, as with the others. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_names"
+    android:previewLayout="@layout/widget_names"
+    android:description="@string/widget_names_description"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

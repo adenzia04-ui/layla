@@ -61,6 +61,16 @@ class WidgetBridge {
   Future<bool> get liveActivitiesEnabled async =>
       await _invoke<bool>('liveActivitiesEnabled') ?? false;
 
+  /// The `layla://` link this launch began with, if a widget tap began it.
+  ///
+  /// Only Android answers. Flutter's deep linking does not carry a
+  /// scheme-only url — `layla://qibla` has no path — through a cold start, so
+  /// by the time the router looks, the destination is already gone and the
+  /// tap has opened the home screen. The launch intent still holds it, and
+  /// this asks for it. Answered once: a second call returns null, so a link
+  /// cannot be spent twice.
+  Future<String?> consumeLaunchLink() => _invoke<String>('consumeLaunchLink');
+
   Future<T?> _invoke<T>(String method, [Map<String, Object?>? args]) async {
     try {
       return await _channel.invokeMethod<T>(method, args);

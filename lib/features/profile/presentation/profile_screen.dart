@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../core/config/platform_features.dart';
 import '../../premium/application/premium_store.dart';
@@ -226,12 +227,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: Insets.xxl),
-          Center(
-            child: Text(
-              'Layla Pro · v1.0.0',
-              style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
-            ),
-          ),
+          const Center(child: _BuildLine()),
           const SizedBox(height: Insets.xl),
         ],
       ),
@@ -551,4 +547,45 @@ class _MenuRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Which build this is, read from the package rather than typed here.
+///
+/// It used to be the string 'Layla Pro · v1.0.0', which is true of every
+/// build ever made and so answers nothing. The question it needs to answer is
+/// the one that actually gets asked — "is this the one where that was fixed?"
+/// — and only the build number answers it. A tester looking at a screen that
+/// should have been fixed, and the person trying to help them, can now settle
+/// it in a glance instead of guessing from a photograph.
+class _BuildLine extends StatefulWidget {
+  const _BuildLine();
+
+  @override
+  State<_BuildLine> createState() => _BuildLineState();
+}
+
+class _BuildLineState extends State<_BuildLine> {
+  String _text = 'Layla Pro';
+
+  @override
+  void initState() {
+    super.initState();
+    _read();
+  }
+
+  Future<void> _read() async {
+    try {
+      final PackageInfo info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() => _text = 'Layla Pro · v${info.version} (${info.buildNumber})');
+    } catch (_) {
+      // A test harness has no package. The plain name is still true.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Text(
+    _text,
+    style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
+  );
 }

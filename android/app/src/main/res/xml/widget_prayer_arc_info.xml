@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- updatePeriodMillis is 0 like the rest: the only thing here that moves by
+     itself is the Chronometer, which the system ticks, and the arc behind it
+     is redrawn when the app pushes a new snapshot.
+
+     minHeight stays at 110dp because that is what two cells means on the
+     launchers that size from it ((110 + 30) / 70), and the column under the
+     arc — gauge, countdown, caption — very nearly fills it. Vertical resize
+     is allowed for that reason rather than in spite of it: on a launcher that
+     hands over the bare minimum, dragging the handle is the only way to get
+     the caption back. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_prayer_arc"
+    android:previewLayout="@layout/widget_prayer_arc"
+    android:description="@string/widget_prayer_arc_description"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

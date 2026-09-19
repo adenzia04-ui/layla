@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The curved gauge from the app's own prayer card: how far through the
+     stretch between the prayer that just passed and the one coming you are.
+     The curve itself is a Bitmap pushed into the ImageView at draw time —
+     RemoteViews has no path and no stroke.
+
+     The colours here are the Midnight placeholder the widget picker shows
+     before the first draw; every one of them is replaced from the palette. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="124dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/arc_gauge"
+            android:layout_width="112dp"
+            android:layout_height="56dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="@null" />
+
+        <Chronometer
+            android:id="@+id/arc_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#FFF6F1E7"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/arc_until"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:maxLines="2"
+            android:textColor="#B3F6F1E7"
+            android:textSize="11sp"
+            android:text="until Fajr" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/arc_city"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="#FFF6F1E7"
+                android:textSize="11sp"
+                android:text=" " />
+
+            <TextView
+                android:id="@+id/arc_streak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:paddingStart="7dp"
+                android:paddingEnd="7dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:background="@drawable/widget_cell"
+                android:singleLine="true"
+                android:textColor="#FFE2B96A"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/arc_now_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:background="@drawable/widget_cell">
+
+            <TextView
+                android:id="@+id/arc_now_label"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="#B3F6F1E7"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="Night" />
+
+            <TextView
+                android:id="@+id/arc_now_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:singleLine="true"
+                android:textColor="#B3F6F1E7"
+                android:textSize="13sp"
+                android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/arc_next_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:background="@drawable/widget_cell_next">
+
+            <TextView
+                android:id="@+id/arc_next_label"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="#FFF6F1E7"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="Fajr" />
+
+            <TextView
+                android:id="@+id/arc_next_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:singleLine="true"
+                android:textColor="#FFF6F1E7"
+                android:textSize="13sp"
+                android:text=" " />
+        </LinearLayout>
+
+        <!-- Only ever seen when there is nothing honest to put in the two
+             rows above, so it starts hidden and the picker shows the rows. -->
+        <TextView
+            android:id="@+id/arc_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:maxLines="3"
+            android:visibility="gone"
+            android:textColor="#B3F6F1E7"
+            android:textSize="11sp"
+            android:text=" " />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nothing on this widget is time-dependent, so there is nothing for a
+     periodic update to catch up with; it is redrawn when the app pushes a new
+     snapshot, which is how a change of colour set reaches it.
+
+     Horizontal resize only: the three doors widen happily, but a launcher
+     that let this be pulled down to one cell tall would crop the titles. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/widget_duas"
+    android:previewLayout="@layout/widget_duas"
+    android:description="@string/widget_duas_description"
+    android:resizeMode="horizontal"
+    android:widgetCategory="home_screen" />

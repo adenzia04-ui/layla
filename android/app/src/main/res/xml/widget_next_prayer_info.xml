@@ -7,7 +7,7 @@
     android:minHeight="110dp"
     android:targetCellWidth="2"
     android:targetCellHeight="2"
-    android:updatePeriodMillis="0"
+    android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/widget_next_prayer"
     android:previewLayout="@layout/widget_next_prayer"
     android:description="@string/widget_next_prayer_description"

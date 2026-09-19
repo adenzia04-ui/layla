@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The verse of the day, drawn to match the iPhone one: the caps label, the
+     Arabic large and centred, its meaning under it, the reference last.
+
+     Everything in here is the placeholder the widget picker shows before the
+     first draw — the painter replaces every colour and every string. The
+     verse in it is the first of the list, so what the picker shows reads as
+     the real thing rather than as an empty box. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/verse_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFE2B96A"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:letterSpacing="0.13"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Verse of the day" />
+
+    <!-- Takes the slack, so the verse sits in the middle of whatever height
+         the launcher hands us rather than pressed against the header. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- The same verse at two sizes, one of them hidden. iOS shrinks this
+             text until it fits; RemoteViews cannot set a text size at all, so
+             the choice has to be made between views that already exist — the
+             same trick the names widget uses for its two multi-word names.
+
+             Most of the hundred-odd verses are short enough for two lines at
+             18sp. A dozen are not, and at the single size the longest of them
+             (Al Imran 3:200) lost its last third to an ellipsis — a cut-off
+             ayah, which is the one thing this widget must not do.
+
+             The line spacing is deliberately loose: Arabic sets its vowel
+             marks above and below the letters, and at a tight line height the
+             second line's fathas collide with the first line's kasras. -->
+        <TextView
+            android:id="@+id/verse_arabic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textDirection="rtl"
+            android:textColor="#FFE2B96A"
+            android:textSize="18sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:lineSpacingExtra="7dp"
+            android:text="لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا" />
+
+        <!-- The long ones: smaller, and a third line rather than a tighter
+             one, because the marks still need the room. Three lines at 14sp
+             hold the longest verse in the list with most of a line to spare,
+             and cost only a few dp more than two at 18sp. -->
+        <TextView
+            android:id="@+id/verse_arabic_long"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textDirection="rtl"
+            android:textColor="#FFE2B96A"
+            android:textSize="14sp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:lineSpacingExtra="5dp"
+            android:visibility="gone"
+            android:text=" " />
+
+        <TextView
+            android:id="@+id/verse_english"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:textDirection="ltr"
+            android:textColor="#FFF6F1E7"
+            android:textSize="11sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:lineSpacingExtra="1dp"
+            android:text="Do not grieve; indeed Allah is with us." />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/verse_reference"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textDirection="ltr"
+        android:textColor="#FFE2B96A"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.06"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="At-Tawbah 9:40" />
+
+    <!-- Only shown when the app has never run. The verse is right either
+         way, so there is nothing else to say in that case. -->
+    <TextView
+        android:id="@+id/verse_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:textColor="#73F6F1E7"
+        android:textSize="9sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:visibility="gone"
+        android:text="" />
+</LinearLayout>

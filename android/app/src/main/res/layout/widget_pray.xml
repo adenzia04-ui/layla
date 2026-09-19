@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The small one that asks one thing. A ring with how many of today's five
+     are confirmed, the prayer that is next with its time and the date, and a
+     button.
+
+     The colours here are only the Midnight-looking placeholder the widget
+     picker shows before the first draw; the painter reapplies every one of
+     them from the chosen set. The ring itself is a bitmap, because
+     RemoteViews has no arc. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="12dp">
+
+    <FrameLayout
+        android:layout_width="44dp"
+        android:layout_height="44dp">
+
+        <ImageView
+            android:id="@+id/pray_ring"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:importantForAccessibility="no" />
+
+        <!-- Baseline-aligned, as on the iPhone: the count sits on the same
+             line as the total rather than floating above it. -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/pray_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFD9B26A"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/pray_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FF96A5BE"
+                android:textSize="11sp"
+                android:text="/5" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/pray_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="#FFF6F1E7"
+        android:textSize="20sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Fajr" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/pray_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FF96A5BE"
+            android:textSize="12sp"
+            android:maxLines="2"
+            android:text=" " />
+
+        <TextView
+            android:id="@+id/pray_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#FF6E7D96"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:text=" " />
+    </LinearLayout>
+
+    <!-- iOS fills a capsule with gold and writes on it in the ground colour.
+         A RemoteViews background can only be a drawable id, and the sets ship
+         no gold fill, so this uses the lit cell the rest of the widgets use
+         for "this is the one" and keeps the gold in the text. -->
+    <TextView
+        android:id="@+id/pray_button"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:background="@drawable/widget_cell_next"
+        android:textColor="#FFD9B26A"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:text="Pray" />
+</LinearLayout>

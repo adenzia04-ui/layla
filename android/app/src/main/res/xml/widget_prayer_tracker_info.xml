@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A confirmation is something the person does in the app, and the app
+     pushes that redraw the moment it happens. The period is for the other
+     half: which prayer is lit as "next" moves with the clock on its own, and
+     without it the widget would still be pointing at Dhuhr in the evening
+     for anyone who had not opened the app since. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_prayer_tracker"
+    android:previewLayout="@layout/widget_prayer_tracker"
+    android:description="@string/widget_prayer_tracker_description"
+    android:resizeMode="horizontal"
+    android:widgetCategory="home_screen" />

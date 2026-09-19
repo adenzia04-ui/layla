@@ -240,27 +240,44 @@ private object WidgetPainter {
     }
 }
 
-/** Redraws every widget of both kinds. Called when the app has new times. */
+/**
+ * Redraws every Layla Pro widget. Called when the app has new times.
+ *
+ * The list is the registry: a widget that is not on it draws once when it is
+ * placed and then never again until the phone reboots, which looks exactly
+ * like a widget that is broken. Adding a provider class here is the last step
+ * of adding a widget, and the easiest one to forget.
+ */
 object PrayerWidgets {
+
+    private val PROVIDERS: List<Class<out AppWidgetProvider>> = listOf(
+        NextPrayerWidget::class.java,
+        PrayerTimesWidget::class.java,
+        PrayerListWidget::class.java,
+        PrayerArcWidget::class.java,
+        PrayWidget::class.java,
+        PrayerTrackerWidget::class.java,
+        DuasWidget::class.java,
+        QiblaWidget::class.java,
+        TasbihWidget::class.java,
+        VerseWidget::class.java,
+        NamesWidget::class.java,
+    )
+
     fun refreshAll(context: Context) {
         val manager = AppWidgetManager.getInstance(context) ?: return
-        redraw(context, manager, NextPrayerWidget::class.java)
-        redraw(context, manager, PrayerTimesWidget::class.java)
-    }
-
-    private fun redraw(
-        context: Context,
-        manager: AppWidgetManager,
-        provider: Class<*>,
-    ) {
-        val ids = manager.getAppWidgetIds(ComponentName(context, provider))
-        if (ids == null || ids.isEmpty()) return
-        val views = if (provider == NextPrayerWidget::class.java) {
-            WidgetPainter.paintNextPrayer(context)
-        } else {
-            WidgetPainterResponsive(context)
+        for (provider in PROVIDERS) {
+            val ids = manager.getAppWidgetIds(ComponentName(context, provider))
+            if (ids == null || ids.isEmpty()) continue
+            // Each provider knows how to draw itself; asking it to update is
+            // the same path the system uses, so there is one drawing routine
+            // per widget rather than two that can disagree.
+            context.sendBroadcast(
+                Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+                    .setComponent(ComponentName(context, provider))
+                    .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids),
+            )
         }
-        manager.updateAppWidget(ids, views)
     }
 }
 

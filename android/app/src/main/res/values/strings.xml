@@ -4,4 +4,22 @@
     <string name="widget_next_prayer_description">The next prayer and how long until it begins.</string>
     <string name="widget_prayer_times_label">Prayer times</string>
     <string name="widget_prayer_times_description">Today\'s five prayers, with the next one lit.</string>
+    <string name="widget_prayer_list_label">Prayer list</string>
+    <string name="widget_prayer_list_description">Today\'s prayers one under another, the next one lit.</string>
+    <string name="widget_prayer_arc_label">Prayer arc</string>
+    <string name="widget_prayer_arc_description">How far through the gap between prayers you are.</string>
+    <string name="widget_pray_label">Pray</string>
+    <string name="widget_pray_description">How many of today\'s five are confirmed, and a way in.</string>
+    <string name="widget_prayer_tracker_label">Prayer tracker</string>
+    <string name="widget_prayer_tracker_description">Which of today\'s five you have confirmed.</string>
+    <string name="widget_duas_label">Duas</string>
+    <string name="widget_duas_description">Morning and evening adhkar, praise, and the full library.</string>
+    <string name="widget_qibla_label">Qibla</string>
+    <string name="widget_qibla_description">The bearing to the Kaaba from where you are.</string>
+    <string name="widget_tasbih_label">Tasbih</string>
+    <string name="widget_tasbih_description">Today\'s dhikr count, and one tap to keep counting.</string>
+    <string name="widget_verse_label">Verse</string>
+    <string name="widget_verse_description">A short verse, in Arabic and English, twice a day.</string>
+    <string name="widget_names_label">Name of Allah</string>
+    <string name="widget_names_description">One of the ninety-nine, a new one each day.</string>
 </resources>

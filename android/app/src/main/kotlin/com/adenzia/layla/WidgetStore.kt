@@ -31,15 +31,34 @@ object WidgetStore {
     data class Snapshot(
         val city: String,
         val hijri: String,
+        val latitude: Double,
+        val longitude: Double,
         val prayers: List<Prayer>,
         val nextKey: String,
         val nextStartsAtSeconds: Long,
+        val currentKey: String,
+        val currentStartedAtSeconds: Long,
         val completedToday: Int,
         val totalToday: Int,
         val streak: Int,
+        /** Keys of the prayers confirmed today — which, not how many. */
+        val confirmed: Set<String>,
+        val tasbihToday: Int,
         val theme: String,
         val updatedAtSeconds: Long,
     ) {
+        /**
+         * How far through the gap between the running prayer and the next one
+         * we are, which is what the arc fills. Matches `progressAt` in
+         * `lib/features/widgets/domain/widget_snapshot.dart`.
+         */
+        fun progressAt(nowSeconds: Long): Float {
+            val span = nextStartsAtSeconds - currentStartedAtSeconds
+            if (span <= 0) return 0f
+            val done = nowSeconds - currentStartedAtSeconds
+            return (done.toFloat() / span.toFloat()).coerceIn(0f, 1f)
+        }
+
         /**
          * Whether this was written on a different day to the one being drawn.
          *
@@ -75,15 +94,26 @@ object WidgetStore {
                     ),
                 )
             }
+            val doneList = root.optJSONArray("confirmed") ?: JSONArray()
+            val done = LinkedHashSet<String>(doneList.length())
+            for (i in 0 until doneList.length()) {
+                done.add(doneList.optString(i))
+            }
             Snapshot(
                 city = root.optString("city"),
                 hijri = root.optString("hijri"),
+                latitude = root.optDouble("latitude", 0.0),
+                longitude = root.optDouble("longitude", 0.0),
                 prayers = prayers,
                 nextKey = root.optString("nextKey"),
                 nextStartsAtSeconds = root.optLong("nextEpoch"),
+                currentKey = root.optString("currentKey"),
+                currentStartedAtSeconds = root.optLong("currentEpoch"),
                 completedToday = root.optInt("completedToday"),
                 totalToday = root.optInt("totalToday", 5),
                 streak = root.optInt("streak"),
+                confirmed = done,
+                tasbihToday = root.optInt("tasbihToday"),
                 theme = root.optString("theme", "midnight"),
                 updatedAtSeconds = root.optLong("updatedAt"),
             )

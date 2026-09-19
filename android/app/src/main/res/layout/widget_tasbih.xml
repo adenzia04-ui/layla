@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Today's dhikr count, drawn to match the iPhone's small Tasbih widget:
+     the caps label, the number, what it counts, and the hint underneath.
+
+     The colours here are only what the widget picker shows before the first
+     draw — the painter replaces every one of them from the chosen set, and
+     one of the nine inverts. The middle block is weighted rather than spaced
+     because RemoteViews will not inflate a Space. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tasbih_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFD9B26A"
+        android:textSize="10sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.13"
+        android:maxLines="1"
+        android:text="Tasbih" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tasbih_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#FFF6F1E7"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:text="0" />
+
+        <TextView
+            android:id="@+id/tasbih_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:gravity="center"
+            android:textColor="#FF96A5BE"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:text="dhikr today" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/tasbih_bead"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/tasbih_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:textColor="#FF96A5BE"
+            android:textSize="11sp"
+            android:maxLines="1"
+            android:text="Tap to count" />
+    </LinearLayout>
+</LinearLayout>
