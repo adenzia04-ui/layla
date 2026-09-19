@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/config/platform_features.dart';
+import '../../premium/application/premium_store.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -156,7 +157,16 @@ class ProfileScreen extends ConsumerWidget {
                 _MenuRow(
                   icon: Icons.workspace_premium_outlined,
 
-                  label: 'Layla Pro Premium · preview',
+                  // Says out loud which build this is. The paid features
+                  // are open only when a build asked for it with
+                  // --dart-define=LAYLA_UNLOCK_ALL=true; without it the
+                  // prayer-mat scan and the paid counters behave as they will
+                  // for a real customer. Knowing which of the two you are
+                  // holding is the difference between "the camera is broken"
+                  // and "this build is not Premium".
+                  label: kUnlockAllForTesting
+                      ? 'Layla Pro Premium · unlocked for testing'
+                      : 'Layla Pro Premium',
 
                   onTap: () => context.push(Routes.paywall),
                 ),
