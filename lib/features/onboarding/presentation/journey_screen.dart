@@ -59,7 +59,10 @@ const List<JourneyStep> journeySteps = <JourneyStep>[
   PhoneHoursStep(),
   ReflectionStep(),
   PauseAppsStep(),
+  // One of these two ever shows: the Apple one on iPhone, the Android one on
+  // Android. Each checks the platform itself in `shows`.
   ScreenTimeStep(),
+  AndroidFocusStep(),
   BinaryStep(
     question: 'Shall I check your prayer mat when you confirm a prayer?',
     note:

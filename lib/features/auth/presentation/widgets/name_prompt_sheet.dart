@@ -108,8 +108,13 @@ class _NamePromptSheetState extends State<_NamePromptSheet> {
           Text('What should I call you?', style: AppType.displaySm),
           const SizedBox(height: Insets.sm),
           Text(
-            'Apple did not share your name, so Layla Pro does not know it yet. '
-            'It is only used to greet you.',
+            // Named the provider, and named the wrong one on Android. Apple
+            // is the usual reason this sheet appears — it hands back a name
+            // on the first authorisation and never again — but Google is not
+            // obliged to give one either, and somebody who signed in with
+            // Google on a Samsung was being told Apple had withheld it.
+            'Whoever you signed in with did not share your name, so Layla Pro '
+            'does not know it yet. It is only used to greet you.',
             style: AppType.bodySm.copyWith(color: AppColors.mist, height: 1.5),
           ),
           const SizedBox(height: Insets.xl),

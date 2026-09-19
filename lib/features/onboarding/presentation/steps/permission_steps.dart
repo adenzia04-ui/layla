@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -303,8 +305,14 @@ class ScreenTimeStep extends JourneyStep {
   @override
   String title(JourneyAnswers a) => 'Two taps from Apple, then we are set.';
 
+  /// iPhone only. This screen is about Apple's Screen Time, down to the
+  /// words on it — an Android phone was being told it was "two taps from
+  /// Apple" and then handed the message "Screen Time is only available on
+  /// iOS" when it tapped. [AndroidFocusStep] asks Android for what Android
+  /// actually needs.
   @override
-  bool shows(JourneyAnswers a) => a.wantsAppPause == true;
+  bool shows(JourneyAnswers a) =>
+      a.wantsAppPause == true && Have.enforcedAppLock;
 
   /// Always passable. The grant lives with iOS, not here, and a journey that
   /// cannot be finished without it would trap anyone who says no.
@@ -386,6 +394,137 @@ class _ScreenTimeState extends ConsumerState<_ScreenTime> {
         const SizedBox(height: Insets.lg),
         Text(
           'You can change either of these later, in Reminders & prayer focus.',
+          style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
+        ),
+      ],
+    );
+  }
+}
+
+/// The Android half of the same question, asked in Android's own terms.
+///
+/// Two special accesses, both granted in Settings rather than in a dialog,
+/// and neither of them Screen Time. Skippable like the Apple one: somebody
+/// who says no here still has an app, and Reminders & prayer focus will ask
+/// again whenever they want it.
+class AndroidFocusStep extends JourneyStep {
+  const AndroidFocusStep();
+
+  @override
+  String title(JourneyAnswers a) => 'Two permissions, granted in Settings.';
+
+  @override
+  bool shows(JourneyAnswers a) =>
+      a.wantsAppPause == true && !Have.enforcedAppLock && Platform.isAndroid;
+
+  @override
+  bool answered(JourneyAnswers a) => true;
+
+  @override
+  String label(JourneyAnswers a) => 'Continue';
+
+  @override
+  Widget body(BuildContext context, WidgetRef ref, JourneyAnswers a) =>
+      const _AndroidFocus();
+}
+
+class _AndroidFocus extends ConsumerStatefulWidget {
+  const _AndroidFocus();
+
+  @override
+  ConsumerState<_AndroidFocus> createState() => _AndroidFocusState();
+}
+
+class _AndroidFocusState extends ConsumerState<_AndroidFocus>
+    with WidgetsBindingObserver {
+  bool _busy = false;
+  LockPermissions _state = const LockPermissions();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _refresh();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Re-reads both grants whenever the app comes back to the front.
+  ///
+  /// Both are given in Settings, which means leaving the app and returning,
+  /// and the answer is not readable the instant we return: the overlay grant
+  /// reported as still missing for a second or so after it had been given,
+  /// so the row sat there grey and the person had gone to Settings for
+  /// nothing they could see.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refresh();
+  }
+
+  Future<void> _refresh() async {
+    // Asked more than once, briefly. The grant lands in the system a moment
+    // after the screen does.
+    for (final int wait in <int>[0, 400, 1200]) {
+      if (wait > 0) {
+        await Future<void>.delayed(Duration(milliseconds: wait));
+      }
+      if (!mounted) return;
+      final LockPermissions now = await ref
+          .read(prayerLockPlatformProvider)
+          .permissions();
+      if (!mounted) return;
+      setState(() => _state = now);
+      if (now.usageAccess && now.overlay) return;
+    }
+  }
+
+  Future<void> _ask(Future<void> Function() request) async {
+    setState(() => _busy = true);
+    await request();
+    if (!mounted) return;
+    setState(() => _busy = false);
+    await _refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final PrayerLockPlatform lock = ref.read(prayerLockPlatformProvider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Text(
+          'Android has nothing like Screen Time, so Layla Pro does the '
+          'nearest honest thing: it notices a paused app opening and covers '
+          'it with a prayer screen. That needs two permissions you grant in '
+          'Settings, and it never records which apps you use.',
+          style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
+        ),
+        const SizedBox(height: Insets.xl),
+        _Grant(
+          step: '1',
+          label: 'Usage access',
+          done: _state.usageAccess,
+          busy: _busy,
+          onTap: _state.usageAccess
+              ? null
+              : () => _ask(lock.requestUsageAccess),
+        ),
+        const SizedBox(height: Insets.sm),
+        _Grant(
+          step: '2',
+          label: 'Display over other apps',
+          done: _state.overlay,
+          busy: _busy,
+          onTap: _state.overlay ? null : () => _ask(lock.requestOverlay),
+        ),
+        const SizedBox(height: Insets.lg),
+        Text(
+          'You choose which apps to pause in Reminders & prayer focus, and '
+          'you can change either permission there or turn this off entirely.',
           style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
         ),
       ],

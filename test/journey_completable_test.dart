@@ -66,12 +66,24 @@ void main() {
     }
   });
 
-  test('declining app pause drops the Screen Time step', () {
+  test('declining app pause drops both permission steps', () {
     const JourneyAnswers no = JourneyAnswers(wantsAppPause: false);
     expect(const ScreenTimeStep().shows(no), isFalse);
-    expect(
-      const ScreenTimeStep().shows(const JourneyAnswers(wantsAppPause: true)),
-      isTrue,
-    );
+    expect(const AndroidFocusStep().shows(no), isFalse);
+  });
+
+  test('the Apple step and the Android step never both appear', () {
+    // One asks for Screen Time, the other for usage access and the overlay,
+    // and each is worded for its own platform. An Android phone used to be
+    // shown the Apple one — "two taps from Apple" — and then told, when it
+    // tapped, that Screen Time is only available on iOS.
+    //
+    // Tests run on the Dart VM, which is neither platform, so both are false
+    // here. What this pins is that neither can ever be true at the same time
+    // as the other.
+    const JourneyAnswers yes = JourneyAnswers(wantsAppPause: true);
+    final bool apple = const ScreenTimeStep().shows(yes);
+    final bool android = const AndroidFocusStep().shows(yes);
+    expect(apple && android, isFalse);
   });
 }
