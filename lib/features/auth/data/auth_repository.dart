@@ -554,8 +554,22 @@ class AuthRepository {
     // The Auth profile is a nice-to-have — it is what other providers read
     // back on a later sign-in. Failing to set it must not undo the write the
     // person can actually see.
+    //
+    // Timed out for the same reason the Firestore write above is, and it was
+    // missed here: this call goes to Firebase's servers and, on a bad
+    // connection, neither returns nor throws. The caller is a modal sheet
+    // that cannot be dismissed, so a hang here left somebody staring at a
+    // spinning Save button with no error, no way back, and their name already
+    // saved in the one place the app actually reads.
     try {
-      await user.updateDisplayName(clean);
+      await user
+          .updateDisplayName(clean)
+          .timeout(
+            const Duration(seconds: 6),
+            onTimeout: () => debugPrint(
+              'Layla Pro: auth profile name timed out; the profile is saved',
+            ),
+          );
     } on Object catch (error) {
       debugPrint('Layla Pro: auth profile name not updated ($error)');
     }
