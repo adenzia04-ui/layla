@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The small one: which prayer is next, when, and how long from now.
+     A Chronometer rather than a text countdown, because a widget cannot
+     redraw every second — the system ticks this one for us. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/next_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFD9B26A"
+        android:textSize="13sp"
+        android:letterSpacing="0.08"
+        android:textAllCaps="true"
+        android:text="Next prayer" />
+
+    <TextView
+        android:id="@+id/next_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="#FFF6F1E7"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:text="Fajr" />
+
+    <Chronometer
+        android:id="@+id/next_countdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="#FF96A5BE"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/next_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="#FF96A5BE"
+        android:textSize="13sp"
+        android:text="" />
+</LinearLayout>

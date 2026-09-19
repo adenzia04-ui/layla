@@ -88,11 +88,6 @@ widgetSnapshotProvider = Provider<WidgetSnapshot?>((Ref ref) {
 
 /// Pushes each new snapshot across to iOS. Watched once from the app shell.
 final Provider<void> widgetSyncProvider = Provider<void>((Ref ref) {
-  // Nothing on the other side of the channel on Android: no widget
-  // extension, no Live Activity. Every call below would be swallowed as a
-  // missing plugin, but the globe frame is rendered before it is sent, so
-  // leaving this to fail quietly would burn a 640px render every twenty
-  // minutes for a picture nobody can see.
   if (!Have.homeScreenWidgets) return;
 
   final WidgetSnapshot? snapshot = ref.watch(widgetSnapshotProvider);
@@ -109,10 +104,12 @@ final Provider<void> widgetSyncProvider = Provider<void>((Ref ref) {
   // after eight hours; the next launch starts it again.
   // Unless it has been switched off in Reminders & prayer focus, in which
   // case any activity still showing is ended now.
-  if (ref.watch(liveActivityEnabledProvider)) {
-    unawaited(bridge.startLiveActivity(snapshot));
-  } else {
-    unawaited(bridge.endLiveActivity());
+  if (Have.liveActivity) {
+    if (ref.watch(liveActivityEnabledProvider)) {
+      unawaited(bridge.startLiveActivity(snapshot));
+    } else {
+      unawaited(bridge.endLiveActivity());
+    }
   }
 
   // Home-screen widgets compute their own times, but the streak and today's
@@ -127,7 +124,10 @@ final Provider<void> widgetSyncProvider = Provider<void>((Ref ref) {
   // timeline, there is no frame loop to run — so the honest version of "it
   // moves" is that the sphere is at the angle the hour says it should be, and
   // has visibly turned whenever you look again later.
-  unawaited(_publishGlobe(bridge, snapshot));
+  // Only iOS has a widget that draws it, and the frame is rendered before it
+  // is sent — so leaving this to fail quietly on Android would burn a 640px
+  // render every twenty minutes for a picture nobody can see.
+  if (Have.liveActivity) unawaited(_publishGlobe(bridge, snapshot));
 });
 
 DateTime? _globePublishedAt;

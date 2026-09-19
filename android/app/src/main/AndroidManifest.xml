@@ -129,6 +129,33 @@
             </intent-filter>
         </receiver>
 
+        <!-- The home-screen widgets. iOS has had these from the start on
+             WidgetKit; these are the Android ones, drawn from the day the
+             app already computed rather than a second copy of the maths. -->
+        <receiver
+            android:name=".NextPrayerWidget"
+            android:exported="false"
+            android:label="@string/widget_next_prayer_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_next_prayer_info" />
+        </receiver>
+
+        <receiver
+            android:name=".PrayerTimesWidget"
+            android:exported="false"
+            android:label="@string/widget_prayer_times_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_prayer_times_info" />
+        </receiver>
+
         <!-- Keeps the prayer window alive when the soft lock is enabled. -->
         <service
             android:name=".PrayerLockService"

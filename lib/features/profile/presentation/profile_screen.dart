@@ -187,7 +187,7 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 // Android has no widget extension to colour, so the row
                 // that leads to one is not shown there.
-                if (Have.homeScreenWidgets)
+                if (Have.widgetColourSets)
                   _MenuRow(
                     icon: Icons.palette_outlined,
                     label: 'Widgets & colours',

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- updatePeriodMillis is deliberately 0: Android refuses anything under
+     30 minutes anyway, and the countdown is a Chronometer the system ticks
+     itself. The app pushes a redraw whenever the day's times change. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/widget_next_prayer"
+    android:previewLayout="@layout/widget_next_prayer"
+    android:description="@string/widget_next_prayer_description"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

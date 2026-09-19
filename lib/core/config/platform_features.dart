@@ -14,11 +14,16 @@ import 'dart:io';
 abstract final class Have {
   const Have._();
 
-  /// WidgetKit home-screen and Lock Screen widgets, and the colour sets they
-  /// draw in. Android app widgets are a separate piece of native work that
-  /// does not exist yet; until it does, the whole "Widgets & colours" screen
-  /// has nothing to configure.
-  static bool get homeScreenWidgets => Platform.isIOS;
+  /// Home-screen widgets. Both platforms have them now: WidgetKit on iPhone,
+  /// app widgets on Android. They are not the same set — Android has the next
+  /// prayer and the day's times, where iOS also has the globe, the tracker
+  /// and the Lock Screen — but on both there is something to configure.
+  static bool get homeScreenWidgets => Platform.isIOS || Platform.isAndroid;
+
+  /// The colour sets. iOS redraws every widget in the chosen palette; the
+  /// Android widgets are drawn in Midnight and nothing else yet, so offering
+  /// nine stones there would be offering eight that do nothing.
+  static bool get widgetColourSets => Platform.isIOS;
 
   /// The Lock Screen / Dynamic Island countdown. Android's nearest relative
   /// is an ongoing notification, which is not the same thing and is not

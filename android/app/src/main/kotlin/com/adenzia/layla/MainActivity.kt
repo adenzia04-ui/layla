@@ -7,5 +7,6 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         PrayerLockPlugin.register(this, flutterEngine)
+        WidgetPlugin.register(this, flutterEngine)
     }
 }
