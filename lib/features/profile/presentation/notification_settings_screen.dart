@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/config/platform_features.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../core/services/battery_exemption.dart';
 import '../../../core/routing/routes.dart';
 import 'widgets/sound_picker.dart';
 import '../../../core/theme/app_colors.dart';
@@ -143,6 +144,46 @@ class NotificationSettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
+          // Android only, and the most common reason a reminder never comes.
+          // The alarm is booked correctly and the phone decides not to run
+          // it — Samsung's One UI puts apps to sleep by default — so the
+          // notification simply does not arrive and nothing on screen
+          // suggests why. iOS has no equivalent, and `unrestrictedProvider`
+          // answers true there so this never appears.
+          if (!(ref.watch(unrestrictedProvider).valueOrNull ?? true)) ...<Widget>[
+            const SizedBox(height: Insets.md),
+            NightCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _StepRow(
+                    done: false,
+                    title: 'Let reminders through',
+                    body:
+                        'This phone is allowed to put Layla Pro to sleep, and '
+                        'a sleeping app cannot sound the adhan. Set battery '
+                        'use to Unrestricted.',
+                    actionLabel: 'Open',
+                    onAction: () async {
+                      await ref.read(batteryExemptionProvider).open();
+                      ref.invalidate(unrestrictedProvider);
+                    },
+                  ),
+                  const SizedBox(height: Insets.md),
+                  const _Caveat(
+                    text:
+                        'On Samsung there is a second switch: Settings → '
+                        'Battery → Background usage limits → make sure Layla '
+                        'Pro is not in "Sleeping apps" or "Deep sleeping '
+                        'apps". Both have to be right or the reminders arrive '
+                        'late, or not at all.',
+                    tone: AppColors.amber,
+                  ),
+                ],
+              ),
+            ),
+          ],
+
           const SizedBox(height: Insets.md),
           TextButton.icon(
             onPressed: () async {

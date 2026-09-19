@@ -28,6 +28,7 @@ class MainActivity : FlutterActivity() {
         PrayerLockPlugin.register(this, flutterEngine)
         WidgetPlugin.register(this, flutterEngine)
         MatVisionPlugin.register(this, flutterEngine)
+        PowerPlugin.register(this, flutterEngine)
     }
 
     /**
