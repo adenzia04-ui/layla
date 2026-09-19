@@ -1,7 +1,7 @@
 name: noor
 description: "Layla Pro — stay connected with your prayers."
 publish_to: 'none'
-version: 1.0.0+5
+version: 1.0.0+6
 
 environment:
   # Raised from 3.6/3.27 by the live prayer-mat scanner: camera 0.12 is the

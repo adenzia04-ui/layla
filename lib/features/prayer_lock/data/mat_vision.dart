@@ -21,13 +21,30 @@ class MatFrame {
     required this.height,
     required this.bytesPerRow,
     required this.sensorOrientation,
+    this.u,
+    this.v,
+    this.uvRowStride,
+    this.uvPixelStride,
   });
 
-  /// A single BGRA plane, exactly as the preview stream delivers it.
+  /// A single BGRA plane, exactly as the preview stream delivers it — or, on
+  /// Android, the luminance plane of a YUV420 frame.
   final Uint8List bytes;
   final int width;
   final int height;
   final int bytesPerRow;
+
+  /// The two chroma planes, when the camera gives them.
+  ///
+  /// iOS hands over one BGRA plane and these stay null. Android gives YUV420
+  /// in three, and luminance on its own is a greyscale picture — enough to
+  /// see shape, blind to the colour that separates a prayer mat from the
+  /// floor it is lying on. Sending them is the difference between the check
+  /// seeing what the camera sees and seeing a black-and-white version of it.
+  final Uint8List? u;
+  final Uint8List? v;
+  final int? uvRowStride;
+  final int? uvPixelStride;
 
   /// How far the sensor sits from upright, in degrees — straight off
   /// `CameraDescription.sensorOrientation`.
@@ -47,7 +64,13 @@ final Provider<MatVision> matVisionProvider = Provider<MatVision>(
   (Ref ref) => MatVision(ref.watch(matSecondOpinionProvider)),
 );
 
-/// Asks iOS to classify the Step 2 photo, on the device.
+/// Asks the phone to classify the Step 2 photo, on the device.
+///
+/// Both platforms answer now, and with the same numbers: iOS runs Apple's
+/// MobileCLIP-S0 image encoder through CoreML, Android runs the same
+/// encoder through ONNX Runtime, and both score against the prompt vectors
+/// in `mat_prompts.json`. Android answered nothing at all until then, so
+/// the scanner never fired on its own and fell back to a manual shutter.
 ///
 /// Every failure path returns [MatVerdict.unsure], which the caller treats as
 /// a pass. That is deliberate: this check exists to stop someone photographing
@@ -176,11 +199,21 @@ class MatVision {
 
   Future<List<VisionLabel>> _frameLabels(MatFrame frame) =>
       _ask('classifyFrame', <String, Object?>{
+        // iOS reads 'bytes' and 'orientation'; Android reads 'y', the chroma
+        // planes and 'rotation'. Both are sent so neither platform needs to
+        // know what the other wanted.
         'bytes': frame.bytes,
+        'y': frame.bytes,
         'width': frame.width,
         'height': frame.height,
         'bytesPerRow': frame.bytesPerRow,
+        'yRowStride': frame.bytesPerRow,
         'orientation': frame.exifOrientation,
+        'rotation': ((frame.sensorOrientation % 360) + 360) % 360,
+        if (frame.u != null) 'u': frame.u,
+        if (frame.v != null) 'v': frame.v,
+        if (frame.uvRowStride != null) 'uvRowStride': frame.uvRowStride,
+        if (frame.uvPixelStride != null) 'uvPixelStride': frame.uvPixelStride,
       });
 
   Future<List<VisionLabel>> _ask(

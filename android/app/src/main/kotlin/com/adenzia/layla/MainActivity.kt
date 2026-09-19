@@ -27,6 +27,7 @@ class MainActivity : FlutterActivity() {
         launchLink = laylaLink(intent)
         PrayerLockPlugin.register(this, flutterEngine)
         WidgetPlugin.register(this, flutterEngine)
+        MatVisionPlugin.register(this, flutterEngine)
     }
 
     /**

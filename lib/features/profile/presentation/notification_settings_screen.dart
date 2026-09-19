@@ -849,6 +849,35 @@ class _AndroidSoftLockCard extends ConsumerWidget {
             ),
 
             const SizedBox(height: Insets.sm),
+
+            // The mat scanner's own test buttons, which used to sit only on
+            // the iPhone card — reasonably, since until the encoder was
+            // ported there was nothing on Android to test. There is now, and
+            // these are the only way to find out what a photo actually
+            // scored.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () => _testMatScanner(context, ref),
+                icon: const Icon(
+                  Icons.center_focus_strong_outlined,
+                  size: 18,
+                ),
+                label: const Text('Test the prayer-mat scanner'),
+                style: TextButton.styleFrom(foregroundColor: AppColors.gold),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () => _testMatPhoto(context, ref),
+                icon: const Icon(Icons.photo_camera_outlined, size: 18),
+                label: const Text('Score a single photo'),
+                style: TextButton.styleFrom(foregroundColor: AppColors.gold),
+              ),
+            ),
+
+            const SizedBox(height: Insets.sm),
             const _Caveat(
               text:
                   'Even with both granted, this is best-effort. Android can '

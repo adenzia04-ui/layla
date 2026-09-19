@@ -20,6 +20,12 @@ plugins {
 }
 
 android {
+    androidResources {
+        // Left uncompressed so the encoder can be memory-mapped straight out
+        // of the apk instead of inflating 22MB on every scan.
+        noCompress += "onnx"
+    }
+
     namespace = "com.adenzia.layla"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
@@ -80,6 +86,12 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
+    // The prayer-mat scanner's eyes. iPhone runs the same MobileCLIP image
+    // encoder through CoreML; this is the Android half, and without it
+    // `MatVision.canScan` answers false and the scanner falls back to a manual
+    // shutter — which is exactly what it had been doing since Android shipped.
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.20.0")
 }
 
 kotlin {

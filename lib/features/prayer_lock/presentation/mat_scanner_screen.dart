@@ -297,6 +297,10 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
   Future<void> _judge(CameraImage image) async {
     if (image.planes.isEmpty) return;
     final Plane plane = image.planes.first;
+    // Three planes means YUV420, which is what Android gives whatever format
+    // was asked for. The other two carry the colour, and without them the
+    // check would be judging a greyscale picture.
+    final bool hasChroma = image.planes.length >= 3;
     final MatVerdict seen = await ref
         .read(matVisionProvider)
         .inspectFrame(
@@ -306,6 +310,10 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
             height: image.height,
             bytesPerRow: plane.bytesPerRow,
             sensorOrientation: _lens?.sensorOrientation ?? 0,
+            u: hasChroma ? image.planes[1].bytes : null,
+            v: hasChroma ? image.planes[2].bytes : null,
+            uvRowStride: hasChroma ? image.planes[1].bytesPerRow : null,
+            uvPixelStride: hasChroma ? image.planes[1].bytesPerPixel ?? 1 : null,
           ),
         );
     if (!mounted || _phase != _Phase.scanning) return;
