@@ -12,6 +12,7 @@ import '../../../prayer_lock/application/prayer_lock_controller.dart';
 import '../../../prayer_lock/application/prayer_lock_sync.dart';
 import '../../../prayer_lock/domain/prayer_session.dart';
 import '../../../prayer_lock/presentation/scan_flow.dart';
+import '../../../prayer_lock/presentation/widgets/mat_scan_offer.dart';
 
 /// One line explaining what an answer costs.
 class _Note extends StatelessWidget {
@@ -179,6 +180,12 @@ class PrayerChoiceCard extends ConsumerWidget {
                   return ok;
                 }),
         ),
+
+        // Shown, not hidden. A free confirmation is one tap and the streak
+        // moves the same way; the paid alternative used to be drawn nowhere
+        // at all, so this screen said nothing about it existing and read as
+        // a broken feature rather than a paid one.
+        if (!pro && !awaiting) const MatScanOffer(),
 
         // Step 1 is still a commitment: once it is pressed the photo is the
         // only way on, or the second step would mean nothing.

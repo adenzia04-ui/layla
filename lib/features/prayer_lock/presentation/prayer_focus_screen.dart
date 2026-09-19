@@ -17,6 +17,7 @@ import '../../premium/application/premium_store.dart';
 import '../application/prayer_lock_controller.dart';
 import '../domain/prayer_session.dart';
 import 'scan_flow.dart';
+import 'widgets/mat_scan_offer.dart';
 
 /// The 30-minute prayer window, full screen.
 ///
@@ -227,6 +228,8 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
                                 }
                               },
                       ),
+                      if (!ref.watch(isProProvider) && !session.awaitingProof)
+                        const MatScanOffer(),
                       const SizedBox(height: Insets.sm),
 
                       // Step 1 is a commitment: once "I am praying now" has
