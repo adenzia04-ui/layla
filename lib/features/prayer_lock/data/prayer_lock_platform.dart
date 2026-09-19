@@ -188,6 +188,32 @@ Future<T?> _invoke<T>(String method, [Map<String, Object?>? args]) async {
   }
 }
 
+/// One installed app, as the Android picker shows it.
+///
+/// The icon arrives as PNG bytes rather than a path: a Flutter list cannot
+/// read another package's resources, and the native side is the only place
+/// that can.
+class AndroidApp {
+  const AndroidApp({
+    required this.package,
+    required this.label,
+    required this.isSystem,
+    this.icon,
+  });
+
+  factory AndroidApp.fromMap(Map<Object?, Object?> map) => AndroidApp(
+    package: map['package'] as String? ?? '',
+    label: map['label'] as String? ?? '',
+    isSystem: map['system'] as bool? ?? false,
+    icon: map['icon'] as Uint8List?,
+  );
+
+  final String package;
+  final String label;
+  final bool isSystem;
+  final Uint8List? icon;
+}
+
 /// Android: foreground service + usage polling + overlay.
 /// Implemented in `platform/kotlin/PrayerLockService.kt`.
 class AndroidSoftLock implements PrayerLockPlatform {
@@ -221,17 +247,60 @@ class AndroidSoftLock implements PrayerLockPlatform {
   Future<String?> requestAuthorization() async =>
       'Screen Time is only available on iOS.';
 
+  /// Android has no system app picker, so Layla draws its own.
+  ///
+  /// Apple hands back opaque tokens and never says which apps were chosen.
+  /// Android has no equivalent, so the list of installed apps is read here
+  /// and the choice is kept on the phone. [androidInstalledApps] and
+  /// [setBlockedPackages] are the two halves of it.
   @override
   Future<bool> chooseApps() async => false;
 
-  /// Android schedules nothing ahead of time: the service starts when a
-  /// window opens. Scope is irrelevant here — the soft lock returns the user
-  /// to Noor rather than shielding a chosen set.
+  /// Every app with a launcher icon, for the picker.
+  Future<List<AndroidApp>> installedApps() async {
+    final List<Object?>? rows = await _invoke<List<Object?>>('installedApps');
+    if (rows == null) return const <AndroidApp>[];
+    return rows
+        .whereType<Map<Object?, Object?>>()
+        .map(AndroidApp.fromMap)
+        .toList();
+  }
+
+  Future<Set<String>> blockedPackages() async {
+    final List<Object?>? rows = await _invoke<List<Object?>>('blockedPackages');
+    return rows?.whereType<String>().toSet() ?? <String>{};
+  }
+
+  Future<void> setBlockedPackages(Set<String> packages) => _invoke<void>(
+    'setBlockedPackages',
+    <String, Object?>{'packages': packages.toList()},
+  );
+
+  /// Hands the day's windows to the native side, which books its own alarms.
+  ///
+  /// This used to do nothing at all, on the reasoning that the service starts
+  /// when a window opens. It did not: the only thing that ever started it was
+  /// a screen reached from a route nothing navigated to, so on Android the
+  /// lock had never engaged in a shipping build. Now the alarm chain in
+  /// PrayerWindowReceiver starts and stops it at each edge, with the app
+  /// closed, which is when it matters.
+  ///
+  /// Scope is not used: on Android the person picks the apps themselves.
   @override
   Future<void> scheduleWindows(
     List<LockWindow> windows, {
     BlockScope scope = BlockScope.everything,
-  }) async {}
+  }) => _invoke<void>('scheduleWindows', <String, Object?>{
+    'windows': windows
+        .map(
+          (LockWindow w) => <String, Object?>{
+            'label': w.label,
+            'startMs': w.start.millisecondsSinceEpoch,
+            'endMs': w.end.millisecondsSinceEpoch,
+          },
+        )
+        .toList(),
+  });
 
   @override
   Future<void> start({required String prayerLabel, required DateTime endsAt}) =>

@@ -2,6 +2,13 @@ package com.adenzia.layla
 
 import android.app.Activity
 import android.app.AppOpsManager
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import java.io.ByteArrayOutputStream
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -96,8 +103,112 @@ object PrayerLockPlugin {
                 result.success(true)
             }
 
+            // The day's windows, handed over so the lock can engage with
+            // Flutter dead. iOS gives these to DeviceActivity and Apple does
+            // the rest; Android has no such service, so the app books its own
+            // alarms. Passing an empty list turns the schedule off.
+            "scheduleWindows" -> {
+                val raw = call.argument<List<Map<String, Any?>>>("windows")
+                    ?: emptyList()
+                val windows = raw.mapNotNull { row ->
+                    val start = (row["startMs"] as? Number)?.toLong()
+                    val end = (row["endMs"] as? Number)?.toLong()
+                    if (start == null || end == null || end <= start) {
+                        null
+                    } else {
+                        LockStore.Window(
+                            (row["label"] as? String) ?: "Prayer",
+                            start,
+                            end,
+                        )
+                    }
+                }
+                LockStore.setWindows(activity, windows)
+                LockStore.setEnabled(activity, windows.isNotEmpty())
+                PrayerWindowReceiver.reschedule(activity)
+                result.success(true)
+            }
+
+            // Which apps this person chose to pause. Stored on the phone and
+            // read by the service; never sent anywhere.
+            "setBlockedPackages" -> {
+                val packages = call.argument<List<String>>("packages")
+                    ?: emptyList()
+                LockStore.setBlocked(activity, packages.toSet())
+                result.success(true)
+            }
+
+            "blockedPackages" ->
+                result.success(LockStore.blocked(activity).toList())
+
+            // Everything with a launcher icon, for the app picker. Apple hands
+            // back opaque tokens and never tells the app what was chosen;
+            // Android has no such picker, so Layla draws its own and has to
+            // read the list itself.
+            "installedApps" -> result.success(installedApps(activity))
+
             else -> result.notImplemented()
         }
+    }
+
+    /**
+     * Apps with a launcher entry, minus this one, newest ordering left to the
+     * caller.
+     *
+     * Icons travel as PNG bytes rather than paths: the picker is Flutter and
+     * cannot read another package's resources. They are capped at 96px, which
+     * is enough for a list row and keeps the whole payload to a few hundred
+     * kilobytes rather than several megabytes.
+     */
+    private fun installedApps(context: Context): List<Map<String, Any?>> {
+        val pm = context.packageManager
+        val launchable = Intent(Intent.ACTION_MAIN)
+            .addCategory(Intent.CATEGORY_LAUNCHER)
+        val resolved = pm.queryIntentActivities(launchable, 0)
+        val seen = HashSet<String>()
+        val apps = ArrayList<Map<String, Any?>>()
+        for (info in resolved) {
+            val pkg = info.activityInfo?.packageName ?: continue
+            if (pkg == context.packageName) continue
+            if (!seen.add(pkg)) continue
+            val appInfo: ApplicationInfo = try {
+                pm.getApplicationInfo(pkg, 0)
+            } catch (error: PackageManager.NameNotFoundException) {
+                continue
+            }
+            apps.add(
+                mapOf(
+                    "package" to pkg,
+                    "label" to pm.getApplicationLabel(appInfo).toString(),
+                    "system" to
+                        ((appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0),
+                    "icon" to iconBytes(pm.getApplicationIcon(appInfo)),
+                ),
+            )
+        }
+        apps.sortBy { (it["label"] as String).lowercase() }
+        return apps
+    }
+
+    private fun iconBytes(drawable: Drawable): ByteArray? = try {
+        val size = 96
+        val bitmap = if (
+            drawable is BitmapDrawable && drawable.bitmap != null
+        ) {
+            Bitmap.createScaledBitmap(drawable.bitmap, size, size, true)
+        } else {
+            Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888).also { bmp ->
+                val canvas = Canvas(bmp)
+                drawable.setBounds(0, 0, size, size)
+                drawable.draw(canvas)
+            }
+        }
+        ByteArrayOutputStream().use { out ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            out.toByteArray()
+        }
+    } catch (error: Exception) {
+        null
     }
 
     fun hasUsageAccess(context: Context): Boolean {

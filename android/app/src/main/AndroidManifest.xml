@@ -19,7 +19,15 @@
 
     <!-- Prayer reminders -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Capped on purpose. Uncapped, SCHEDULE_EXACT_ALARM is denied by
+         default from Android 14 and can be withdrawn at any time, and
+         withdrawing it force-stops the app and cancels every alarm it had
+         booked — which on this app means every prayer reminder and the whole
+         prayer-focus schedule, silently. USE_EXACT_ALARM covers 33 and up
+         and cannot be taken away. -->
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -91,6 +99,35 @@
                 android:name="flutter_deeplinking_enabled"
                 android:value="true" />
         </activity>
+
+        <!-- What a paused app opens to during a prayer window. Its own task
+             so it replaces the app it covers rather than stacking on Layla,
+             and out of Recents so it cannot be returned to after it closes. -->
+        <activity
+            android:name=".PrayerShieldActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity=".shield"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" />
+
+        <!-- Starts and stops the focus at each window edge, with the app
+             closed. Without this the lock only ever engaged while somebody
+             was already looking at Layla, which is the moment it is least
+             needed. -->
+        <receiver
+            android:name=".PrayerWindowReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
 
         <!-- Keeps the prayer window alive when the soft lock is enabled. -->
         <service

@@ -9,25 +9,37 @@ import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
+import android.view.View
+import android.view.WindowManager
 
 /**
  * The Android half of the prayer lock, and the honest limits of it.
  *
- * While a prayer window is open this service polls which app is in the
- * foreground. When it is not Noor, it brings the prayer focus screen back —
- * which is only permitted because the user granted "display over other apps",
- * the grant that also lifts the background-activity-start restriction.
+ * While a prayer window is open this service watches which app is in front.
+ * When it is one the person chose to pause, it raises [PrayerShieldActivity]
+ * over the top. That is as close to Apple's Screen Time shield as Android
+ * allows a normal app to get, and the gap is real: the other app is visible
+ * for a moment first, and anybody can leave.
  *
  * What this deliberately does NOT do:
- *  - use an AccessibilityService (works, but is a Play Store policy problem)
- *  - record, store or transmit which apps the user opened
- *  - run outside an open prayer window
- *  - survive the user turning the feature off, force-stopping, or rebooting
+ *  - use an AccessibilityService. It would detect the launch instantly rather
+ *    than within a second, and Play does permit it with a declaration — but
+ *    the policy asks for the narrowest API that achieves the job, and
+ *    UsageStatsManager plainly achieves this one. It would also put every
+ *    future release into extended review, and Android's Advanced Protection
+ *    revokes it outright for the users who turn that on.
+ *  - record, store or transmit which apps were opened. The foreground package
+ *    is read, compared against the chosen set, and discarded.
+ *  - run outside an open prayer window.
+ *  - survive the person turning the feature off, force-stopping, or revoking
+ *    either permission. All three are meant to work.
  */
 class PrayerLockService : Service() {
 
@@ -37,21 +49,26 @@ class PrayerLockService : Service() {
         const val EXTRA_LABEL = "prayerLabel"
         const val EXTRA_ENDS_AT = "endsAtMillis"
 
-        private const val TAG = "NoorPrayerLock"
+        private const val TAG = "LaylaPrayerLock"
         private const val CHANNEL_ID = "prayer_focus_service"
         private const val NOTIFICATION_ID = 4711
 
-        /** Long enough to be gentle on the battery, short enough to matter. */
-        private const val POLL_INTERVAL_MS = 2_000L
+        /**
+         * Short enough that the paused app is on screen for about a second,
+         * long enough that the poll costs little. Under a second the query
+         * starts returning the same event repeatedly for no gain.
+         */
+        private const val POLL_INTERVAL_MS = 900L
 
-        /** Don't re-launch more than once every few seconds. */
-        private const val RELAUNCH_COOLDOWN_MS = 6_000L
+        /** Don't stack shields if the person keeps trying the same app. */
+        private const val RERAISE_COOLDOWN_MS = 4_000L
     }
 
     private val handler = Handler(Looper.getMainLooper())
     private var endsAt: Long = 0
     private var label: String = "Prayer"
-    private var lastRelaunch: Long = 0
+    private var lastRaise: Long = 0
+    private var anchor: View? = null
 
     private val poll = object : Runnable {
         override fun run() {
@@ -82,50 +99,100 @@ class PrayerLockService : Service() {
                     EXTRA_ENDS_AT,
                     System.currentTimeMillis() + 30 * 60 * 1000L,
                 )
+                if (endsAt <= System.currentTimeMillis()) {
+                    stopSelf()
+                    return START_NOT_STICKY
+                }
                 startForeground(NOTIFICATION_ID, buildNotification())
+                addAnchor()
                 handler.removeCallbacks(poll)
                 handler.postDelayed(poll, POLL_INTERVAL_MS)
             }
         }
         // Deliberately not START_STICKY: if Android kills this, the user is
-        // not silently re-locked later without context.
+        // not silently re-locked later without context. The alarm chain in
+        // PrayerWindowReceiver brings it back at the next edge instead.
         return START_NOT_STICKY
     }
 
     override fun onDestroy() {
         handler.removeCallbacks(poll)
+        removeAnchor()
         super.onDestroy()
+    }
+
+    /**
+     * A one-pixel, untouchable overlay window, held for the length of the
+     * window and nothing else.
+     *
+     * It draws nothing anybody can see. Its whole job is to be an overlay
+     * window that exists, because from Android 10 a background process may
+     * only start an Activity if it holds one — which is exactly what raising
+     * the shield is. Without it the shield is refused on newer Android with a
+     * SecurityException and the feature silently does nothing.
+     */
+    private fun addAnchor() {
+        if (anchor != null) return
+        if (!Settings.canDrawOverlaysCompat(this)) return
+        val manager = getSystemService(WindowManager::class.java) ?: return
+        val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            @Suppress("DEPRECATION")
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+        val params = WindowManager.LayoutParams(
+            1,
+            1,
+            type,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+            PixelFormat.TRANSLUCENT,
+        ).apply { gravity = Gravity.TOP or Gravity.START }
+
+        val view = View(this)
+        try {
+            manager.addView(view, params)
+            anchor = view
+        } catch (error: Exception) {
+            Log.w(TAG, "overlay anchor refused", error)
+        }
+    }
+
+    private fun removeAnchor() {
+        val view = anchor ?: return
+        anchor = null
+        try {
+            getSystemService(WindowManager::class.java)?.removeView(view)
+        } catch (error: Exception) {
+            Log.w(TAG, "overlay anchor already gone", error)
+        }
     }
 
     private fun checkForeground() {
         val current = foregroundPackage() ?: return
         if (current == packageName) return
-        // Home screen and the system UI are left alone — putting the phone
-        // down is exactly what we want the user to do.
-        if (current == launcherPackage() || current == "android") return
+        // Only the apps the person actually chose. An empty set pauses
+        // nothing, which is the right answer for somebody who turned the
+        // feature on and never picked anything.
+        if (current !in LockStore.blocked(this)) return
 
         val now = System.currentTimeMillis()
-        if (now - lastRelaunch < RELAUNCH_COOLDOWN_MS) return
-        lastRelaunch = now
+        if (now - lastRaise < RERAISE_COOLDOWN_MS) return
+        lastRaise = now
 
         try {
-            startActivity(
-                Intent(this, MainActivity::class.java).apply {
-                    addFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK or
-                            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT,
-                    )
-                },
-            )
+            startActivity(PrayerShieldActivity.intent(this, label, endsAt))
         } catch (error: SecurityException) {
-            // Background activity starts are blocked on some OEM builds even
+            // Background activity starts are refused on some OEM builds even
             // with the overlay grant. Nothing to do but stay out of the way.
-            Log.w(TAG, "could not return to Noor", error)
+            Log.w(TAG, "could not raise the shield", error)
         }
     }
 
     /**
-     * The most recent app to move to the foreground in the last 10 seconds.
+     * The most recent app to move to the foreground in the last few seconds.
      * Nothing is stored: the value is read, compared, and discarded.
      */
     private fun foregroundPackage(): String? {
@@ -148,14 +215,6 @@ class PrayerLockService : Service() {
         return latest
     }
 
-    private fun launcherPackage(): String? = packageManager
-        .resolveActivity(
-            Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME),
-            0,
-        )
-        ?.activityInfo
-        ?.packageName
-
     private fun buildNotification(): Notification {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = getSystemService(NotificationManager::class.java)
@@ -166,8 +225,8 @@ class PrayerLockService : Service() {
                     NotificationManager.IMPORTANCE_LOW,
                 ).apply {
                     description =
-                        "Shown while a prayer window is open and the soft " +
-                        "lock is on."
+                        "Shown while a prayer window is open and the apps " +
+                        "you chose are paused."
                     setShowBadge(false)
                 },
             )
@@ -196,4 +255,14 @@ class PrayerLockService : Service() {
             .setOngoing(true)
             .build()
     }
+}
+
+/** Overlay permission, without dragging Settings into every file. */
+private object Settings {
+    fun canDrawOverlaysCompat(context: Context): Boolean =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            android.provider.Settings.canDrawOverlays(context)
+        } else {
+            true
+        }
 }
