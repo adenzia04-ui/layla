@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/config/platform_features.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -40,7 +41,7 @@ class _CycleStartSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _SheetFrame(
+    return _SheetFrame(
       title: 'Pause prayers for these days?',
       // The ruling first, in plain words, because it is the thing the feature
       // exists to honour and the thing an app can most easily get wrong. A
@@ -50,7 +51,7 @@ class _CycleStartSheet extends StatelessWidget {
           'While you are on your period you do not pray, and these prayers '
           'are not made up afterwards.',
       rows: <_SheetRow>[
-        _SheetRow(
+        const _SheetRow(
           icon: Icons.check_circle_outline_rounded,
           positive: true,
           title: 'Nothing is owed',
@@ -58,7 +59,7 @@ class _CycleStartSheet extends StatelessWidget {
               'These prayers are not recorded and never counted as missed. '
               'There is nothing to make up when it ends.',
         ),
-        _SheetRow(
+        const _SheetRow(
           icon: Icons.notifications_off_outlined,
           positive: true,
           title: 'Reminders stop',
@@ -66,7 +67,7 @@ class _CycleStartSheet extends StatelessWidget {
               'No prayer reminders, no nudges, and your other apps are not '
               'paused at prayer time.',
         ),
-        _SheetRow(
+        const _SheetRow(
           icon: Icons.local_fire_department_outlined,
           positive: true,
           title: 'Your streak is kept',
@@ -78,9 +79,11 @@ class _CycleStartSheet extends StatelessWidget {
           icon: Icons.visibility_off_outlined,
           positive: false,
           title: 'Nobody can tell',
-          body:
-              'Nothing is shared with friends, and nothing about this appears '
-              'on your widgets or Lock Screen.',
+          body: Have.liveActivity
+              ? 'Nothing is shared with friends, and nothing about this '
+                    'appears on your widgets or Lock Screen.'
+              : 'Nothing is shared with friends, and nothing about this '
+                    'appears on your widgets.',
         ),
       ],
       footer:
@@ -98,7 +101,7 @@ class _CycleEndSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _SheetFrame(
+    return _SheetFrame(
       title: 'Resume prayers?',
       intro:
           'Do this once it has ended and you have made ghusl. The next prayer '
@@ -108,11 +111,13 @@ class _CycleEndSheet extends StatelessWidget {
           icon: Icons.play_circle_outline_rounded,
           positive: true,
           title: 'Everything comes back',
-          body:
-              'Reminders, the prayer choices and the shield return from the '
-              'next prayer onwards.',
+          body: Have.enforcedAppLock
+              ? 'Reminders, the prayer choices and the shield return from the '
+                    'next prayer onwards.'
+              : 'Reminders, the prayer choices and the prayer focus return '
+                    'from the next prayer onwards.',
         ),
-        _SheetRow(
+        const _SheetRow(
           icon: Icons.history_toggle_off_rounded,
           positive: true,
           title: 'The paused days stay paused',

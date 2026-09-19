@@ -193,6 +193,20 @@ Future<T?> _invoke<T>(String method, [Map<String, Object?>? args]) async {
 /// The icon arrives as PNG bytes rather than a path: a Flutter list cannot
 /// read another package's resources, and the native side is the only place
 /// that can.
+/// How many apps the Android prayer focus is set to cover.
+///
+/// Zero is the state that matters: the feature can be switched on with both
+/// permissions granted and still do nothing, because the service only ever
+/// covers an app that was chosen. The settings row reads this so that state
+/// is visible rather than something you discover by it not working.
+final FutureProvider<int> blockedAppCountProvider = FutureProvider<int>((
+  Ref ref,
+) async {
+  final PrayerLockPlatform platform = ref.watch(prayerLockPlatformProvider);
+  if (platform is! AndroidSoftLock) return 0;
+  return (await platform.blockedPackages()).length;
+});
+
 class AndroidApp {
   const AndroidApp({
     required this.package,
@@ -316,8 +330,25 @@ class AndroidSoftLock implements PrayerLockPlatform {
   @override
   Future<DateTime?> startTriggerTest() async => null;
 
+  /// A two-minute window, right now, so the focus can be seen working.
+  ///
+  /// The iPhone has had this since the start and Android had nothing: the
+  /// only way to find out whether the prayer focus worked was to wait for a
+  /// real prayer, open something else, and hope. That is not a thing anyone
+  /// will do, so in practice nobody — including us — had ever watched the
+  /// Android focus engage. Two minutes is long enough to switch apps and see
+  /// it, short enough that forgetting about it costs nothing.
   @override
-  Future<DateTime?> startTestWindow() async => null;
+  Future<DateTime?> startTestWindow() async {
+    final DateTime endsAt = DateTime.now().add(const Duration(minutes: 2));
+    final bool? started = await _invoke<bool>('start', <String, Object?>{
+      'prayerLabel': 'Test',
+      'endsAtMillis': endsAt.millisecondsSinceEpoch,
+    });
+    // The Kotlin side answers false when a permission is missing rather than
+    // starting a service that could never surface anything.
+    return started == true ? endsAt : null;
+  }
 }
 
 /// iOS: Apple's Screen Time API.
@@ -460,6 +491,23 @@ class UnsupportedPrayerLock implements PrayerLockPlatform {
   @override
   Future<DateTime?> startTriggerTest() async => null;
 
+  /// A two-minute window, right now, so the focus can be seen working.
+  ///
+  /// The iPhone has had this since the start and Android had nothing: the
+  /// only way to find out whether the prayer focus worked was to wait for a
+  /// real prayer, open something else, and hope. That is not a thing anyone
+  /// will do, so in practice nobody — including us — had ever watched the
+  /// Android focus engage. Two minutes is long enough to switch apps and see
+  /// it, short enough that forgetting about it costs nothing.
   @override
-  Future<DateTime?> startTestWindow() async => null;
+  Future<DateTime?> startTestWindow() async {
+    final DateTime endsAt = DateTime.now().add(const Duration(minutes: 2));
+    final bool? started = await _invoke<bool>('start', <String, Object?>{
+      'prayerLabel': 'Test',
+      'endsAtMillis': endsAt.millisecondsSinceEpoch,
+    });
+    // The Kotlin side answers false when a permission is missing rather than
+    // starting a service that could never surface anything.
+    return started == true ? endsAt : null;
+  }
 }

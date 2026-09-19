@@ -12,6 +12,7 @@ import '../../../../core/widgets/layla_mark.dart';
 import '../../application/friends_controller.dart';
 import '../../application/invite.dart';
 import '../../domain/friend.dart';
+import '../../../../core/widgets/platform_icons.dart';
 
 /// "Your code": the six characters someone else types to find you.
 ///
@@ -67,7 +68,7 @@ class FriendCodeCard extends ConsumerWidget {
               const SizedBox(width: Insets.md),
               Expanded(
                 child: _SealAction(
-                  icon: Icons.ios_share_rounded,
+                  icon: kShareIcon,
                   label: 'Share',
                   onPressed: value == null
                       ? null

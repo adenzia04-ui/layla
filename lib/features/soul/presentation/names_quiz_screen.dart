@@ -14,6 +14,7 @@ import '../application/name_speaker.dart';
 import '../application/names_store.dart';
 import '../domain/names_of_allah.dart';
 import 'widgets/known_ring.dart';
+import '../../../core/widgets/app_snackbar.dart';
 
 /// Learn the ninety-nine: the Arabic is shown, three meanings are offered,
 /// and a name answered right first time is counted as known.
@@ -138,8 +139,18 @@ class _NamesQuizScreenState extends ConsumerState<NamesQuizScreen> {
                     CircleIconButton(
                       icon: Icons.volume_up_rounded,
                       tooltip: 'Hear it',
-                      onPressed: () =>
-                          ref.read(nameSpeakerProvider).say(name.arabic),
+                      onPressed: () async {
+                        final bool spoke = await ref
+                            .read(nameSpeakerProvider)
+                            .say(name.arabic);
+                        if (!spoke && context.mounted) {
+                          context.showMessage(
+                            'This phone has no Arabic voice installed. You '
+                            'can add one in Settings, under language and '
+                            'speech.',
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),

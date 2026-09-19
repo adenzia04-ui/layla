@@ -18,6 +18,8 @@ import '../domain/names_detail.dart';
 import '../domain/names_of_allah.dart';
 import 'widgets/known_ring.dart';
 import 'widgets/name_share_card.dart';
+import '../../../core/widgets/platform_icons.dart';
+import '../../../core/widgets/app_snackbar.dart';
 
 /// One of the Names each day, the ninety-nine beneath it, and the ways into
 /// each: hear it, read it, live it, save it, share it, learn it.
@@ -202,7 +204,15 @@ class _SpeakButton extends ConsumerWidget {
     return CircleIconButton(
       icon: Icons.volume_up_rounded,
       tooltip: 'Hear it',
-      onPressed: () => ref.read(nameSpeakerProvider).say(arabic),
+      onPressed: () async {
+        final bool spoke = await ref.read(nameSpeakerProvider).say(arabic);
+        if (!spoke && context.mounted) {
+          context.showMessage(
+            'This phone has no Arabic voice installed. You can add one in '
+            'Settings, under language and speech.',
+          );
+        }
+      },
     );
   }
 }
@@ -433,7 +443,7 @@ class _NameSheet extends ConsumerWidget {
                 ),
                 const SizedBox(width: Insets.sm),
                 CircleIconButton(
-                  icon: Icons.ios_share_rounded,
+                  icon: kShareIcon,
                   tooltip: 'Share',
                   onPressed: () => shareName(
                     context,

@@ -192,7 +192,9 @@ class PauseAppsStep extends JourneyStep {
         _PauseIllustration(),
         const SizedBox(height: Insets.xl),
         _Choice(
-          label: 'Yes, pause them',
+          // The question above already forks per platform; the answer did
+          // not, so Android offered to "pause" apps it cannot pause.
+          label: Have.enforcedAppLock ? 'Yes, pause them' : 'Yes, bring me back',
           selected: a.wantsAppPause == true,
           onTap: () => c.setWantsAppPause(true),
         ),

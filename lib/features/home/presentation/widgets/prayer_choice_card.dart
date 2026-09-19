@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/config/platform_features.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -70,7 +71,9 @@ class PrayerChoiceCard extends ConsumerWidget {
       if (!context.mounted) return;
       if (!ok) {
         context.showMessage(
-          'That could not be saved. Your apps stay paused until it is.',
+          Have.enforcedAppLock
+              ? 'That could not be saved. Your apps stay paused until it is.'
+              : 'That could not be saved. Prayer focus stays on until it is.',
         );
       }
     }
@@ -100,8 +103,14 @@ class PrayerChoiceCard extends ConsumerWidget {
           awaiting
               ? 'Your photo finishes it. Until then this prayer is not '
                     'confirmed.'
-              : paused
+              // "Paused" is Apple's word for what Screen Time does. Android
+              // has no such thing — the focus brings Layla Pro back over
+              // whatever you opened — so on Android it says what is actually
+              // true, in the same words the shield itself uses.
+              : paused && Have.enforcedAppLock
               ? 'Your apps are paused. Any of these three releases them.'
+              : paused
+              ? 'Prayer focus is on. Any of these three ends it.'
               : 'Any of these three moves the day on.',
           style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
         ),
@@ -125,8 +134,11 @@ class PrayerChoiceCard extends ConsumerWidget {
           ),
           _Note(
             icon: Icons.schedule_rounded,
-            text: paused
+            text: paused && Have.enforcedAppLock
                 ? 'Later — apps come back, the prayer stays open, and you '
+                      'can still confirm it today.'
+                : paused
+                ? 'Later — the focus ends, the prayer stays open, and you '
                       'can still confirm it today.'
                 : 'Later — the prayer stays open, and you can still confirm '
                       'it today.',

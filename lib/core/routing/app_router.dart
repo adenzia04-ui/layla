@@ -33,6 +33,7 @@ import '../../features/stories/presentation/story_detail_screen.dart';
 import '../../features/tahajjud/presentation/tahajjud_map_screen.dart';
 import '../../features/tahajjud/presentation/tahajjud_screen.dart';
 import '../../features/dua/presentation/tasbih_dua_home_screen.dart';
+import '../../features/prayer_lock/presentation/paused_apps_screen.dart';
 import 'widget_links.dart';
 import '../../features/circles/presentation/circle_screen.dart';
 import '../../features/friends/application/invite.dart'
@@ -299,6 +300,19 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
                                       state,
                                       const NotificationSettingsScreen(),
                                     ),
+                            routes: <RouteBase>[
+                              GoRoute(
+                                path: 'apps',
+                                pageBuilder:
+                                    (
+                                      BuildContext context,
+                                      GoRouterState state,
+                                    ) => _rise(
+                                      state,
+                                      const PausedAppsScreen(),
+                                    ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

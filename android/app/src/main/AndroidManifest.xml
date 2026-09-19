@@ -304,5 +304,26 @@
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
         </intent>
+
+        <!-- The app picker for the prayer focus.
+             From Android 11 `queryIntentActivities` only returns apps the
+             manifest has declared an interest in, so without this the picker
+             would list a handful of system apps and none of the ones anybody
+             actually loses ten minutes to. This is the sanctioned way to ask;
+             QUERY_ALL_PACKAGES is the other one, and Play rejects it for
+             anything but a launcher or an antivirus. -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+
+        <!-- The "Hear it" button on the Names of Allah.
+             From Android 11 an app sees no other app it has not declared an
+             interest in, and `flutter_tts` ships no queries of its own, so
+             the plugin found no speech engine at all and every tap was
+             silent — no error, no log, nothing to notice. -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
     </queries>
 </manifest>

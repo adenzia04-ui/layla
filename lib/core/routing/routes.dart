@@ -81,6 +81,11 @@ abstract final class Routes {
   static const String notificationSettings =
       '/home/profile/settings/notifications';
 
+  /// Which apps the Android prayer focus covers. Android only — Apple's
+  /// picker is Apple's, and never says what was chosen.
+  static const String pausedApps =
+      '/home/profile/settings/notifications/apps';
+
   /// Layla Pro Premium — the paywall, over everything.
   static const String paywall = '/paywall';
 

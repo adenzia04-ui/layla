@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+
 import '../../prayer_lock/domain/mat_check.dart';
 import '../../prayer_lock/data/proof_repository.dart';
 import '../../prayer_lock/data/mat_vision.dart';
@@ -9,6 +11,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/config/platform_features.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../core/routing/routes.dart';
 import 'widgets/sound_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -188,9 +191,13 @@ class NotificationSettingsScreen extends ConsumerWidget {
               await ref.read(notificationServiceProvider).sendTestAdhan();
               if (!context.mounted) return;
               context.showSuccess(
-                'The adhan will sound in 5 seconds. Lock your phone to hear '
-                'it as you would at a prayer time — and check the ring '
-                'switch is not on silent.',
+                Platform.isIOS
+                    ? 'The adhan will sound in 5 seconds. Lock your phone to '
+                          'hear it as you would at a prayer time — and check '
+                          'the ring switch is not on silent.'
+                    : 'The adhan will sound in 5 seconds. Lock your phone to '
+                          'hear it as you would at a prayer time — and check '
+                          'your phone is not on silent or in Do Not Disturb.',
               );
             },
             icon: const Icon(Icons.volume_up_outlined, size: 18),
@@ -266,7 +273,14 @@ class NotificationSettingsScreen extends ConsumerWidget {
             ),
           ],
           const SizedBox(height: Insets.xl),
-          const SectionHeader(label: 'Pausing other apps'),
+          SectionHeader(
+            // Android does not pause anything — it comes back over what you
+            // opened — so calling the section "pausing" promised the wrong
+            // mechanism before the card underneath had a chance to explain.
+            label: Have.enforcedAppLock
+                ? 'Pausing other apps'
+                : 'Other apps during prayer',
+          ),
           lock.when(
             loading: () => const SizedBox(
               height: 90,
@@ -784,7 +798,57 @@ class _AndroidSoftLockCard extends ConsumerWidget {
                 ref.invalidate(lockPermissionsProvider);
               },
             ),
-            const SizedBox(height: Insets.lg),
+            const SizedBox(height: Insets.md),
+
+            // Without this the feature cannot do anything at all: the service
+            // only covers an app that is in the chosen set, and until now
+            // there was no way on Android to choose one. Switched on, both
+            // permissions granted, and nothing would ever happen.
+            _StepRow(
+              done: ref.watch(blockedAppCountProvider).valueOrNull != null &&
+                  ref.watch(blockedAppCountProvider).valueOrNull! > 0,
+              title: 'Apps to pause',
+              body:
+                  'Pick the ones that take the ten minutes you meant to pray '
+                  'in. Nothing is paused until you do.',
+              actionLabel: 'Choose',
+              onAction: () async {
+                await context.push(Routes.pausedApps);
+                ref.invalidate(blockedAppCountProvider);
+              },
+            ),
+
+            const SizedBox(height: Insets.md),
+
+            // The iPhone card has had this from the start and this one had
+            // nothing, so the only way to find out whether the focus worked
+            // on Android was to wait for a real prayer, open something else
+            // and hope. Nobody does that, which is why nobody had ever
+            // watched it engage.
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: permissions.isComplete
+                    ? () async {
+                        final DateTime? endsAt = await platform
+                            .startTestWindow();
+                        if (!context.mounted) return;
+                        context.showMessage(
+                          endsAt == null
+                              ? 'The focus could not start. Check both '
+                                    'permissions above.'
+                              : 'Focus on for two minutes. Open another app '
+                                    'and Layla Pro should come back over it.',
+                        );
+                      }
+                    : null,
+                icon: const Icon(Icons.play_circle_outline_rounded, size: 18),
+                label: const Text('Try it for two minutes'),
+                style: TextButton.styleFrom(foregroundColor: AppColors.gold),
+              ),
+            ),
+
+            const SizedBox(height: Insets.sm),
             const _Caveat(
               text:
                   'Even with both granted, this is best-effort. Android can '

@@ -18,10 +18,14 @@ final Provider<NameSpeaker> nameSpeakerProvider = Provider<NameSpeaker>((
 class NameSpeaker {
   final FlutterTts _tts = FlutterTts();
   bool _ready = false;
+  bool _hasArabic = true;
 
   Future<void> _prepare() async {
     if (_ready) return;
     try {
+      // Asked before the language is set, because setLanguage succeeds on a
+      // phone that cannot actually speak it and then says nothing.
+      _hasArabic = await _tts.isLanguageAvailable('ar-SA') == true;
       await _tts.setLanguage('ar-SA');
       await _tts.setSpeechRate(0.38);
       await _tts.setPitch(1.0);
@@ -33,15 +37,23 @@ class NameSpeaker {
     _ready = true;
   }
 
-  /// Speaks the Arabic. Errors are silent: a voice that is missing on this
-  /// phone should never break the page.
-  Future<void> say(String arabic) async {
+  /// Speaks the Arabic, and says whether it managed to.
+  ///
+  /// It used to return nothing and swallow every failure, which is the right
+  /// instinct — a missing voice must not break the page — and the wrong
+  /// outcome: on Android the button was silent for two separate reasons at
+  /// once, and a silent button with no message is indistinguishable from a
+  /// broken one. The caller can now tell the person why nothing happened.
+  Future<bool> say(String arabic) async {
     await _prepare();
+    if (!_hasArabic) return false;
     try {
       await _tts.stop();
       await _tts.speak(arabic);
+      return true;
     } catch (e) {
       debugPrint('Layla Pro: speech failed ($e)');
+      return false;
     }
   }
 

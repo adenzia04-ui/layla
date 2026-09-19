@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -120,8 +122,17 @@ class _SoundPickerState extends ConsumerState<SoundPicker> {
               Insets.sm,
             ),
             child: Text(
-              'Plays with the ring switch on. Reminders already set are '
-              'queued again with the new sound.',
+              // The ring switch is the physical slider on the side of an
+              // iPhone. Sending an Android user to look for one is worse than
+              // saying nothing: this line exists precisely for somebody whose
+              // reminders are silent, so it has to name the thing that is
+              // actually silencing them.
+              Platform.isIOS
+                  ? 'Plays with the ring switch on. Reminders already set are '
+                        'queued again with the new sound.'
+                  : 'Plays unless your phone is on silent or Do Not Disturb. '
+                        'Reminders already set are queued again with the new '
+                        'sound.',
               style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
             ),
           ),

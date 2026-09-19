@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/permission_service.dart';
+import '../../../core/config/platform_features.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/app_snackbar.dart';
@@ -35,7 +36,9 @@ Future<bool> confirmWithScan(
     if (!ok) {
       if (context.mounted) {
         context.showMessage(
-          'That could not be saved. Your apps stay paused until it is.',
+          Have.enforcedAppLock
+              ? 'That could not be saved. Your apps stay paused until it is.'
+              : 'That could not be saved. Prayer focus stays on until it is.',
         );
       }
       return false;
@@ -82,7 +85,9 @@ Future<bool> confirmWithScan(
     );
   } else {
     context.showMessage(
-      'The photo could not be saved. Your apps stay paused until it is.',
+      Have.enforcedAppLock
+          ? 'The photo could not be saved. Your apps stay paused until it is.'
+          : 'The photo could not be saved. Prayer focus stays on until it is.',
     );
   }
   return ok;

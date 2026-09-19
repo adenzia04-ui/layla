@@ -24,6 +24,7 @@ import 'widgets/comfort_face.dart';
 import 'widgets/mood_sheets.dart';
 import 'widgets/share_card.dart';
 import 'widgets/touch_ripples.dart';
+import '../../../core/widgets/platform_icons.dart';
 
 /// Which passages the deck shows.
 enum _Source { all, quran, hadith }
@@ -299,7 +300,7 @@ class _MoodDeckScreenState extends ConsumerState<MoodDeckScreen>
                   const SizedBox(height: Insets.lg),
                   GhostButton(
                     label: 'Share to story',
-                    icon: Icons.ios_share_rounded,
+                    icon: kShareIcon,
                     onPressed: _sharing ? null : _share,
                   ),
                   const SizedBox(height: Insets.xxl),

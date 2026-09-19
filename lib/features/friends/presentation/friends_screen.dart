@@ -21,6 +21,7 @@ import 'widgets/friend_code_card.dart';
 import 'widgets/friend_sheet.dart';
 import 'widgets/inbox_strip.dart';
 import 'widgets/you_card.dart';
+import '../../../core/widgets/platform_icons.dart';
 
 /// Whether the person on this phone has no account Friends can work with —
 /// a guest, or nobody signed in.
@@ -45,7 +46,7 @@ class FriendsScreen extends ConsumerWidget {
       scrollable: true,
       ornamentHeight: 240,
       leading: CircleIconButton(
-        icon: Icons.arrow_back_ios_new_rounded,
+        icon: kBackIcon,
         tooltip: 'Back',
         onPressed: () => context.pop(),
       ),

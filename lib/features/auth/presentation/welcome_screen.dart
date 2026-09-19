@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -83,10 +85,14 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
             ),
             const SizedBox(height: Insets.md),
             Text(
-              'Signing in with Apple or Google means there is no password to '
-              'forget. Layla Pro receives your name and email and nothing else — '
-              'not your contacts, not your photos, and never the prayer-mat '
-              'photos, which stay on this phone and are not uploaded anywhere.',
+              // The Apple button is correctly hidden on Android — so naming
+              // it here offered a way in that is not on the screen, on the
+              // first thing anyone reads about signing in.
+              '${Platform.isIOS ? 'Signing in with Apple or Google' : 'Signing in with Google'} '
+              'means there is no password to forget. Layla Pro receives your '
+              'name and email and nothing else — not your contacts, not your '
+              'photos, and never the prayer-mat photos, which stay on this '
+              'phone and are not uploaded anywhere.',
               style: AppType.bodySm.copyWith(
                 color: AppColors.mistFaint,
                 height: 1.5,
