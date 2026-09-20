@@ -148,27 +148,23 @@ and a reminder that drifts by fifteen minutes is useless. The answer to give:
 If the declaration is refused, the app still works: reminders fall back to
 inexact scheduling and can arrive a few minutes late.
 
-## Two switches to flip before either store, not just Play
+## Premium is locked by default
 
-Both live in `lib/features/premium/application/premium_store.dart` and are
-deliberate — every paid feature is open while the app is being tested — but
-shipping with them as they are means giving Premium away:
+Every paid feature is gated on a real purchase unless the build is made with
+`--dart-define=LAYLA_UNLOCK_ALL=true`, which exists only for testing on our own
+phones. A build without the flag is the strict one, so a store upload cannot
+give Premium away by accident.
 
-    isProProvider            returns true for everyone
-    kStylesOpenForTesting    true, so every locked colour and counter applies
+## Android parity, stated so nobody is surprised
 
-While they stand, a padlock is drawn on a colour that then works, which is
-the contradiction a reviewer or a first user notices. Set the provider back to
-`ref.watch(premiumProvider).isPro` and the flag to `false` when the store
-products exist.
-
-## Known gaps on Android, stated so nobody is surprised
-
-  - No home-screen or lock-screen widgets, and no Live Activity. Those are
-    WidgetKit; the Android equivalents are unwritten. The app hides the
-    screens rather than offering switches that do nothing.
-  - The prayer lock is a nudge, not a shield: Android lets no app hold
+  - Eleven home-screen widgets, drawn from the day the app already computed,
+    in all nine colour sets. No Lock Screen widgets and no Live Activity —
+    Android has no equivalent — and no globe widget, which would need a map SDK.
+  - The prayer focus is a nudge, not a shield: Android lets no app hold
     another closed. The settings screen, the onboarding question and the
     website all say so on Android.
-  - The prayer-mat scan has no on-device classifier on Android, so the
-    scanner falls back to a manual capture.
+  - The prayer-mat scanner sees on Android: the same MobileCLIP-S0 encoder the
+    iPhone runs, through ONNX Runtime, scoring against the same prompt
+    vectors. It costs about 60MB of apk.
+  - Samsung can put the app to sleep and swallow the adhan; Reminders & prayer
+    focus shows a row for that only when it is actually true of the phone.
