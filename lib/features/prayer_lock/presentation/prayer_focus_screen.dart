@@ -68,6 +68,10 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
     }
 
     final PrayerPalette palette = session.prayer.palette;
+    // The mat is asked for only at the prayer's own time. A prayer left open
+    // since the morning is confirmed with one tap, because a photo taken now
+    // proves nothing about then.
+    final bool scanHere = ref.watch(isProProvider) && session.isCurrent;
 
     return PopScope(
       // System back is disabled: leaving is a deliberate choice made with the
@@ -193,17 +197,17 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
                       // expensive option teaches people to stop being honest
                       // with it.
                       PrimaryButton(
-                        label: !ref.watch(isProProvider)
+                        label: !scanHere
                             ? 'I have prayed'
                             : session.awaitingProof
                             ? 'Scan your prayer mat'
                             : 'I have prayed',
-                        icon: session.awaitingProof && ref.watch(isProProvider)
+                        icon: session.awaitingProof && scanHere
                             ? Icons.center_focus_strong_rounded
                             : Icons.check_rounded,
                         // The camera opens over this screen; once the mat is
                         // scanned, Home.
-                        onPressed: ref.watch(isProProvider)
+                        onPressed: scanHere
                             ? () async {
                                 final bool ok = await confirmWithScan(
                                   context,

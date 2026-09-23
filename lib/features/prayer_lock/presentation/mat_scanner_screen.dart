@@ -117,9 +117,11 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
   ///
   /// One is not enough. Swinging the camera across a room puts all sorts of
   /// things in frame for a fifth of a second, and a single lucky frame would
-  /// confirm a prayer from a doorway. Two in a row means the phone was
-  /// actually held over the mat.
-  static const int _runNeeded = 2;
+  /// confirm a prayer from a doorway. One passing frame is enough here: the
+  /// photo is judged again, in full, before the prayer is completed, so the
+  /// live scan does not need to be a second gate — and asking for two frames
+  /// read as the scanner "going twice" when one would do.
+  static const int _runNeeded = 1;
 
   CameraController? _camera;
   CameraDescription? _lens;
@@ -313,7 +315,9 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
             u: hasChroma ? image.planes[1].bytes : null,
             v: hasChroma ? image.planes[2].bytes : null,
             uvRowStride: hasChroma ? image.planes[1].bytesPerRow : null,
-            uvPixelStride: hasChroma ? image.planes[1].bytesPerPixel ?? 1 : null,
+            uvPixelStride: hasChroma
+                ? image.planes[1].bytesPerPixel ?? 1
+                : null,
           ),
         );
     if (!mounted || _phase != _Phase.scanning) return;

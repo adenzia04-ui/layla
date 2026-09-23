@@ -10,12 +10,16 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!-- Step 2 of the prayer confirmation: the prayer-mat photo -->
+    <!-- Step 2 of the prayer confirmation: the prayer-mat photo. The
+         gallery route goes through the system photo picker, which needs no
+         permission, so READ_MEDIA_IMAGES is deliberately absent: Play treats
+         it as broad gallery access and asks for a justification the app
+         cannot honestly give. The camera plugin also asks for RECORD_AUDIO
+         for video capture, which the app never does. -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+        android:name="android.permission.RECORD_AUDIO"
+        tools:node="remove" />
 
     <!-- Prayer reminders -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />

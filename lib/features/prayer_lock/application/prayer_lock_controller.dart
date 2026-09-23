@@ -86,13 +86,21 @@ activeSessionProvider = Provider<PrayerSession?>((Ref ref) {
   // phone does about it.
   if (schedule == null || day == null) return null;
 
-  for (final PrayerSlot slot in schedule.obligatory) {
-    final DateTime endsAt = slot.start.add(kPrayerSessionLength);
+  // The prayer whose time it is: the latest one that has begun. It is asked
+  // first, at its own time, and it is the only one that asks for the mat.
+  // Anything unsettled before it is this morning's backlog and is offered
+  // afterwards, one tap each. It used to run the other way round — earliest
+  // first — so someone opening the app at Maghrib was walked through Fajr,
+  // Dhuhr and Asr, each with its own scan, before Maghrib was even mentioned.
+  final List<PrayerSlot> begun = <PrayerSlot>[
+    for (final PrayerSlot slot in schedule.obligatory)
+      if (!now.isBefore(slot.start)) slot,
+  ];
+  if (begun.isEmpty) return null;
+  final PrayerId currentPrayer = begun.last.id;
 
-    // Only the upper bound is gone: a session opens when the prayer's time
-    // arrives and stays open until it is confirmed, however long that takes.
-    // Blocked apps stay blocked for exactly as long as this session lives.
-    if (now.isBefore(slot.start)) continue;
+  for (final PrayerSlot slot in begun.reversed) {
+    final DateTime endsAt = slot.start.add(kPrayerSessionLength);
 
     final PrayerStatus status = day.recordFor(slot.id).status;
 
@@ -119,6 +127,7 @@ activeSessionProvider = Provider<PrayerSession?>((Ref ref) {
       startedAt: slot.start,
       endsAt: endsAt,
       status: status,
+      isCurrent: slot.id == currentPrayer,
     );
   }
   return null;

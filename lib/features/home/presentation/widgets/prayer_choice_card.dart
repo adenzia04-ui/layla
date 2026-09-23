@@ -64,7 +64,10 @@ class PrayerChoiceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool awaiting = session.awaitingProof;
-    final bool pro = ref.watch(isProProvider);
+    // The mat is asked for only at the prayer's own time. A prayer left open
+    // since the morning is confirmed with one tap, because a photo taken now
+    // proves nothing about then.
+    final bool pro = ref.watch(isProProvider) && session.isCurrent;
     final bool paused = ref.watch(appBlockingEnabledProvider);
 
     Future<void> run(Future<bool> Function() action) async {
@@ -93,7 +96,9 @@ class PrayerChoiceCard extends ConsumerWidget {
               child: Text(
                 awaiting
                     ? '${session.prayer.label} — one step left'
-                    : 'It is time for ${session.prayer.label}',
+                    : session.isCurrent
+                    ? 'It is time for ${session.prayer.label}'
+                    : '${session.prayer.label} is still open',
                 style: AppType.titleMd,
               ),
             ),
@@ -112,6 +117,8 @@ class PrayerChoiceCard extends ConsumerWidget {
               ? 'Your apps are paused. Any of these three releases them.'
               : paused
               ? 'Prayer focus is on. Any of these three ends it.'
+              : !session.isCurrent
+              ? 'Its time has passed. One tap settles it, no photo.'
               : 'Any of these three moves the day on.',
           style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
         ),
@@ -185,7 +192,7 @@ class PrayerChoiceCard extends ConsumerWidget {
         // moves the same way; the paid alternative used to be drawn nowhere
         // at all, so this screen said nothing about it existing and read as
         // a broken feature rather than a paid one.
-        if (!pro && !awaiting) const MatScanOffer(),
+        if (!ref.watch(isProProvider) && !awaiting) const MatScanOffer(),
 
         // Step 1 is still a commitment: once it is pressed the photo is the
         // only way on, or the second step would mean nothing.

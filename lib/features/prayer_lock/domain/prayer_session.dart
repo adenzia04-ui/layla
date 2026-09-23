@@ -14,9 +14,18 @@ class PrayerSession {
     required this.startedAt,
     required this.endsAt,
     required this.status,
+    this.isCurrent = true,
   });
 
   final PrayerId prayer;
+
+  /// True when this is the prayer whose time it is now — the latest one that
+  /// has begun. Earlier prayers still open from this morning are a backlog,
+  /// and the backlog is settled with one tap: only the current prayer asks
+  /// for the mat. The photo proves "I am on the mat now", and it cannot prove
+  /// that about a Fajr being confirmed at Maghrib, so asking for it there was
+  /// theatre — four scans in a row that meant nothing.
+  final bool isCurrent;
 
   /// When the prayer's time began.
   final DateTime startedAt;
@@ -56,8 +65,9 @@ class PrayerSession {
       other is PrayerSession &&
       other.prayer == prayer &&
       other.startedAt == startedAt &&
-      other.status == status;
+      other.status == status &&
+      other.isCurrent == isCurrent;
 
   @override
-  int get hashCode => Object.hash(prayer, startedAt, status);
+  int get hashCode => Object.hash(prayer, startedAt, status, isCurrent);
 }
