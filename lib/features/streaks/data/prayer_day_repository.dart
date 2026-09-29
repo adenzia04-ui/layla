@@ -141,13 +141,24 @@ class PrayerDayRepository {
     ).doc(dateId);
     final DocumentReference<Map<String, Object?>> userRef = _auth.userDoc(uid);
 
-    await _db.runTransaction((Transaction tx) async {
-      final DocumentSnapshot<Map<String, Object?>> daySnap = await tx.get(
-        dayRef,
-      );
-      final DocumentSnapshot<Map<String, Object?>> userSnap = await tx.get(
-        userRef,
-      );
+    // A read and then a batch, not a transaction. A transaction has to reach
+    // the server: on a weak signal it retries in silence and then fails, and
+    // the button appeared to do nothing until the third or fourth press —
+    // which is how "I have prayed" got reported as needing several taps. A
+    // batch is written to the local store at once, shows on screen at once,
+    // and reaches the server when it can. The reads below fall back to the
+    // cache when the server is out of reach, so this works with no signal at
+    // all. The double-tap guard is the button, which is disabled while this
+    // runs, plus the completed check just below.
+    final (
+      DocumentSnapshot<Map<String, Object?>> daySnap,
+      DocumentSnapshot<Map<String, Object?>> userSnap,
+    ) = await _readPair(
+      dayRef,
+      userRef,
+    );
+    {
+      final WriteBatch tx = _db.batch();
 
       final PrayerDay day = daySnap.exists
           ? PrayerDay.fromDoc(daySnap)
@@ -202,7 +213,8 @@ class PrayerDayRepository {
       tx.set(userRef, <String, Object?>{
         'stats': nextStats,
       }, SetOptions(merge: true));
-    });
+      await tx.commit();
+    }
   }
 
   // ── The prayer pause ──────────────────────────────────────────────────
@@ -380,13 +392,17 @@ class PrayerDayRepository {
     ).doc(dateId);
     final DocumentReference<Map<String, Object?>> userRef = _auth.userDoc(uid);
 
-    await _db.runTransaction((Transaction tx) async {
-      final DocumentSnapshot<Map<String, Object?>> daySnap = await tx.get(
-        dayRef,
-      );
-      final DocumentSnapshot<Map<String, Object?>> userSnap = await tx.get(
-        userRef,
-      );
+    // Read-then-batch for the same reason as `_complete`: it has to work on
+    // the first press, with or without a signal.
+    final (
+      DocumentSnapshot<Map<String, Object?>> daySnap,
+      DocumentSnapshot<Map<String, Object?>> userSnap,
+    ) = await _readPair(
+      dayRef,
+      userRef,
+    );
+    {
+      final WriteBatch tx = _db.batch();
 
       // Both signals, and the profile's is the one that matters. `excused` is
       // written by the catch-up and lags the pause by a network round trip —
@@ -426,7 +442,40 @@ class PrayerDayRepository {
           },
         }, SetOptions(merge: true));
       }
-    });
+      await tx.commit();
+    }
+  }
+
+  /// The day and the profile, from the server when it answers and from the
+  /// local cache when it does not. Firestore's default `get` already does
+  /// this fallback, but only after its own timeout; asking the cache
+  /// explicitly keeps a dead signal from turning one press into a long wait.
+  Future<
+    (
+      DocumentSnapshot<Map<String, Object?>>,
+      DocumentSnapshot<Map<String, Object?>>,
+    )
+  >
+  _readPair(
+    DocumentReference<Map<String, Object?>> a,
+    DocumentReference<Map<String, Object?>> b,
+  ) async {
+    try {
+      final List<DocumentSnapshot<Map<String, Object?>>> got =
+          await Future.wait(<Future<DocumentSnapshot<Map<String, Object?>>>>[
+            a.get(),
+            b.get(),
+          ]).timeout(const Duration(seconds: 6));
+      return (got[0], got[1]);
+    } on Object {
+      const GetOptions cache = GetOptions(source: Source.cache);
+      final List<DocumentSnapshot<Map<String, Object?>>> got =
+          await Future.wait(<Future<DocumentSnapshot<Map<String, Object?>>>>[
+            a.get(cache),
+            b.get(cache),
+          ]);
+      return (got[0], got[1]);
+    }
   }
 
   /// Tahajjud is voluntary, so it is recorded without the photo step and never

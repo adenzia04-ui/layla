@@ -197,6 +197,7 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
                       // expensive option teaches people to stop being honest
                       // with it.
                       PrimaryButton(
+                        busy: ref.watch(prayerLockControllerProvider).isLoading,
                         label: !scanHere
                             ? 'I have prayed'
                             : session.awaitingProof

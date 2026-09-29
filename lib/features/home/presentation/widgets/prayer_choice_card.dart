@@ -161,6 +161,9 @@ class PrayerChoiceCard extends ConsumerWidget {
         ],
 
         PrimaryButton(
+          // Disabled while the write is in flight, so a second press cannot
+          // land on a prayer that is already being saved.
+          busy: ref.watch(prayerLockControllerProvider).isLoading,
           // Premium confirms in two steps, the second being the mat scan.
           // Everyone else confirms with one honest tap, and the streak moves
           // the same way.
