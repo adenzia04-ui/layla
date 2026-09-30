@@ -245,6 +245,8 @@ class _LineChips extends ConsumerWidget {
       );
     }
 
+    // A Wrap, not a Row: three chips fit an iPhone Pro Max with room to
+    // spare and a small phone with none, and a Row would overflow there.
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         Insets.lg,
@@ -252,7 +254,8 @@ class _LineChips extends ConsumerWidget {
         Insets.lg,
         Insets.sm,
       ),
-      child: Row(
+      child: Wrap(
+        runSpacing: Insets.xs,
         children: <Widget>[
           chip(ReaderLine.arabic, 'Arabic'),
           chip(ReaderLine.transliteration, 'Transliteration'),

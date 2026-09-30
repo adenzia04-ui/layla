@@ -21,9 +21,9 @@ int ayahOf(NowPlaying now) =>
 /// Starts [surah] at [ayah] with the remembered reciter, mode, repeat count
 /// and loop setting. Nothing happens without a player.
 ///
-/// Recordings already on the device play from the file; the rest stream
-/// and are fetched into the cache from this ayah onwards, so the next
-/// listen — and the repeats of this one — need no signal.
+/// Recordings already on the device play from the file; the rest stream,
+/// and the few ahead are fetched into the cache so the next ayahs — and the
+/// repeats of this one — need no signal.
 Future<void> playSurah(
   WidgetRef ref, {
   required Quran quran,
@@ -33,15 +33,7 @@ Future<void> playSurah(
   final RecitationHandler? handler = ref.read(recitationHandlerProvider);
   if (handler == null) return;
   final Reciter reciter = ref.read(reciterProvider);
-  final RecitationCache? cache = RecitationCache.instance;
-  final List<RecitationTrack> tracks = surahTracks(
-    quran,
-    surah,
-    reciter: reciter,
-    mode: ref.read(playModeProvider),
-    repeat: ref.read(ayahRepeatProvider),
-    localFile: cache?.pathIfCached,
-  );
+  final List<RecitationTrack> tracks = _tracksFor(ref, quran, surah, reciter);
   final int start = trackIndexOf(tracks, ayah);
   if (start < 0) return;
   await ref.read(lastReadProvider.notifier).set('$surah:$ayah');
@@ -51,10 +43,58 @@ Future<void> playSurah(
     start: start,
     loop: ref.read(loopSurahProvider),
   );
-  cache?.prefetch(<Uri>[
-    for (final RecitationTrack t in tracks.skip(start))
-      if (t.file == null && t.url != null) t.url!,
-    for (final RecitationTrack t in tracks.take(start))
+  _lastPrefetch = null;
+  prefetchAhead(ref, quran: quran, surah: surah, ayah: ayah);
+}
+
+List<RecitationTrack> _tracksFor(
+  WidgetRef ref,
+  Quran quran,
+  int surah,
+  Reciter reciter,
+) => surahTracks(
+  quran,
+  surah,
+  reciter: reciter,
+  mode: ref.read(playModeProvider),
+  repeat: ref.read(ayahRepeatProvider),
+  localFile: RecitationCache.instance?.pathIfCached,
+);
+
+/// How many ayahs ahead of the one sounding are fetched. A few, not the
+/// surah: Al-Baqarah in a 192 kbps voice is over a hundred megabytes, and
+/// nobody asked for that on a phone signal. Called again as the reciter
+/// moves, so the window slides.
+const int _prefetchWindow = 6;
+String? _lastPrefetch;
+
+void prefetchAhead(
+  WidgetRef ref, {
+  required Quran quran,
+  required int surah,
+  required int ayah,
+}) {
+  final RecitationCache? cache = RecitationCache.instance;
+  if (cache == null) return;
+  final Reciter reciter = ref.read(reciterProvider);
+  final String key = '${surahOwner(surah, reciter)}:$ayah';
+  if (key == _lastPrefetch) return;
+  _lastPrefetch = key;
+  final List<RecitationTrack> tracks = _tracksFor(ref, quran, surah, reciter);
+  final int from = trackIndexOf(tracks, ayah);
+  if (from < 0) return;
+  cache.cancelPending();
+  cache.prefetch(<Uri>[
+    for (final RecitationTrack t in tracks.skip(from).take(_prefetchWindow))
       if (t.file == null && t.url != null) t.url!,
   ]);
 }
+
+/// The listening settings as one value, so a screen can tell whether the
+/// options sheet changed anything worth restarting for.
+(String, PlayMode, int, bool) listeningSettings(WidgetRef ref) => (
+  ref.read(reciterProvider).id,
+  ref.read(playModeProvider),
+  ref.read(ayahRepeatProvider),
+  ref.read(loopSurahProvider),
+);

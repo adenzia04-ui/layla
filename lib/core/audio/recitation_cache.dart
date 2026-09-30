@@ -53,6 +53,10 @@ class RecitationCache {
   final List<Uri> _pending = <Uri>[];
   bool _draining = false;
 
+  /// Drops whatever is queued but not yet started. A new surah or a new
+  /// voice should not wait behind the old one's downloads.
+  void cancelPending() => _pending.clear();
+
   /// Fetches every one of [urls] that is not already on the device, two at
   /// a time, quietly. Failures are dropped: the next play will stream and
   /// try again.

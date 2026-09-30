@@ -51,6 +51,16 @@ class QuranPlayerBar extends ConsumerWidget {
     final Surah s = quran.surah(surah);
     final bool playing = now?.playing ?? false;
 
+    // As the reciter moves, keep the next few recordings coming.
+    ref.listen<AsyncValue<NowPlaying?>>(nowPlayingProvider, (
+      AsyncValue<NowPlaying?>? _,
+      AsyncValue<NowPlaying?> next,
+    ) {
+      final NowPlaying? n = surahNowPlaying(next.valueOrNull, surah, reciter);
+      if (n == null) return;
+      prefetchAhead(ref, quran: quran, surah: surah, ayah: ayahOf(n));
+    });
+
     Future<void> start() =>
         playSurah(ref, quran: quran, surah: surah, ayah: fromAyah);
 
@@ -121,9 +131,16 @@ class QuranPlayerBar extends ConsumerWidget {
                 tooltip: 'Playback options',
                 icon: const Icon(Icons.tune_rounded, color: AppColors.mist),
                 onPressed: () async {
+                  final (String, PlayMode, int, bool) before =
+                      listeningSettings(ref);
                   final bool go = await showPlayOptions(context, ref);
-                  // Changed while playing: take effect now, from this ayah.
-                  if (go && now != null) {
+                  final bool changed = listeningSettings(ref) != before;
+                  // A change while playing takes effect now, from this
+                  // ayah — whether the sheet was closed with Play or just
+                  // swiped away, because the screen's idea of "the
+                  // recitation" follows the settings and would otherwise
+                  // lose track of what is still sounding.
+                  if (now != null && (go || changed)) {
                     await playSurah(
                       ref,
                       quran: quran,

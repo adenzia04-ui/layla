@@ -214,6 +214,10 @@ class RecitationHandler extends BaseAudioHandler
       await _player.setAudioSources(sources, initialIndex: start);
     } on Object catch (e) {
       debugPrint('Layla Pro: recitation would not load ($e)');
+      _tracks = const <RecitationTrack>[];
+      _owner = '';
+      _last = null;
+      _now.add(null);
       return;
     }
     _applyLoop();
