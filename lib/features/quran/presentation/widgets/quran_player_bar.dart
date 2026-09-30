@@ -20,10 +20,10 @@ import 'download_row.dart';
 
 /// The bar under a surah: who is reciting, which ayah, and the transport.
 ///
-/// The first press of play asks how — whole surah or ayah by ayah, how many
-/// times each, which voice, whether to loop — and remembers the answer, so
-/// the next press just plays. The gear reopens the same sheet, which is
-/// also where the surah is downloaded for offline listening.
+/// Play plays, with the remembered voice, mode and repeats. The gear opens
+/// the options — whole surah or ayah by ayah, how many times each, which
+/// voice, whether to loop — and is also where the surah is downloaded for
+/// offline listening.
 class QuranPlayerBar extends ConsumerWidget {
   const QuranPlayerBar({
     super.key,
@@ -120,15 +120,11 @@ class QuranPlayerBar extends ConsumerWidget {
                 playing: playing,
                 onPlay: () async {
                   unawaited(HapticFeedback.lightImpact());
+                  // Play plays. The voice, mode and repeats are whatever
+                  // was chosen last (or the defaults); the gear beside the
+                  // transport is where they are changed.
                   if (now == null) {
-                    // Asked once, then remembered.
-                    final bool go = await showPlayOptions(
-                      context,
-                      ref,
-                      quran: quran,
-                      surah: surah,
-                    );
-                    if (go) await start();
+                    await start();
                   } else if (playing) {
                     await handler.pause();
                   } else {
