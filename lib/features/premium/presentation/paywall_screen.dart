@@ -146,6 +146,14 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               style: TextButton.styleFrom(foregroundColor: AppColors.goldSoft),
               child: const Text('Or support the creator with a one-off gift'),
             ),
+            if (premium.notice != null) ...<Widget>[
+              const SizedBox(height: Insets.sm),
+              Text(
+                premium.notice!,
+                textAlign: TextAlign.center,
+                style: AppType.bodySm.copyWith(color: AppColors.goldSoft),
+              ),
+            ],
             if (premium.error != null) ...<Widget>[
               const SizedBox(height: Insets.sm),
               Text(

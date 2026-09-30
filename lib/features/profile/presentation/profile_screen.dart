@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../core/config/platform_features.dart';
-import '../../premium/application/premium_store.dart';
 import '../../premium/presentation/support_sheet.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
@@ -156,20 +155,19 @@ class ProfileScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: Insets.lg),
             child: Column(
               children: <Widget>[
-                // Premium and the support gift are sold on Android only;
-                // on the iPhone everything is already open.
-                if (kPremiumSoldHere) ...<Widget>[
-                  _MenuRow(
-                    icon: Icons.workspace_premium_outlined,
-                    label: 'Layla Pro Premium',
-                    onTap: () => context.push(Routes.paywall),
-                  ),
-                  _MenuRow(
-                    icon: Icons.volunteer_activism_outlined,
-                    label: 'Support the creator',
-                    onTap: () => showSupportSheet(context),
-                  ),
-                ],
+                // Premium and the support gift are sold on Android. On the
+                // iPhone both are shown as they will look, with everything
+                // already open and nothing charged.
+                _MenuRow(
+                  icon: Icons.workspace_premium_outlined,
+                  label: 'Layla Pro Premium',
+                  onTap: () => context.push(Routes.paywall),
+                ),
+                _MenuRow(
+                  icon: Icons.volunteer_activism_outlined,
+                  label: 'Support the creator',
+                  onTap: () => showSupportSheet(context),
+                ),
                 _MenuRow(
                   icon: Icons.person_outline_rounded,
                   label: 'Account',

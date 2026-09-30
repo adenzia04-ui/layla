@@ -108,6 +108,14 @@ class _SupportSheet extends ConsumerWidget {
                   ),
               ],
             ),
+            if (s.notice != null) ...<Widget>[
+              const SizedBox(height: Insets.sm),
+              Text(
+                s.notice!,
+                textAlign: TextAlign.center,
+                style: AppType.bodySm.copyWith(color: AppColors.goldSoft),
+              ),
+            ],
             if (s.error != null) ...<Widget>[
               const SizedBox(height: Insets.md),
               Text(

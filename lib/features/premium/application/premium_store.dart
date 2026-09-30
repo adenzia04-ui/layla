@@ -71,9 +71,14 @@ class PremiumState {
     this.busy = false,
     this.error,
     this.thanked,
+    this.notice,
   });
 
   final bool isPro;
+
+  /// A neutral line for the screen — not an error. Used for the preview
+  /// on a platform where nothing is sold.
+  final String? notice;
 
   /// The support gift that just went through, to thank for; null otherwise.
   final SupportTip? thanked;
@@ -99,6 +104,8 @@ class PremiumState {
     bool clearError = false,
     SupportTip? thanked,
     bool clearThanks = false,
+    String? notice,
+    bool clearNotice = false,
   }) => PremiumState(
     isPro: isPro ?? this.isPro,
     products: products ?? this.products,
@@ -106,6 +113,7 @@ class PremiumState {
     busy: busy ?? this.busy,
     error: clearError ? null : error ?? this.error,
     thanked: clearThanks ? null : thanked ?? this.thanked,
+    notice: clearNotice ? null : notice ?? this.notice,
   );
 }
 
@@ -231,8 +239,16 @@ class PremiumStore extends Notifier<PremiumState> {
     } catch (_) {}
   }
 
+  static const String previewNotice =
+      'This is a preview. On this iPhone everything is already open — '
+      'Premium and support gifts are paid through Google Play on Android.';
+
   /// Starts the store's own purchase sheet for [plan].
   Future<void> buy(PremiumPlan plan) async {
+    if (!kPremiumSoldHere) {
+      state = state.copyWith(notice: previewNotice, clearError: true);
+      return;
+    }
     final ProductDetails? product = state.products[plan.id];
     if (product == null) {
       state = state.copyWith(
@@ -260,6 +276,10 @@ class PremiumStore extends Notifier<PremiumState> {
   }
 
   Future<void> restore() async {
+    if (!kPremiumSoldHere) {
+      state = state.copyWith(notice: previewNotice, clearError: true);
+      return;
+    }
     state = state.copyWith(busy: true, clearError: true);
     try {
       await InAppPurchase.instance.restorePurchases();
@@ -282,6 +302,10 @@ class PremiumStore extends Notifier<PremiumState> {
   /// A one-off gift to the creator. Consumed at once, so it can be given
   /// again; it unlocks nothing.
   Future<void> support(SupportTip tip) async {
+    if (!kPremiumSoldHere) {
+      state = state.copyWith(notice: previewNotice, clearError: true);
+      return;
+    }
     final ProductDetails? product = state.products[tip.id];
     if (product == null) {
       state = state.copyWith(
