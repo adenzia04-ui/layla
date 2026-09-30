@@ -46,7 +46,6 @@ class QuranPlayerBar extends ConsumerWidget {
     final NowPlaying? now = surahNowPlaying(
       ref.watch(nowPlayingProvider).valueOrNull,
       surah,
-      reciter,
     );
     final Surah s = quran.surah(surah);
     final bool playing = now?.playing ?? false;
@@ -56,7 +55,7 @@ class QuranPlayerBar extends ConsumerWidget {
       AsyncValue<NowPlaying?>? _,
       AsyncValue<NowPlaying?> next,
     ) {
-      final NowPlaying? n = surahNowPlaying(next.valueOrNull, surah, reciter);
+      final NowPlaying? n = surahNowPlaying(next.valueOrNull, surah);
       if (n == null) return;
       prefetchAhead(ref, quran: quran, surah: surah, ayah: ayahOf(n));
     });
@@ -96,7 +95,7 @@ class QuranPlayerBar extends ConsumerWidget {
                           ? '${reciter.name} · tap play'
                           : now.loading
                           ? 'Loading…'
-                          : reciter.name,
+                          : now.track.subtitle,
                       style: AppType.bodySm.copyWith(
                         fontSize: 11,
                         color: AppColors.mistFaint,
@@ -166,6 +165,11 @@ Future<bool> showPlayOptions(BuildContext context, WidgetRef ref) async {
     context: context,
     backgroundColor: AppColors.navy,
     isScrollControlled: true,
+    // Never the whole screen: the strip above it is how the sheet is put
+    // away without choosing, and a sheet with no way out is a trap.
+    constraints: BoxConstraints(
+      maxHeight: MediaQuery.sizeOf(context).height * 0.88,
+    ),
     shape: const RoundedRectangleBorder(borderRadius: Radii.sheet),
     builder: (BuildContext context) => const _PlayOptionsSheet(),
   );
@@ -205,8 +209,22 @@ class _PlayOptionsSheet extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: Insets.lg),
-            Text('How would you like to listen?', style: AppType.titleLg),
-            const SizedBox(height: Insets.xl),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    'How would you like to listen?',
+                    style: AppType.titleLg,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.mist),
+                  child: const Text('Not now'),
+                ),
+              ],
+            ),
+            const SizedBox(height: Insets.lg),
 
             Text(
               'RECITER',

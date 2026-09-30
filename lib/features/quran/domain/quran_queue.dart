@@ -12,8 +12,10 @@ enum PlayMode {
 }
 
 /// The queue owner key for a surah, so a reader can tell its own recitation
-/// from another surah's or from a dua.
-String surahOwner(int surah, Reciter reciter) => 'quran:$surah:${reciter.id}';
+/// from another surah's or from a dua. Deliberately not the voice: picking
+/// another reciter in the options sheet must not make the screen lose sight
+/// of the recitation still sounding — it restarts in the new voice instead.
+String surahOwner(int surah) => 'quran:$surah';
 
 /// The tracks for [surah], one per ayah, in [reciter]'s voice.
 ///

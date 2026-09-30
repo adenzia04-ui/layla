@@ -11,8 +11,8 @@ import 'quran_prefs.dart';
 /// The ayah being recited from [surah], if the player is on that surah in
 /// the chosen voice. Null otherwise, so a reader never highlights an ayah
 /// for a recitation that is not its own.
-NowPlaying? surahNowPlaying(NowPlaying? now, int surah, Reciter reciter) =>
-    now != null && now.owner == surahOwner(surah, reciter) ? now : null;
+NowPlaying? surahNowPlaying(NowPlaying? now, int surah) =>
+    now != null && now.owner == surahOwner(surah) ? now : null;
 
 /// The ayah number inside [now]'s group key, `2:255` → 255.
 int ayahOf(NowPlaying now) =>
@@ -39,7 +39,7 @@ Future<void> playSurah(
   await ref.read(lastReadProvider.notifier).set('$surah:$ayah');
   await handler.load(
     tracks,
-    owner: surahOwner(surah, reciter),
+    owner: surahOwner(surah),
     start: start,
     loop: ref.read(loopSurahProvider),
   );
@@ -77,7 +77,7 @@ void prefetchAhead(
   final RecitationCache? cache = RecitationCache.instance;
   if (cache == null) return;
   final Reciter reciter = ref.read(reciterProvider);
-  final String key = '${surahOwner(surah, reciter)}:$ayah';
+  final String key = '${surahOwner(surah)}:${reciter.id}:$ayah';
   if (key == _lastPrefetch) return;
   _lastPrefetch = key;
   final List<RecitationTrack> tracks = _tracksFor(ref, quran, surah, reciter);

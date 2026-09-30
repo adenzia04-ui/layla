@@ -13,7 +13,6 @@ import '../../../core/theme/app_typography.dart';
 import '../application/quran_player.dart';
 import '../application/quran_prefs.dart';
 import '../domain/quran_data.dart';
-import '../domain/reciters.dart';
 import 'widgets/ayah_card.dart';
 import 'widgets/quran_player_bar.dart';
 import 'widgets/tafsir_sheet.dart';
@@ -74,7 +73,6 @@ class _SurahReaderScreenState extends ConsumerState<SurahReaderScreen> {
     final AsyncValue<Quran> quran = ref.watch(quranProvider);
     final Set<ReaderLine> lines = ref.watch(readerLinesProvider);
     final double scale = ref.watch(readerScaleProvider);
-    final Reciter reciter = ref.watch(reciterProvider);
     final RecitationHandler? handler = ref.watch(recitationHandlerProvider);
 
     // Follow the reciter: when the ayah changes, bring it into view once.
@@ -82,7 +80,7 @@ class _SurahReaderScreenState extends ConsumerState<SurahReaderScreen> {
       AsyncValue<NowPlaying?>? _,
       AsyncValue<NowPlaying?> next,
     ) {
-      final NowPlaying? now = surahNowPlaying(next.valueOrNull, surah, reciter);
+      final NowPlaying? now = surahNowPlaying(next.valueOrNull, surah);
       if (now == null) return;
       final int a = ayahOf(now);
       if (a == _followed) return;
@@ -94,7 +92,6 @@ class _SurahReaderScreenState extends ConsumerState<SurahReaderScreen> {
     final NowPlaying? now = surahNowPlaying(
       ref.watch(nowPlayingProvider).valueOrNull,
       surah,
-      reciter,
     );
     final int? currentAyah = now == null ? null : ayahOf(now);
 
