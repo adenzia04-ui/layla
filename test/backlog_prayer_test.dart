@@ -55,16 +55,24 @@ void main() {
   }
 
   group('A prayer from earlier in the day', () {
-    testWidgets('is one tap even with Premium, and says so', (
+    testWidgets('still asks Premium for the mat — every prayer is scanned', (
       WidgetTester tester,
     ) async {
       await pump(tester, pro: true, isCurrent: false);
       expect(find.text('Fajr is still open'), findsOneWidget);
-      expect(find.textContaining('no photo'), findsOneWidget);
+      expect(find.textContaining('no photo'), findsNothing);
       expect(find.text('I have prayed'), findsOneWidget);
-      expect(find.textContaining('photo of your mat'), findsNothing);
+      expect(find.textContaining('photo of your mat'), findsOneWidget);
       // Premium is not sold to someone who has it, backlog or not.
       expect(find.byType(MatScanOffer), findsNothing);
+    });
+
+    testWidgets('is one tap without Premium, and says so', (
+      WidgetTester tester,
+    ) async {
+      await pump(tester, pro: false, isCurrent: false);
+      expect(find.textContaining('no photo'), findsOneWidget);
+      expect(find.textContaining('photo of your mat'), findsNothing);
     });
 
     testWidgets('the current prayer still asks Premium for the mat', (

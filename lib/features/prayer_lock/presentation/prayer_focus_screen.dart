@@ -68,10 +68,11 @@ class _PrayerFocusScreenState extends ConsumerState<PrayerFocusScreen> {
     }
 
     final PrayerPalette palette = session.prayer.palette;
-    // The mat is asked for only at the prayer's own time. A prayer left open
-    // since the morning is confirmed with one tap, because a photo taken now
-    // proves nothing about then.
-    final bool scanHere = ref.watch(isProProvider) && session.isCurrent;
+    // Every prayer is confirmed on the mat, whichever one it is: "I have
+    // prayed" opens the camera, the mat is scanned, and only then is it
+    // recorded. The one-tap shortcut for an earlier prayer was taken out
+    // at the user's request — the scan is the point of the feature.
+    final bool scanHere = ref.watch(isProProvider);
 
     return PopScope(
       // System back is disabled: leaving is a deliberate choice made with the

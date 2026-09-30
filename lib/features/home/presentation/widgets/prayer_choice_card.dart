@@ -64,10 +64,10 @@ class PrayerChoiceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bool awaiting = session.awaitingProof;
-    // The mat is asked for only at the prayer's own time. A prayer left open
-    // since the morning is confirmed with one tap, because a photo taken now
-    // proves nothing about then.
-    final bool pro = ref.watch(isProProvider) && session.isCurrent;
+    // Every prayer is confirmed on the mat, whichever one it is — the scan
+    // is the point of the feature, and the one-tap shortcut for an earlier
+    // prayer was taken out at the user's request.
+    final bool pro = ref.watch(isProProvider);
     final bool paused = ref.watch(appBlockingEnabledProvider);
 
     Future<void> run(Future<bool> Function() action) async {
@@ -117,7 +117,7 @@ class PrayerChoiceCard extends ConsumerWidget {
               ? 'Your apps are paused. Any of these three releases them.'
               : paused
               ? 'Prayer focus is on. Any of these three ends it.'
-              : !session.isCurrent
+              : !session.isCurrent && !pro
               ? 'Its time has passed. One tap settles it, no photo.'
               : 'Any of these three moves the day on.',
           style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
