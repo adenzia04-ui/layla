@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Resources the app asks for by name at runtime. The release build shrinks
+  away anything no code references directly, and these are only ever named
+  in strings — so without this list they vanished from the Play build:
+  the adhan and reminder tones (every prayer reminder failed to schedule),
+  the recitation player's lock-screen buttons (playback threw on every
+  update), and the home-screen widget colour sets.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/adhan,@raw/bell,@raw/chime,@raw/soft,@drawable/audio_service_*,@drawable/widget_*" />
