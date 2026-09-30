@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,16 +11,26 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../application/quran_prefs.dart';
 import '../domain/quran_data.dart';
+import 'widgets/ayah_card.dart';
+import 'widgets/mushaf_frame.dart';
 import 'widgets/quran_player_bar.dart';
 
-/// The mushaf, page by page, exactly as the Madinah edition prints it.
+/// The mushaf, page by page, as the Madinah edition prints it.
 ///
 /// Every page is bundled, so it opens with no signal. Pages turn the way a
-/// book does — swipe left for the next page, as the text runs right to left.
-/// Nothing is re-typed: what is on screen is the printed page, which is the
-/// whole point of this view over the reader.
+/// book does — swipe left for the next page, as the text runs right to
+/// left, and the page lifts and lays down as it goes. Around each page the
+/// mushaf's own furniture: the surah name and the juz in the head, the
+/// page number in the foot, an ornamental border. Nothing is re-typed: what
+/// is on screen is the printed page.
+///
+/// Opened for one surah, the book is held to that surah's pages, so a
+/// swipe past the end of Al-Baqarah does not land in Ali 'Imran.
 class MushafScreen extends ConsumerStatefulWidget {
-  const MushafScreen({super.key, this.page});
+  const MushafScreen({super.key, this.surah, this.page});
+
+  /// Held to this surah's pages when given.
+  final int? surah;
 
   /// Opens at this page; otherwise where the mushaf was left.
   final int? page;
@@ -29,29 +40,36 @@ class MushafScreen extends ConsumerStatefulWidget {
 }
 
 class _MushafScreenState extends ConsumerState<MushafScreen> {
-  late final PageController _controller;
-  late int _page;
+  PageController? _controller;
+  int _page = 1;
+  int _first = 1;
+  int _last = Quran.pageCount;
 
   /// Cream glyphs on the night sky, instead of ink on paper.
   bool _night = false;
 
-  @override
-  void initState() {
-    super.initState();
+  int get _count => _last - _first + 1;
+
+  void _setUp(Quran q) {
+    if (_controller != null) return;
+    if (widget.surah case final int s when s >= 1 && s <= 114) {
+      _first = q.surah(s).firstPage;
+      _last = q.surah(s).lastPage;
+    }
     final int saved = ref.read(lastPageProvider);
-    final int wanted = widget.page ?? saved;
-    _page = wanted.clamp(1, Quran.pageCount);
-    _controller = PageController(initialPage: _page - 1);
+    final int wanted = widget.page ?? (widget.surah == null ? saved : _first);
+    _page = wanted.clamp(_first, _last);
+    _controller = PageController(initialPage: _page - _first);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   void _onPage(int index) {
-    setState(() => _page = index + 1);
+    setState(() => _page = _first + index);
     unawaited(ref.read(lastPageProvider.notifier).set(_page));
   }
 
@@ -61,10 +79,11 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
       backgroundColor: AppColors.navy,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: Radii.sheet),
-      builder: (BuildContext context) => _JumpSheet(quran: q, current: _page),
+      builder: (BuildContext context) =>
+          _JumpSheet(quran: q, current: _page, first: _first, last: _last),
     );
     if (target != null && mounted) {
-      _controller.jumpToPage(target - 1);
+      _controller?.jumpToPage(target.clamp(_first, _last) - _first);
     }
   }
 
@@ -87,10 +106,14 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
         ),
       ),
       data: (Quran q) {
+        _setUp(q);
         final List<Surah> here = q.surahsOnPage(_page);
         final List<Ayah> ayahs = q.onPage(_page);
         final String names = here.map((Surah s) => s.name).join(' · ');
         final int juz = q.juzOfPage(_page);
+        final Surah? held = widget.surah == null
+            ? null
+            : q.surah(widget.surah!);
 
         return Scaffold(
           backgroundColor: AppColors.midnight,
@@ -114,7 +137,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                       children: <Widget>[
                         Flexible(
                           child: Text(
-                            names,
+                            held?.name ?? names,
                             style: AppType.titleSm,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -128,7 +151,10 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                       ],
                     ),
                     Text(
-                      'Page $_page of ${Quran.pageCount} · Juz $juz',
+                      held == null
+                          ? 'Page $_page of ${Quran.pageCount} · Juz $juz'
+                          : 'Page $_page · ${_page - _first + 1} of $_count in '
+                                '${held.name} · Juz $juz',
                       style: AppType.bodySm.copyWith(
                         fontSize: 11,
                         color: AppColors.mistFaint,
@@ -145,7 +171,10 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                   _night ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
                   color: AppColors.mist,
                 ),
-                onPressed: () => setState(() => _night = !_night),
+                onPressed: () {
+                  unawaited(HapticFeedback.selectionClick());
+                  setState(() => _night = !_night);
+                },
               ),
             ],
           ),
@@ -153,17 +182,37 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
             controller: _controller,
             // Right to left: the next page comes from the left, like the book.
             reverse: true,
-            itemCount: Quran.pageCount,
+            // No rubber-band at the covers: a book does not stretch past
+            // its last page, and the turn animation under a bounce read as
+            // the page tearing loose.
+            physics: const _BookPhysics(parent: ClampingScrollPhysics()),
+            itemCount: _count,
             onPageChanged: _onPage,
-            itemBuilder: (BuildContext context, int i) =>
-                _Page(number: i + 1, night: _night),
+            itemBuilder: (BuildContext context, int i) {
+              final int number = _first + i;
+              return _Turning(
+                controller: _controller!,
+                index: i,
+                child: _Page(
+                  number: number,
+                  night: _night,
+                  surahName: q
+                      .surahsOnPage(number)
+                      .map((Surah s) => s.arabicName)
+                      .join(' · '),
+                  juzName: 'الجزء ${juzOrdinals[q.juzOfPage(number) - 1]}',
+                ),
+              );
+            },
           ),
           bottomNavigationBar: ayahs.isEmpty
               ? null
               : QuranPlayerBar(
                   quran: q,
-                  surah: ayahs.first.surah,
-                  fromAyah: ayahs.first.number,
+                  surah: held?.number ?? ayahs.first.surah,
+                  fromAyah: held == null || ayahs.first.surah == held.number
+                      ? ayahs.first.number
+                      : 1,
                 ),
         );
       },
@@ -171,11 +220,92 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
   }
 }
 
+/// A page that lifts as it leaves and lays flat as it arrives.
+///
+/// A turn of the book, not a slide of a carousel: the page rotates a little
+/// about its spine-side edge, in perspective, and darkens as it lifts. Kept
+/// gentle — the point is that the eye reads it as paper, not that it draws
+/// attention to itself.
+class _Turning extends StatelessWidget {
+  const _Turning({
+    required this.controller,
+    required this.index,
+    required this.child,
+  });
+
+  final PageController controller;
+  final int index;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (BuildContext context, Widget? _) {
+        double delta = 0;
+        if (controller.hasClients && controller.position.haveDimensions) {
+          delta = (controller.page ?? index.toDouble()) - index;
+        }
+        final double t = delta.clamp(-1.0, 1.0);
+        // The spine is on the right (the book opens to the left), so a page
+        // on its way out pivots about its right edge.
+        // A shallow perspective and a modest angle: deeper values made the
+        // near edge balloon towards the viewer mid-turn. The page also
+        // shrinks a touch as it lifts, so it never looks larger in motion
+        // than at rest.
+        final double s = 1 - t.abs() * 0.06;
+        final Matrix4 m = Matrix4.identity()
+          ..setEntry(3, 2, 0.0005)
+          ..rotateY(t * math.pi * 0.22)
+          ..scaleByDouble(s, s, 1, 1);
+        return Transform(
+          alignment: t > 0 ? Alignment.centerLeft : Alignment.centerRight,
+          transform: m,
+          child: Stack(
+            fit: StackFit.passthrough,
+            children: <Widget>[
+              child,
+              IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: t.abs() * 0.38),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+/// A firmer snap than the default, so a half-turn always settles on a page.
+class _BookPhysics extends PageScrollPhysics {
+  const _BookPhysics({super.parent});
+
+  @override
+  _BookPhysics applyTo(ScrollPhysics? ancestor) =>
+      _BookPhysics(parent: buildParent(ancestor));
+
+  @override
+  SpringDescription get spring =>
+      const SpringDescription(mass: 60, stiffness: 120, damping: 1.1);
+}
+
 class _Page extends StatelessWidget {
-  const _Page({required this.number, required this.night});
+  const _Page({
+    required this.number,
+    required this.night,
+    required this.surahName,
+    required this.juzName,
+  });
 
   final int number;
   final bool night;
+  final String surahName;
+  final String juzName;
 
   /// Ink to cream: the page PNGs are black glyphs on a transparent ground,
   /// so inverting the colour channels and leaving alpha alone gives the
@@ -206,14 +336,17 @@ class _Page extends StatelessWidget {
         child: image,
       );
     }
+    final Color ink = night ? AppColors.cream : const Color(0xFF1B2A44);
+    final TextStyle head = AppType.arabic(15, height: 1.2).copyWith(color: ink);
+
     return InteractiveViewer(
       minScale: 1,
       maxScale: 4,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(Insets.sm, Insets.sm, Insets.sm, 0),
+        padding: const EdgeInsets.fromLTRB(Insets.sm, 0, Insets.sm, Insets.sm),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: night ? AppColors.midnight : const Color(0xFFFBF7EE),
+            color: night ? const Color(0xFF0A1428) : MushafFrame.paper,
             borderRadius: BorderRadius.circular(Radii.md),
             boxShadow: night
                 ? null
@@ -228,8 +361,44 @@ class _Page extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(Radii.md),
             child: Padding(
-              padding: const EdgeInsets.all(Insets.sm),
-              child: image,
+              padding: const EdgeInsets.fromLTRB(10, 6, 10, 8),
+              child: Column(
+                children: <Widget>[
+                  // The head, as the mushaf prints it: juz on the right,
+                  // surah on the left.
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: Row(
+                        children: <Widget>[
+                          Text(juzName, style: head),
+                          const Spacer(),
+                          Flexible(
+                            child: Text(
+                              surahName.contains('·')
+                                  ? surahName
+                                  : 'سُورَةُ $surahName',
+                              style: head,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Expanded(
+                    child: MushafFrame(night: night, band: 16, child: image),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    AyahCard.arabicNumeral(number),
+                    style: AppType.arabic(16, height: 1.1).copyWith(color: ink),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -238,12 +407,19 @@ class _Page extends StatelessWidget {
   }
 }
 
-/// Go to a page or a surah.
+/// Go to a page or a surah, within the pages this mushaf is held to.
 class _JumpSheet extends StatefulWidget {
-  const _JumpSheet({required this.quran, required this.current});
+  const _JumpSheet({
+    required this.quran,
+    required this.current,
+    required this.first,
+    required this.last,
+  });
 
   final Quran quran;
   final int current;
+  final int first;
+  final int last;
 
   @override
   State<_JumpSheet> createState() => _JumpSheetState();
@@ -260,12 +436,17 @@ class _JumpSheetState extends State<_JumpSheet> {
 
   void _go() {
     final int? p = int.tryParse(_page.text.trim());
-    if (p == null || p < 1 || p > Quran.pageCount) return;
+    if (p == null || p < widget.first || p > widget.last) return;
     Navigator.of(context).pop(p);
   }
 
   @override
   Widget build(BuildContext context) {
+    final List<Surah> surahs = widget.quran.surahs
+        .where(
+          (Surah s) => s.lastPage >= widget.first && s.firstPage <= widget.last,
+        )
+        .toList();
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.7,
@@ -292,7 +473,7 @@ class _JumpSheetState extends State<_JumpSheet> {
                       onSubmitted: (_) => _go(),
                       style: AppType.body.copyWith(color: AppColors.cream),
                       decoration: InputDecoration(
-                        hintText: 'Page 1–${Quran.pageCount}',
+                        hintText: 'Page ${widget.first}–${widget.last}',
                         hintStyle: AppType.bodySm.copyWith(
                           color: AppColors.mistFaint,
                         ),
@@ -311,6 +492,7 @@ class _JumpSheetState extends State<_JumpSheet> {
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.gold,
                       foregroundColor: AppColors.midnight,
+                      minimumSize: const Size(72, 48),
                     ),
                     child: const Text('Go'),
                   ),
@@ -321,9 +503,9 @@ class _JumpSheetState extends State<_JumpSheet> {
               child: ListView.builder(
                 controller: controller,
                 padding: const EdgeInsets.fromLTRB(Insets.xl, 0, Insets.xl, 40),
-                itemCount: widget.quran.surahs.length,
+                itemCount: surahs.length,
                 itemBuilder: (BuildContext context, int i) {
-                  final Surah s = widget.quran.surahs[i];
+                  final Surah s = surahs[i];
                   final bool here =
                       s.firstPage <= widget.current &&
                       widget.current <= s.lastPage;
@@ -356,7 +538,9 @@ class _JumpSheetState extends State<_JumpSheet> {
                         height: 1.2,
                       ).copyWith(color: AppColors.goldSoft),
                     ),
-                    onTap: () => Navigator.of(context).pop(s.firstPage),
+                    onTap: () => Navigator.of(
+                      context,
+                    ).pop(s.firstPage.clamp(widget.first, widget.last)),
                   );
                 },
               ),

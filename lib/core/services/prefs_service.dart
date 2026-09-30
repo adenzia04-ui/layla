@@ -162,6 +162,28 @@ class PrefsService {
   Future<void> setQuranLastRead(String key) =>
       _prefs.setString('quran_last_read', key);
 
+  /// Translation ids shown in the reader, in catalogue order.
+  List<String> get quranTranslations =>
+      _prefs.getStringList('quran_translations') ?? const <String>['20'];
+  Future<void> setQuranTranslations(List<String> ids) =>
+      _prefs.setStringList('quran_translations', ids);
+
+  Set<int> get starredSurahs =>
+      (_prefs.getStringList('starred_surahs') ?? <String>[])
+          .map(int.tryParse)
+          .whereType<int>()
+          .toSet();
+  Future<void> setStarredSurahs(Set<int> value) => _prefs.setStringList(
+    'starred_surahs',
+    value.map((int n) => n.toString()).toList(),
+  );
+
+  /// Surahs kept on the device for offline listening, as `reciter:surah`.
+  Set<String> get quranDownloads =>
+      (_prefs.getStringList('quran_downloads') ?? const <String>[]).toSet();
+  Future<void> setQuranDownloads(Set<String> keys) =>
+      _prefs.setStringList('quran_downloads', keys.toList());
+
   int get quranLastPage => _prefs.getInt('quran_last_page') ?? 1;
   Future<void> setQuranLastPage(int page) =>
       _prefs.setInt('quran_last_page', page);

@@ -16,12 +16,14 @@ import '../../application/quran_prefs.dart';
 import '../../domain/quran_data.dart';
 import '../../domain/quran_queue.dart';
 import '../../domain/reciters.dart';
+import 'download_row.dart';
 
 /// The bar under a surah: who is reciting, which ayah, and the transport.
 ///
 /// The first press of play asks how — whole surah or ayah by ayah, how many
 /// times each, which voice, whether to loop — and remembers the answer, so
-/// the next press just plays. The gear reopens the same sheet.
+/// the next press just plays. The gear reopens the same sheet, which is
+/// also where the surah is downloaded for offline listening.
 class QuranPlayerBar extends ConsumerWidget {
   const QuranPlayerBar({
     super.key,
@@ -57,11 +59,19 @@ class QuranPlayerBar extends ConsumerWidget {
     ) {
       final NowPlaying? n = surahNowPlaying(next.valueOrNull, surah);
       if (n == null) return;
-      prefetchAhead(ref, quran: quran, surah: surah, ayah: ayahOf(n));
+      final int a = ayahOf(n);
+      if (a > 0) prefetchAhead(ref, quran: quran, surah: surah, ayah: a);
     });
 
     Future<void> start() =>
         playSurah(ref, quran: quran, surah: surah, ayah: fromAyah);
+
+    final String line = now == null
+        ? s.name
+        : ayahOf(now) == 0
+        ? '${s.name} · whole surah'
+        : 'Ayah ${ayahOf(now)} of ${s.ayahCount}'
+              '${now.track.passes > 1 ? ' · ${now.pass}/${now.track.passes}' : ''}';
 
     return Material(
       color: AppColors.navy,
@@ -82,10 +92,7 @@ class QuranPlayerBar extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
-                      now == null
-                          ? s.name
-                          : 'Ayah ${ayahOf(now)} of ${s.ayahCount}'
-                                '${now.track.passes > 1 ? ' · ${now.pass}/${now.track.passes}' : ''}',
+                      line,
                       style: AppType.titleSm,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -113,7 +120,12 @@ class QuranPlayerBar extends ConsumerWidget {
                   unawaited(HapticFeedback.lightImpact());
                   if (now == null) {
                     // Asked once, then remembered.
-                    final bool go = await showPlayOptions(context, ref);
+                    final bool go = await showPlayOptions(
+                      context,
+                      ref,
+                      quran: quran,
+                      surah: surah,
+                    );
                     if (go) await start();
                   } else if (playing) {
                     await handler.pause();
@@ -132,7 +144,12 @@ class QuranPlayerBar extends ConsumerWidget {
                 onPressed: () async {
                   final (String, PlayMode, int, bool) before =
                       listeningSettings(ref);
-                  final bool go = await showPlayOptions(context, ref);
+                  final bool go = await showPlayOptions(
+                    context,
+                    ref,
+                    quran: quran,
+                    surah: surah,
+                  );
                   final bool changed = listeningSettings(ref) != before;
                   // A change while playing takes effect now, from this
                   // ayah — whether the sheet was closed with Play or just
@@ -140,11 +157,12 @@ class QuranPlayerBar extends ConsumerWidget {
                   // recitation" follows the settings and would otherwise
                   // lose track of what is still sounding.
                   if (now != null && (go || changed)) {
+                    final int a = ayahOf(now);
                     await playSurah(
                       ref,
                       quran: quran,
                       surah: surah,
-                      ayah: ayahOf(now),
+                      ayah: a == 0 ? 1 : a,
                     );
                   } else if (go) {
                     await start();
@@ -159,8 +177,14 @@ class QuranPlayerBar extends ConsumerWidget {
   }
 }
 
-/// Voice, mode, repeats, loop. Returns true when "Play" was pressed.
-Future<bool> showPlayOptions(BuildContext context, WidgetRef ref) async {
+/// Voice, mode, repeats, loop, download. Returns true when "Play" was
+/// pressed.
+Future<bool> showPlayOptions(
+  BuildContext context,
+  WidgetRef ref, {
+  required Quran quran,
+  required int surah,
+}) async {
   final bool? go = await showModalBottomSheet<bool>(
     context: context,
     backgroundColor: AppColors.navy,
@@ -171,13 +195,17 @@ Future<bool> showPlayOptions(BuildContext context, WidgetRef ref) async {
       maxHeight: MediaQuery.sizeOf(context).height * 0.88,
     ),
     shape: const RoundedRectangleBorder(borderRadius: Radii.sheet),
-    builder: (BuildContext context) => const _PlayOptionsSheet(),
+    builder: (BuildContext context) =>
+        _PlayOptionsSheet(quran: quran, surah: surah),
   );
   return go ?? false;
 }
 
 class _PlayOptionsSheet extends ConsumerWidget {
-  const _PlayOptionsSheet();
+  const _PlayOptionsSheet({required this.quran, required this.surah});
+
+  final Quran quran;
+  final int surah;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -185,6 +213,8 @@ class _PlayOptionsSheet extends ConsumerWidget {
     final PlayMode mode = ref.watch(playModeProvider);
     final int repeat = ref.watch(ayahRepeatProvider);
     final bool loop = ref.watch(loopSurahProvider);
+    // A whole-surah voice has nothing to repeat by ayah.
+    final bool ayahTools = reciter.perAyah;
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -226,6 +256,10 @@ class _PlayOptionsSheet extends ConsumerWidget {
             ),
             const SizedBox(height: Insets.lg),
 
+            // Offline first: it is the one thing here that takes time.
+            DownloadRow(quran: quran, surah: surah, reciter: reciter),
+            const SizedBox(height: Insets.xl),
+
             Text(
               'RECITER',
               style: AppType.label.copyWith(color: AppColors.mistFaint),
@@ -246,20 +280,23 @@ class _PlayOptionsSheet extends ConsumerWidget {
             ),
             const SizedBox(height: Insets.sm),
             _Option(
-              selected: mode == PlayMode.surah,
+              selected: mode == PlayMode.surah || !ayahTools,
               title: 'The whole surah',
               subtitle: 'Straight through, each ayah once',
               onTap: () =>
                   ref.read(playModeProvider.notifier).set(PlayMode.surah),
             ),
             _Option(
-              selected: mode == PlayMode.ayahByAyah,
+              selected: mode == PlayMode.ayahByAyah && ayahTools,
+              enabled: ayahTools,
               title: 'Ayah by ayah',
-              subtitle: 'Each ayah $repeat× before the next — for memorising',
+              subtitle: ayahTools
+                  ? 'Each ayah $repeat× before the next — for memorising'
+                  : '${reciter.name} is recorded as whole surahs only',
               onTap: () =>
                   ref.read(playModeProvider.notifier).set(PlayMode.ayahByAyah),
             ),
-            if (mode == PlayMode.ayahByAyah) ...<Widget>[
+            if (mode == PlayMode.ayahByAyah && ayahTools) ...<Widget>[
               const SizedBox(height: Insets.md),
               Text(
                 'REPEAT EACH AYAH',
@@ -316,9 +353,11 @@ class _Option extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.enabled = true,
   });
 
   final bool selected;
+  final bool enabled;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
@@ -327,45 +366,48 @@ class _Option extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: Insets.sm),
-      child: Material(
-        color: selected
-            ? AppColors.gold.withValues(alpha: 0.12)
-            : AppColors.navyElevated,
-        borderRadius: Radii.card,
-        child: InkWell(
+      child: Opacity(
+        opacity: enabled ? 1 : 0.45,
+        child: Material(
+          color: selected
+              ? AppColors.gold.withValues(alpha: 0.12)
+              : AppColors.navyElevated,
           borderRadius: Radii.card,
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Insets.lg,
-              vertical: Insets.md,
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  selected
-                      ? Icons.radio_button_checked_rounded
-                      : Icons.radio_button_off_rounded,
-                  size: 20,
-                  color: selected ? AppColors.gold : AppColors.mistFaint,
-                ),
-                const SizedBox(width: Insets.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(title, style: AppType.titleSm),
-                      Text(
-                        subtitle,
-                        style: AppType.bodySm.copyWith(
-                          fontSize: 12,
-                          color: AppColors.mistFaint,
-                        ),
-                      ),
-                    ],
+          child: InkWell(
+            borderRadius: Radii.card,
+            onTap: enabled ? onTap : null,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Insets.lg,
+                vertical: Insets.md,
+              ),
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    selected
+                        ? Icons.radio_button_checked_rounded
+                        : Icons.radio_button_off_rounded,
+                    size: 20,
+                    color: selected ? AppColors.gold : AppColors.mistFaint,
                   ),
-                ),
-              ],
+                  const SizedBox(width: Insets.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(title, style: AppType.titleSm),
+                        Text(
+                          subtitle,
+                          style: AppType.bodySm.copyWith(
+                            fontSize: 12,
+                            color: AppColors.mistFaint,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

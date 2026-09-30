@@ -19,6 +19,10 @@ abstract final class Routes {
   /// The Ninety-Nine Names, one a day.
   static const String quran = '/tasbih/quran';
   static const String quranMushaf = '/tasbih/quran/mushaf';
+  static const String quranDownloads = '/tasbih/quran/downloads';
+
+  /// The mushaf held to one surah's pages.
+  static String quranMushafOf(int surah) => '$quranMushaf?surah=$surah';
 
   /// `/tasbih/quran/surah/2` — the reader, one surah at a time.
   static String quranSurah(int surah) => '/tasbih/quran/surah/$surah';

@@ -4,6 +4,7 @@ import '../../../core/services/prefs_service.dart';
 import '../domain/quran_data.dart';
 import '../domain/quran_queue.dart';
 import '../domain/reciters.dart';
+import '../domain/translations.dart';
 
 /// The bundled book, once.
 final FutureProvider<Quran> quranProvider = FutureProvider<Quran>(
@@ -40,6 +41,41 @@ class ReaderLines extends Notifier<Set<ReaderLine>> {
     await ref
         .read(prefsProvider)
         .setQuranLines(next.map((ReaderLine l) => l.name).toSet());
+  }
+}
+
+/// Which translations the reader shows, by id. Any mix; never none.
+final NotifierProvider<TranslationChoice, List<String>> translationsProvider =
+    NotifierProvider<TranslationChoice, List<String>>(TranslationChoice.new);
+
+class TranslationChoice extends Notifier<List<String>> {
+  @override
+  List<String> build() {
+    final List<String> saved = ref
+        .read(prefsProvider)
+        .quranTranslations
+        .where((String id) => translations.any((Translation t) => t.id == id))
+        .toList();
+    return saved.isEmpty ? <String>['20'] : saved;
+  }
+
+  Future<void> toggle(String id) async {
+    final List<String> next = <String>[...state];
+    if (next.contains(id)) {
+      if (next.length == 1) return;
+      next.remove(id);
+    } else {
+      next.add(id);
+    }
+    // Kept in the catalogue's order, so the same two always stack the same
+    // way whichever was ticked first.
+    next.sort(
+      (String a, String b) =>
+          translations.indexWhere((Translation t) => t.id == a) -
+          translations.indexWhere((Translation t) => t.id == b),
+    );
+    state = next;
+    await ref.read(prefsProvider).setQuranTranslations(next);
   }
 }
 
@@ -148,5 +184,22 @@ class LastPage extends Notifier<int> {
     if (state == page) return;
     state = page;
     await ref.read(prefsProvider).setQuranLastPage(page);
+  }
+}
+
+/// The surahs someone has starred. They rise to the top of the list, so
+/// the ones being memorised are never scrolled for.
+final NotifierProvider<StarredSurahs, Set<int>> starredSurahsProvider =
+    NotifierProvider<StarredSurahs, Set<int>>(StarredSurahs.new);
+
+class StarredSurahs extends Notifier<Set<int>> {
+  @override
+  Set<int> build() => ref.read(prefsProvider).starredSurahs;
+
+  void toggle(int surah) {
+    final Set<int> next = <int>{...state};
+    if (!next.remove(surah)) next.add(surah);
+    state = next;
+    ref.read(prefsProvider).setStarredSurahs(next);
   }
 }

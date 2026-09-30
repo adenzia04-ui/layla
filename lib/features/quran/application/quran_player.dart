@@ -8,15 +8,16 @@ import '../domain/quran_queue.dart';
 import '../domain/reciters.dart';
 import 'quran_prefs.dart';
 
-/// The ayah being recited from [surah], if the player is on that surah in
-/// the chosen voice. Null otherwise, so a reader never highlights an ayah
-/// for a recitation that is not its own.
+/// The recitation of [surah], if that is what the player is on. Null
+/// otherwise, so a reader never highlights an ayah for a recitation that is
+/// not its own.
 NowPlaying? surahNowPlaying(NowPlaying? now, int surah) =>
     now != null && now.owner == surahOwner(surah) ? now : null;
 
-/// The ayah number inside [now]'s group key, `2:255` → 255.
+/// The ayah number inside [now]'s group key, `2:255` → 255. Zero for a
+/// whole-surah voice, which has no ayah to point at.
 int ayahOf(NowPlaying now) =>
-    int.tryParse(now.track.group.split(':').last) ?? 1;
+    int.tryParse(now.track.group.split(':').last) ?? 0;
 
 /// Starts [surah] at [ayah] with the remembered reciter, mode, repeat count
 /// and loop setting. Nothing happens without a player.
@@ -63,8 +64,9 @@ List<RecitationTrack> _tracksFor(
 
 /// How many ayahs ahead of the one sounding are fetched. A few, not the
 /// surah: Al-Baqarah in a 192 kbps voice is over a hundred megabytes, and
-/// nobody asked for that on a phone signal. Called again as the reciter
-/// moves, so the window slides.
+/// nobody asked for that on a phone signal — downloading the surah is its
+/// own, deliberate action. Called again as the reciter moves, so the
+/// window slides.
 const int _prefetchWindow = 6;
 String? _lastPrefetch;
 

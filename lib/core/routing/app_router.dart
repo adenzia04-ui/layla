@@ -40,6 +40,7 @@ import '../../features/friends/application/invite.dart'
     show pendingInviteProvider;
 import '../../features/friends/presentation/friends_screen.dart';
 import '../../features/soul/presentation/names_quiz_screen.dart';
+import '../../features/quran/presentation/downloads_screen.dart';
 import '../../features/quran/presentation/mushaf_screen.dart';
 import '../../features/quran/presentation/quran_home_screen.dart';
 import '../../features/quran/presentation/surah_reader_screen.dart';
@@ -386,14 +387,36 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
                     pageBuilder: (BuildContext context, GoRouterState state) =>
                         _rise(state, const QuranHomeScreen()),
                     routes: <RouteBase>[
+                      // The mushaf and the reader sit on the root navigator,
+                      // outside the tab shell: a page of the Qur'an wants the
+                      // whole screen, and a player bar wants the real bottom
+                      // edge, not a strip above a floating tab bar.
                       GoRoute(
                         path: 'mushaf',
+                        parentNavigatorKey: _rootKey,
                         pageBuilder:
                             (BuildContext context, GoRouterState state) =>
-                                _rise(state, const MushafScreen()),
+                                _rise(
+                                  state,
+                                  MushafScreen(
+                                    surah: int.tryParse(
+                                      state.uri.queryParameters['surah'] ?? '',
+                                    ),
+                                    page: int.tryParse(
+                                      state.uri.queryParameters['page'] ?? '',
+                                    ),
+                                  ),
+                                ),
+                      ),
+                      GoRoute(
+                        path: 'downloads',
+                        pageBuilder:
+                            (BuildContext context, GoRouterState state) =>
+                                _rise(state, const DownloadsScreen()),
                       ),
                       GoRoute(
                         path: 'surah/:n',
+                        parentNavigatorKey: _rootKey,
                         pageBuilder:
                             (BuildContext context, GoRouterState state) =>
                                 _rise(

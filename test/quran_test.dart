@@ -7,6 +7,7 @@ import 'package:noor/features/quran/application/tafsir_service.dart';
 import 'package:noor/features/quran/domain/quran_data.dart';
 import 'package:noor/features/quran/domain/quran_queue.dart';
 import 'package:noor/features/quran/domain/reciters.dart';
+import 'package:noor/features/quran/domain/translations.dart';
 
 /// The bundled Qur'an, checked as a whole: 114 surahs, 6,236 ayahs, 604
 /// pages with none missing, and a page image for every page. A book with a
@@ -185,10 +186,77 @@ void main() {
       expect(t.title, 'Al-Baqarah · Ayah 255');
     });
 
-    test('four reciters, each distinct, and an unknown id falls back', () {
-      expect(reciters.length, 4);
-      expect(reciters.map((Reciter r) => r.id).toSet().length, 4);
+    test('every voice is distinct and an unknown id falls back', () {
+      expect(reciters.length, greaterThanOrEqualTo(12));
+      expect(reciters.map((Reciter r) => r.id).toSet().length, reciters.length);
       expect(reciterById('nobody').id, reciters.first.id);
+      expect(reciterById('luhaidan').perAyah, isFalse);
+      expect(
+        reciterById('luhaidan').surahUrl(2).toString(),
+        endsWith('/002.mp3'),
+      );
+    });
+
+    test('a whole-surah voice gives one track and no ayah to point at', () {
+      final List<RecitationTrack> q = surahTracks(
+        quran,
+        2,
+        reciter: reciterById('luhaidan'),
+        mode: PlayMode.ayahByAyah,
+        repeat: 5,
+      );
+      expect(q.length, 1);
+      expect(q.single.group, wholeSurahGroup(2));
+      expect(q.single.passes, 1);
+      expect(trackIndexOf(q, 255), 0);
+      expect(
+        reciterById('luhaidan').filesFor(2, quran.surah(2).ayahCount).length,
+        1,
+      );
+      expect(
+        reciterById('alafasy').filesFor(2, quran.surah(2).ayahCount).length,
+        286,
+      );
+    });
+  });
+
+  group('Translations and the order of the book', () {
+    test('five translations, all present on every ayah', () {
+      expect(translations.length, 5);
+      for (final Surah s in quran.surahs) {
+        for (final Ayah a in quran.ayahsOf(s.number)) {
+          for (final Translation t in translations) {
+            expect(
+              a.translations[t.id]?.trim(),
+              isNotEmpty,
+              reason: '${a.key} ${t.id}',
+            );
+            expect(a.translations[t.id], isNot(contains('<')), reason: a.key);
+          }
+        }
+      }
+      expect(quran.ayah(1, 1).translations['20'], quran.ayah(1, 1).translation);
+    });
+
+    test('every surah has a revelation order, each used once', () {
+      final Set<int> orders = quran.surahs
+          .map((Surah s) => s.revelationOrder)
+          .toSet();
+      expect(orders.length, 114);
+      expect(orders.reduce((int a, int b) => a < b ? a : b), 1);
+      expect(orders.reduce((int a, int b) => a > b ? a : b), 114);
+      expect(quran.surah(96).revelationOrder, 1); // Al-'Alaq came first.
+      expect(quran.byRevelation.first.number, 96);
+    });
+
+    test('thirty juz, each starting where the mushaf says', () {
+      final List<Juz> juzs = quran.juzs;
+      expect(juzs.length, 30);
+      expect(juzs.first.firstAyah.key, '1:1');
+      expect(juzs[1].firstAyah.key, '2:142');
+      expect(juzs.last.firstAyah.key, '78:1');
+      expect(juzs.last.firstPage, 582);
+      expect(juzs.first.arabicName, 'الجزء الأول');
     });
   });
 
