@@ -52,6 +52,7 @@ List<RecitationTrack> surahTracks(
         album: '${s.name} (${s.meaning})',
         url: url,
         file: localFile?.call(url),
+        voice: reciter.id,
       ),
     ];
   }
@@ -69,6 +70,7 @@ List<RecitationTrack> surahTracks(
           url: url,
           file: localFile?.call(url),
           passes: passes,
+          voice: reciter.id,
         );
       }(),
   ];

@@ -73,8 +73,10 @@ class QuranPlayerBar extends ConsumerWidget {
         : 'Ayah ${ayahOf(now)} of ${s.ayahCount}'
               '${now.track.passes > 1 ? ' · ${now.pass}/${now.track.passes}' : ''}';
 
+    // The same ground as the page, so the bar has no top edge: the text
+    // above it fades out into midnight and the controls sit in it.
     return Material(
-      color: AppColors.navy,
+      color: AppColors.midnight,
       child: SafeArea(
         top: false,
         child: Padding(

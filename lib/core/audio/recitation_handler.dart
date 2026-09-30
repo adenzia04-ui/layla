@@ -27,6 +27,7 @@ class RecitationTrack {
     this.file,
     this.url,
     this.passes = 1,
+    this.voice,
   }) : assert(
          asset != null || file != null || url != null,
          'a track needs a source',
@@ -54,6 +55,10 @@ class RecitationTrack {
   /// How many times this track is read before the next.
   final int passes;
 
+  /// Whose voice this is — a reciter id — when a screen needs to know,
+  /// as the Qur'an reader does to find the word timings for it.
+  final String? voice;
+
   @override
   bool operator ==(Object other) =>
       other is RecitationTrack &&
@@ -62,10 +67,11 @@ class RecitationTrack {
       other.asset == asset &&
       other.file == file &&
       other.url == url &&
-      other.passes == passes;
+      other.passes == passes &&
+      other.voice == voice;
 
   @override
-  int get hashCode => Object.hash(id, group, asset, file, url, passes);
+  int get hashCode => Object.hash(id, group, asset, file, url, passes, voice);
 }
 
 /// What is being recited right now, as the screens see it.
@@ -146,6 +152,15 @@ class RecitationHandler extends BaseAudioHandler
   NowPlaying? get current => _last;
 
   Stream<Duration> get position => _player.positionStream;
+
+  /// The position often enough to light one word after another: the
+  /// default stream reports a few times a second, which is fine for a
+  /// slider and too coarse for a short word.
+  late final Stream<Duration> finePosition = _player.createPositionStream(
+    steps: 2000,
+    minPeriod: const Duration(milliseconds: 40),
+    maxPeriod: const Duration(milliseconds: 90),
+  );
   Stream<Duration?> get duration => _player.durationStream;
   bool get isPlaying => _player.playing;
 

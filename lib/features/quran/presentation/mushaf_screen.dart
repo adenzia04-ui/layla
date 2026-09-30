@@ -6,13 +6,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/audio/recitation_handler.dart';
+import '../../../core/audio/recitation_player.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../application/quran_player.dart';
 import '../application/quran_prefs.dart';
+import '../application/quran_word.dart';
+import '../domain/ayah_words.dart';
+import '../domain/mushaf_glyphs.dart';
 import '../domain/quran_data.dart';
 import 'widgets/ayah_card.dart';
 import 'widgets/mushaf_frame.dart';
+import 'widgets/page_glow.dart';
 import 'widgets/quran_player_bar.dart';
 
 /// The mushaf, page by page, as the Madinah edition prints it.
@@ -26,6 +33,11 @@ import 'widgets/quran_player_bar.dart';
 ///
 /// Opened for one surah, the book is held to that surah's pages, so a
 /// swipe past the end of Al-Baqarah does not land in Ali 'Imran.
+///
+/// While a reciter reads, the ayah is washed in gold on the page and the
+/// word being spoken glows and glides along the line; the book turns to
+/// the next page as the voice reaches it. A touch on any word starts the
+/// recitation from that ayah.
 class MushafScreen extends ConsumerStatefulWidget {
   const MushafScreen({super.key, this.surah, this.page});
 
@@ -115,6 +127,38 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
             ? null
             : q.surah(widget.surah!);
 
+        // Turn the page with the voice, within the pages this book holds.
+        ref.listen<(int, int)?>(
+          spokenWordProvider.select(
+            (SpokenWord? w) => w == null ? null : (w.surah, w.ayah),
+          ),
+          ((int, int)? _, (int, int)? at) {
+            if (at == null) return;
+            final List<Ayah> list = q.ayahsOf(at.$1);
+            if (at.$2 < 1 || at.$2 > list.length) return;
+            final int page = list[at.$2 - 1].page;
+            if (page == _page || page < _first || page > _last) return;
+            unawaited(
+              _controller?.animateToPage(
+                page - _first,
+                duration: const Duration(milliseconds: 460),
+                curve: Curves.easeInOutCubic,
+              ),
+            );
+          },
+        );
+
+        // The bar follows whichever surah on this page is sounding; with
+        // nothing playing, the surah the book is held to, or the first.
+        final NowPlaying? np = ref.watch(nowPlayingProvider).valueOrNull;
+        final int? sounding = np != null && np.owner.startsWith('quran:')
+            ? int.tryParse(np.owner.substring(6))
+            : null;
+        final int barSurah =
+            sounding != null && here.any((Surah s) => s.number == sounding)
+            ? sounding
+            : held?.number ?? (ayahs.isEmpty ? 1 : ayahs.first.surah);
+
         return Scaffold(
           backgroundColor: AppColors.midnight,
           appBar: AppBar(
@@ -196,11 +240,18 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                 child: _Page(
                   number: number,
                   night: _night,
+                  quran: q,
                   surahName: q
                       .surahsOnPage(number)
                       .map((Surah s) => s.arabicName)
                       .join(' · '),
                   juzName: 'الجزء ${juzOrdinals[q.juzOfPage(number) - 1]}',
+                  onTapAyah: (int surah, int ayah) {
+                    unawaited(HapticFeedback.lightImpact());
+                    unawaited(
+                      playSurah(ref, quran: q, surah: surah, ayah: ayah),
+                    );
+                  },
                 ),
               );
             },
@@ -209,8 +260,8 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
               ? null
               : QuranPlayerBar(
                   quran: q,
-                  surah: held?.number ?? ayahs.first.surah,
-                  fromAyah: held == null || ayahs.first.surah == held.number
+                  surah: barSurah,
+                  fromAyah: ayahs.first.surah == barSurah
                       ? ayahs.first.number
                       : 1,
                 ),
@@ -294,18 +345,22 @@ class _BookPhysics extends PageScrollPhysics {
       const SpringDescription(mass: 60, stiffness: 120, damping: 1.1);
 }
 
-class _Page extends StatelessWidget {
+class _Page extends ConsumerWidget {
   const _Page({
     required this.number,
     required this.night,
+    required this.quran,
     required this.surahName,
     required this.juzName,
+    required this.onTapAyah,
   });
 
   final int number;
   final bool night;
+  final Quran quran;
   final String surahName;
   final String juzName;
+  final void Function(int surah, int ayah) onTapAyah;
 
   /// Ink to cream: the page PNGs are black glyphs on a transparent ground,
   /// so inverting the colour channels and leaving alpha alone gives the
@@ -318,7 +373,19 @@ class _Page extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // This page repaints only when the word on *this* page changes.
+    final SpokenWord? spoken = ref.watch(
+      spokenWordProvider.select((SpokenWord? w) {
+        if (w == null) return null;
+        final List<Ayah> list = quran.ayahsOf(w.surah);
+        if (w.ayah < 1 || w.ayah > list.length) return null;
+        return list[w.ayah - 1].page == number ? w : null;
+      }),
+    );
+    final MushafGlyphs? glyphs = ref.watch(glyphsProvider).valueOrNull;
+    final PageGlyphs? boxes = glyphs?.page(number);
+
     Widget image = Image.asset(
       'assets/quran/pages/$number.png',
       fit: BoxFit.contain,
@@ -390,7 +457,21 @@ class _Page extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Expanded(
-                    child: MushafFrame(night: night, band: 16, child: image),
+                    child: MushafFrame(
+                      night: night,
+                      band: 16,
+                      child: boxes == null || glyphs == null
+                          ? image
+                          : _Sheet(
+                              image: image,
+                              imageSize: glyphs.imageSize,
+                              boxes: boxes,
+                              spoken: spoken,
+                              quran: quran,
+                              night: night,
+                              onTapAyah: onTapAyah,
+                            ),
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -546,6 +627,85 @@ class _JumpSheetState extends State<_JumpSheet> {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+}
+
+/// The page image with the light on it and a touch on any word.
+class _Sheet extends StatelessWidget {
+  const _Sheet({
+    required this.image,
+    required this.imageSize,
+    required this.boxes,
+    required this.spoken,
+    required this.quran,
+    required this.night,
+    required this.onTapAyah,
+  });
+
+  final Widget image;
+  final Size imageSize;
+  final PageGlyphs boxes;
+  final SpokenWord? spoken;
+  final Quran quran;
+  final bool night;
+  final void Function(int surah, int ayah) onTapAyah;
+
+  /// Where `BoxFit.contain` puts the image inside [size].
+  Rect _fitted(Size size) {
+    final double scale = math.min(
+      size.width / imageSize.width,
+      size.height / imageSize.height,
+    );
+    final double w = imageSize.width * scale;
+    final double h = imageSize.height * scale;
+    return Rect.fromLTWH((size.width - w) / 2, (size.height - h) / 2, w, h);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints c) {
+        final Size size = Size(c.maxWidth, c.maxHeight);
+        final Rect fitted = _fitted(size);
+
+        List<Glyph> ayahGlyphs = const <Glyph>[];
+        int wordPosition = 0;
+        if (spoken != null) {
+          ayahGlyphs = boxes.ofAyah(spoken!.ayahKey);
+          if (spoken!.word > 0) {
+            final Ayah a = quran.ayahsOf(spoken!.surah)[spoken!.ayah - 1];
+            wordPosition = wordToken(ayahTokens(a.arabic), spoken!.word) + 1;
+          }
+        }
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapUp: (TapUpDetails d) {
+            final Offset p = d.localPosition;
+            if (!fitted.contains(p)) return;
+            final Offset inImage = Offset(
+              (p.dx - fitted.left) / fitted.width * imageSize.width,
+              (p.dy - fitted.top) / fitted.height * imageSize.height,
+            );
+            final Glyph? g = boxes.hit(inImage);
+            if (g != null) onTapAyah(g.surah, g.ayah);
+          },
+          child: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              image,
+              PageGlow(
+                ayahGlyphs: ayahGlyphs,
+                wordPosition: wordPosition,
+                imageSize: imageSize,
+                fitted: fitted,
+                night: night,
+              ),
+            ],
+          ),
         );
       },
     );

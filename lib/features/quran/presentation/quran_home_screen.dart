@@ -8,11 +8,13 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/edge_fade.dart';
 import '../../dua/application/starred_duas.dart';
 import '../application/quran_downloads.dart';
 import '../application/quran_prefs.dart';
 import '../domain/quran_data.dart';
 import '../domain/reciters.dart';
+import '../domain/surah_search.dart';
 
 /// The Qur'an: the mushaf as printed, or the reader with the words beside
 /// their meaning — and the 114 surahs to open either from, by surah, by
@@ -61,6 +63,7 @@ class _QuranHomeScreenState extends ConsumerState<QuranHomeScreen> {
       ],
       showOrnaments: false,
       padding: EdgeInsets.zero,
+      extendUnderBar: true,
       child: quran.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (Object e, _) => Center(
@@ -74,100 +77,104 @@ class _QuranHomeScreenState extends ConsumerState<QuranHomeScreen> {
           final Ayah? resume = _resume(q, lastRead);
           final List<Widget> rows = _rows(q, starred, downloads, reciter);
 
-          // One ListView, header and all: a scroll view inside a scroll view
-          // is what left the list blank behind the keyboard.
-          return ListView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: EdgeInsets.fromLTRB(
-              Insets.page,
-              Insets.md,
-              Insets.page,
-              // The shell's floating bar sits over the bottom of the list;
-              // its height arrives through MediaQuery.
-              MediaQuery.paddingOf(context).bottom + Insets.xxl,
-            ),
-            children: <Widget>[
-              if (resume != null) ...<Widget>[
-                _Resume(
-                  title: 'Continue reading',
-                  line: '${q.surah(resume.surah).name} · Ayah ${resume.number}',
-                  onTap: () => context.push(
-                    '${Routes.quranSurah(resume.surah)}?ayah=${resume.number}',
-                  ),
-                ),
-                const SizedBox(height: Insets.md),
-              ],
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: _Mode(
-                      title: 'Mushaf',
-                      line: 'The Madinah pages, as printed',
-                      detail: lastPage > 1 ? 'Page $lastPage' : '604 pages',
-                      icon: Icons.auto_stories_rounded,
-                      onTap: () => context.push(Routes.quranMushaf),
+          // The list runs on under the floating bar and fades out as it
+          // gets there, the way the home screen's globe does — no hard
+          // edge above the glass.
+          final double bar = MediaQuery.paddingOf(context).bottom;
+          return EdgeFade(
+            bottom: bar + 48,
+            child: ListView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.fromLTRB(
+                Insets.page,
+                Insets.md,
+                Insets.page,
+                bar + Insets.xxl,
+              ),
+              children: <Widget>[
+                if (resume != null) ...<Widget>[
+                  _Resume(
+                    title: 'Continue reading',
+                    line:
+                        '${q.surah(resume.surah).name} · Ayah ${resume.number}',
+                    onTap: () => context.push(
+                      '${Routes.quranSurah(resume.surah)}?ayah=${resume.number}',
                     ),
                   ),
-                  const SizedBox(width: Insets.md),
-                  Expanded(
-                    child: _Mode(
-                      title: 'Read & listen',
-                      line: 'Arabic, transliteration, translations, tafsir',
-                      detail: '${reciters.length} reciters',
-                      icon: Icons.translate_rounded,
-                      onTap: () => context.push(
-                        resume == null
-                            ? Routes.quranSurah(1)
-                            : '${Routes.quranSurah(resume.surah)}?ayah=${resume.number}',
+                  const SizedBox(height: Insets.md),
+                ],
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: _Mode(
+                        title: 'Mushaf',
+                        line: 'The Madinah pages, as printed',
+                        detail: lastPage > 1 ? 'Page $lastPage' : '604 pages',
+                        icon: Icons.auto_stories_rounded,
+                        onTap: () => context.push(Routes.quranMushaf),
+                      ),
+                    ),
+                    const SizedBox(width: Insets.md),
+                    Expanded(
+                      child: _Mode(
+                        title: 'Read & listen',
+                        line: 'Arabic, transliteration, translations, tafsir',
+                        detail: '${reciters.length} reciters',
+                        icon: Icons.translate_rounded,
+                        onTap: () => context.push(
+                          resume == null
+                              ? Routes.quranSurah(1)
+                              : '${Routes.quranSurah(resume.surah)}?ayah=${resume.number}',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: Insets.xl),
+                _Tabs(
+                  current: _tab,
+                  onChanged: (_Tab t) => setState(() => _tab = t),
+                ),
+                const SizedBox(height: Insets.md),
+                if (_tab != _Tab.juz) ...<Widget>[
+                  TextField(
+                    controller: _search,
+                    onChanged: (String v) => setState(() => _query = v.trim()),
+                    style: AppType.body.copyWith(color: AppColors.cream),
+                    decoration: InputDecoration(
+                      hintText: 'Find a surah — name, meaning or number',
+                      hintStyle: AppType.bodySm.copyWith(
+                        color: AppColors.mistFaint,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search_rounded,
+                        color: AppColors.mistFaint,
+                      ),
+                      suffixIcon: _query.isEmpty
+                          ? null
+                          : IconButton(
+                              icon: const Icon(
+                                Icons.close_rounded,
+                                color: AppColors.mistFaint,
+                              ),
+                              onPressed: () {
+                                _search.clear();
+                                setState(() => _query = '');
+                              },
+                            ),
+                      filled: true,
+                      fillColor: AppColors.navyElevated,
+                      border: const OutlineInputBorder(
+                        borderRadius: Radii.card,
+                        borderSide: BorderSide.none,
                       ),
                     ),
                   ),
+                  const SizedBox(height: Insets.md),
                 ],
-              ),
-              const SizedBox(height: Insets.xl),
-              _Tabs(
-                current: _tab,
-                onChanged: (_Tab t) => setState(() => _tab = t),
-              ),
-              const SizedBox(height: Insets.md),
-              if (_tab != _Tab.juz) ...<Widget>[
-                TextField(
-                  controller: _search,
-                  onChanged: (String v) => setState(() => _query = v.trim()),
-                  style: AppType.body.copyWith(color: AppColors.cream),
-                  decoration: InputDecoration(
-                    hintText: 'Find a surah — name, meaning or number',
-                    hintStyle: AppType.bodySm.copyWith(
-                      color: AppColors.mistFaint,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.search_rounded,
-                      color: AppColors.mistFaint,
-                    ),
-                    suffixIcon: _query.isEmpty
-                        ? null
-                        : IconButton(
-                            icon: const Icon(
-                              Icons.close_rounded,
-                              color: AppColors.mistFaint,
-                            ),
-                            onPressed: () {
-                              _search.clear();
-                              setState(() => _query = '');
-                            },
-                          ),
-                    filled: true,
-                    fillColor: AppColors.navyElevated,
-                    border: const OutlineInputBorder(
-                      borderRadius: Radii.card,
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: Insets.md),
+                ...rows,
               ],
-              ...rows,
-            ],
+            ),
           );
         },
       ),
@@ -191,14 +198,25 @@ class _QuranHomeScreenState extends ConsumerState<QuranHomeScreen> {
     final List<Surah> source = _tab == _Tab.revelation
         ? q.byRevelation
         : q.surahs;
-    final String needle = _query.toLowerCase();
-    final List<Surah> matching = source.where((Surah s) {
-      if (_query.isEmpty) return true;
-      return s.name.toLowerCase().contains(needle) ||
-          s.meaning.toLowerCase().contains(needle) ||
-          s.arabicName.contains(_query) ||
-          s.number.toString() == _query;
-    }).toList();
+    // Best matches first — a name that starts with what was typed before
+    // a meaning that merely contains it — and the tab's own order within
+    // each rank. A stable sort keeps that order.
+    final List<Surah> matching = <Surah>[
+      for (final Surah s in source)
+        if (surahMatch(s, _query) > 0) s,
+    ];
+    if (_query.isNotEmpty) {
+      final List<int> rank = <int>[
+        for (final Surah s in matching) surahMatch(s, _query),
+      ];
+      final List<int> order = List<int>.generate(
+        matching.length,
+        (int i) => i,
+      )..sort((int a, int b) => rank[b] != rank[a] ? rank[b] - rank[a] : a - b);
+      matching.replaceRange(0, matching.length, <Surah>[
+        for (final int i in order) matching[i],
+      ]);
+    }
     // Starred first, in the tab's own order within each group.
     final List<Surah> ordered = starredFirst(
       matching,

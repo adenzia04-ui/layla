@@ -8,16 +8,19 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_snackbar.dart';
 import '../../application/quran_prefs.dart';
+import '../../application/quran_word.dart';
 import '../../application/tafsir_service.dart';
+import '../../domain/ayah_words.dart';
 import '../../domain/quran_data.dart';
 import '../../domain/translations.dart';
 
 /// One ayah in the reader: the Arabic large and right-aligned, then the
 /// transliteration and the chosen translations underneath, whichever are
-/// switched on. A thin gold edge marks the one being recited. Tapping the
-/// ayah opens Ibn Kathir's tafsir right under it; tapping again folds it
-/// away.
-class AyahCard extends StatelessWidget {
+/// switched on. A thin gold edge marks the one being recited, and inside
+/// it the word being spoken warms to gold as the voice reaches it. Tapping
+/// the ayah opens Ibn Kathir's tafsir right under it; tapping again folds
+/// it away.
+class AyahCard extends ConsumerWidget {
   const AyahCard({
     super.key,
     required this.ayah,
@@ -46,10 +49,23 @@ class AyahCard extends StatelessWidget {
   final VoidCallback onToggleTafsir;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final bool arabic = lines.contains(ReaderLine.arabic);
     final bool translit = lines.contains(ReaderLine.transliteration);
     final bool english = lines.contains(ReaderLine.translation);
+
+    // Only the card being recited follows the word, and it rebuilds only
+    // when the word changes — not on every tick of the position.
+    final int word = current
+        ? ref.watch(
+            spokenWordProvider.select(
+              (SpokenWord? w) =>
+                  w != null && w.surah == ayah.surah && w.ayah == ayah.number
+                  ? w.word
+                  : 0,
+            ),
+          )
+        : 0;
 
     return InkWell(
       onTap: onToggleTafsir,
@@ -77,29 +93,11 @@ class AyahCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             if (arabic) ...<Widget>[
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: Text.rich(
-                  TextSpan(
-                    children: <InlineSpan>[
-                      TextSpan(text: ayah.arabic),
-                      const TextSpan(text: ' '),
-                      // The ayah's number in the mushaf's own style: the
-                      // end-of-ayah mark carries it.
-                      TextSpan(
-                        text: ' ${arabicNumeral(ayah.number)} ',
-                        style: TextStyle(
-                          color: AppColors.gold,
-                          fontSize: 22 * scale,
-                        ),
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.right,
-                  style: AppType.quran(
-                    28 * scale,
-                  ).copyWith(color: AppColors.cream, height: 2.1),
-                ),
+              ArabicWords(
+                arabic: ayah.arabic,
+                number: ayah.number,
+                scale: scale,
+                litWord: word,
               ),
               const SizedBox(height: Insets.md),
             ],
@@ -143,7 +141,7 @@ class AyahCard extends StatelessWidget {
                 ],
             Row(
               children: <Widget>[
-                _Badge(number: ayah.number, current: current),
+                _Marker(ayah: ayah, current: current),
                 const Spacer(),
                 _Action(
                   icon: playing
@@ -196,6 +194,97 @@ class AyahCard extends StatelessWidget {
       .split('')
       .map((String d) => '٠١٢٣٤٥٦٧٨٩'[int.parse(d)])
       .join();
+}
+
+/// The ayah's Arabic, one widget per word so a word can warm to gold as
+/// it is spoken. Laid out right to left and wrapped like a line of text;
+/// the ayah-end mark carries the number, the way the mushaf sets it.
+class ArabicWords extends StatelessWidget {
+  const ArabicWords({
+    super.key,
+    required this.arabic,
+    required this.number,
+    required this.scale,
+    required this.litWord,
+  });
+
+  final String arabic;
+  final int number;
+  final double scale;
+
+  /// 1-based word (marks not counted) to light, or 0 for none.
+  final int litWord;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<String> tokens = ayahTokens(arabic);
+    final int lit = wordToken(tokens, litWord);
+    final double size = 28 * scale;
+    final TextStyle base = AppType.quran(
+      size,
+    ).copyWith(color: AppColors.cream, height: 1.9);
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Wrap(
+        spacing: size * 0.24,
+        crossAxisAlignment: WrapCrossAlignment.end,
+        children: <Widget>[
+          for (int i = 0; i < tokens.length; i++)
+            _Word(text: tokens[i], lit: i == lit, base: base),
+          Text(
+            AyahCard.arabicNumeral(number),
+            style: base.copyWith(color: AppColors.gold, fontSize: size * 0.8),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Word extends StatelessWidget {
+  const _Word({required this.text, required this.lit, required this.base});
+
+  final String text;
+  final bool lit;
+  final TextStyle base;
+
+  @override
+  Widget build(BuildContext context) {
+    // The word brightens and a soft glow gathers under it, then both ease
+    // away as the voice moves on — a lantern passing along the line, not a
+    // marker jumping from word to word.
+    return AnimatedDefaultTextStyle(
+      duration: Duration(milliseconds: lit ? 140 : 420),
+      curve: Curves.easeOutCubic,
+      style: lit
+          ? base.copyWith(
+              color: AppColors.goldSoft,
+              shadows: <Shadow>[
+                Shadow(
+                  color: AppColors.gold.withValues(alpha: 0.75),
+                  blurRadius: 18,
+                ),
+                Shadow(
+                  color: AppColors.gold.withValues(alpha: 0.35),
+                  blurRadius: 4,
+                ),
+              ],
+            )
+          : base.copyWith(
+              shadows: <Shadow>[
+                Shadow(
+                  color: AppColors.gold.withValues(alpha: 0),
+                  blurRadius: 18,
+                ),
+                Shadow(
+                  color: AppColors.gold.withValues(alpha: 0),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
+      child: Text(text),
+    );
+  }
 }
 
 /// Ibn Kathir, unfolded under the ayah. Fetched the first time, kept after.
@@ -275,29 +364,33 @@ class _TafsirInline extends ConsumerWidget {
   }
 }
 
-class _Badge extends StatelessWidget {
-  const _Badge({required this.number, required this.current});
+/// The ayah's place, set the way a mushaf's margin would: the number in
+/// its ornate brackets, and the reference beside it in small caps. No
+/// pill, no border — a footnote, not a button.
+class _Marker extends StatelessWidget {
+  const _Marker({required this.ayah, required this.current});
 
-  final int number;
+  final Ayah ayah;
   final bool current;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        borderRadius: Radii.chip,
-        border: Border.all(
-          color: current ? AppColors.gold : AppColors.navyLine,
+    final Color ink = current ? AppColors.gold : AppColors.mistFaint;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          '﴿${AyahCard.arabicNumeral(ayah.number)}﴾',
+          textDirection: TextDirection.rtl,
+          style: AppType.arabic(15, height: 1).copyWith(color: ink),
         ),
-        color: current ? AppColors.gold.withValues(alpha: 0.14) : null,
-      ),
-      child: Text(
-        'Ayah $number',
-        style: AppType.label.copyWith(
-          color: current ? AppColors.gold : AppColors.mistFaint,
+        const SizedBox(width: Insets.sm),
+        Text(
+          '${ayah.surah}:${ayah.number}',
+          style: AppType.label.copyWith(color: ink, letterSpacing: 1.2),
         ),
-      ),
+      ],
     );
   }
 }

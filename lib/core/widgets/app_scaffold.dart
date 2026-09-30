@@ -20,6 +20,7 @@ class NightScaffold extends StatelessWidget {
     this.scrollable = false,
     this.bottom,
     this.floatingActionButton,
+    this.extendUnderBar = false,
   });
 
   final Widget child;
@@ -34,6 +35,11 @@ class NightScaffold extends StatelessWidget {
   final bool scrollable;
   final Widget? bottom;
   final Widget? floatingActionButton;
+
+  /// Lets a non-scrolling screen's content run on under the floating tab
+  /// bar, for a list that fades out into it rather than stopping short.
+  /// The screen then owes its own bottom padding, from MediaQuery.
+  final bool extendUnderBar;
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +130,9 @@ class NightScaffold extends StatelessWidget {
                 // device's own inset.
                 : Padding(
                     padding: EdgeInsets.only(
-                      bottom: MediaQuery.paddingOf(context).bottom,
+                      bottom: extendUnderBar
+                          ? 0
+                          : MediaQuery.paddingOf(context).bottom,
                     ),
                     child: content,
                   ),

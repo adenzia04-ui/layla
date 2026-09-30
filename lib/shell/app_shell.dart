@@ -123,13 +123,21 @@ class AppShell extends ConsumerWidget {
       // Hand the bar's own height down as bottom padding. Without it every
       // screen thinks it owns the full viewport and the last thing on each
       // one ends up parked under the glass, unreachable by scrolling.
-      body: MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-          padding: MediaQuery.of(context).padding.copyWith(
-            bottom: MediaQuery.of(context).padding.bottom + kBottomBarHeight,
+      //
+      // Read through a Builder, from inside this Scaffold: the Scaffold
+      // has already taken the keyboard's inset off its body, and copying
+      // the query from above it handed the inset down a second time. Every
+      // screen's own Scaffold then shrank for the keyboard again, and a
+      // list behind a focused search field was squeezed to a sliver.
+      body: Builder(
+        builder: (BuildContext context) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            padding: MediaQuery.of(context).padding.copyWith(
+              bottom: MediaQuery.of(context).padding.bottom + kBottomBarHeight,
+            ),
           ),
+          child: navigationShell,
         ),
-        child: navigationShell,
       ),
       // The bar floats over the content, and the content showed through
       // beneath it: feature tiles half-visible under the pill. A scrim now

@@ -11,6 +11,7 @@ import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/edge_fade.dart';
 import '../application/quran_player.dart';
 import '../application/quran_prefs.dart';
 import '../domain/quran_data.dart';
@@ -183,58 +184,64 @@ class _SurahReaderScreenState extends ConsumerState<SurahReaderScreen> {
                 onTranslations: () => _pickTranslations(context),
               ),
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(bottom: Insets.xl),
-                  itemCount: ayahs.length + 1,
-                  itemBuilder: (BuildContext context, int i) {
-                    if (i == 0) {
-                      return _SurahHead(
-                        surah: s,
-                        scale: scale,
-                        juz: ayahs.first.juz,
-                      );
-                    }
-                    final Ayah a = ayahs[i - 1];
-                    final bool current = currentAyah == a.number;
-                    return KeyedSubtree(
-                      key: _keyFor(a.number),
-                      child: AyahCard(
-                        ayah: a,
-                        lines: lines,
-                        translationIds: translationIds,
-                        scale: scale,
-                        current: current,
-                        playing: current && (now?.playing ?? false),
-                        tafsirOpen: _tafsirOpen.contains(a.number),
-                        onToggleTafsir: () {
-                          unawaited(HapticFeedback.selectionClick());
-                          setState(() {
-                            if (!_tafsirOpen.remove(a.number)) {
-                              _tafsirOpen.add(a.number);
+                // The text thins out under the chips and above the player
+                // instead of stopping at a line.
+                child: EdgeFade(
+                  top: 24,
+                  bottom: 44,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(bottom: Insets.xxl),
+                    itemCount: ayahs.length + 1,
+                    itemBuilder: (BuildContext context, int i) {
+                      if (i == 0) {
+                        return _SurahHead(
+                          surah: s,
+                          scale: scale,
+                          juz: ayahs.first.juz,
+                        );
+                      }
+                      final Ayah a = ayahs[i - 1];
+                      final bool current = currentAyah == a.number;
+                      return KeyedSubtree(
+                        key: _keyFor(a.number),
+                        child: AyahCard(
+                          ayah: a,
+                          lines: lines,
+                          translationIds: translationIds,
+                          scale: scale,
+                          current: current,
+                          playing: current && (now?.playing ?? false),
+                          tafsirOpen: _tafsirOpen.contains(a.number),
+                          onToggleTafsir: () {
+                            unawaited(HapticFeedback.selectionClick());
+                            setState(() {
+                              if (!_tafsirOpen.remove(a.number)) {
+                                _tafsirOpen.add(a.number);
+                              }
+                            });
+                          },
+                          onPlay: () {
+                            unawaited(HapticFeedback.lightImpact());
+                            if (handler == null) return;
+                            if (current) {
+                              unawaited(
+                                now!.playing ? handler.pause() : handler.play(),
+                              );
+                            } else {
+                              unawaited(
+                                playSurah(
+                                  ref,
+                                  quran: q,
+                                  surah: surah,
+                                  ayah: a.number,
+                                ),
+                              );
                             }
-                          });
-                        },
-                        onPlay: () {
-                          unawaited(HapticFeedback.lightImpact());
-                          if (handler == null) return;
-                          if (current) {
-                            unawaited(
-                              now!.playing ? handler.pause() : handler.play(),
-                            );
-                          } else {
-                            unawaited(
-                              playSurah(
-                                ref,
-                                quran: q,
-                                surah: surah,
-                                ayah: a.number,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    );
-                  },
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
