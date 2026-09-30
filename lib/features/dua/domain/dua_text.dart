@@ -96,6 +96,17 @@ class DuaTextSection {
   final int section;
   final String title;
   final List<DuaText> duas;
+
+  /// Where [number] sits in this section, counting from 1.
+  ///
+  /// This is the number people see. The book numbers its supplications
+  /// straight through — the first dua of the evening adhkar is 75 — and
+  /// "Dua 75" under a heading that lists six of them reads as nonsense.
+  /// The book's own number stays available for looking up the printed page.
+  int positionOf(int number) {
+    final int i = duas.indexWhere((DuaText d) => d.number == number);
+    return i < 0 ? 0 : i + 1;
+  }
 }
 
 /// Every section of the book as clean text, keyed by its number.

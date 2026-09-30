@@ -306,7 +306,7 @@ class _SectionScreen extends ConsumerWidget {
                         Row(
                           children: <Widget>[
                             Text(
-                              'Dua ${dua.number}',
+                              'Dua ${section.positionOf(dua.number)}',
                               style: AppType.label.copyWith(
                                 color: AppColors.goldSoft,
                               ),

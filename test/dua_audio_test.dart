@@ -37,6 +37,32 @@ void main() {
     });
   });
 
+  test('a dua is numbered by its place in the section', () {
+    const DuaTextSection section = DuaTextSection(
+      section: 27,
+      title: 'Evening',
+      duas: <DuaText>[
+        DuaText(
+          number: 75,
+          arabic: 'أ',
+          transliteration: '',
+          english: '',
+          repeat: 1,
+        ),
+        DuaText(
+          number: 76,
+          arabic: 'ب',
+          transliteration: '',
+          english: '',
+          repeat: 1,
+        ),
+      ],
+    );
+    expect(section.positionOf(75), 1);
+    expect(section.positionOf(76), 2);
+    expect(section.positionOf(1), 0);
+  });
+
   group('The queue', () {
     const List<DuaText> duas = <DuaText>[
       DuaText(
@@ -70,6 +96,9 @@ void main() {
         <String>['13/1', '13/2', '13/3', '14/1', '14/2', '14/3'],
       );
       expect(q.every((DuaQueueItem i) => i.passes == 3), isTrue);
+      // Shown as its place in the section, not the book's running number.
+      expect(q.first.position, 1);
+      expect(q.last.position, 2);
     });
 
     test('once is once, and the count is held to one to ten', () {

@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../domain/dua_text.dart';
 
@@ -11,11 +14,16 @@ import '../domain/dua_text.dart';
 class DuaQueueItem {
   const DuaQueueItem({
     required this.number,
+    required this.position,
     required this.pass,
     required this.passes,
   });
 
+  /// The book's number, which is what the recording file is named after.
   final int number;
+
+  /// The dua's place in its section, counting from 1 — the number shown.
+  final int position;
 
   /// 1-based. "2 of 3" is pass 2 of 3 passes.
   final int pass;
@@ -25,14 +33,15 @@ class DuaQueueItem {
   bool operator ==(Object other) =>
       other is DuaQueueItem &&
       other.number == number &&
+      other.position == position &&
       other.pass == pass &&
       other.passes == passes;
 
   @override
-  int get hashCode => Object.hash(number, pass, passes);
+  int get hashCode => Object.hash(number, position, pass, passes);
 
   @override
-  String toString() => 'Dua $number ($pass/$passes)';
+  String toString() => 'Dua $position (#$number, $pass/$passes)';
 }
 
 /// The dua being recited right now, as the screens see it.
@@ -64,10 +73,15 @@ class DuaNowPlaying {
 List<DuaQueueItem> buildDuaQueue(List<DuaText> duas, {required int repeat}) {
   final int passes = repeat.clamp(1, 10);
   return <DuaQueueItem>[
-    for (final DuaText dua in duas)
-      if (dua.hasArabic)
+    for (int i = 0; i < duas.length; i++)
+      if (duas[i].hasArabic)
         for (int pass = 1; pass <= passes; pass++)
-          DuaQueueItem(number: dua.number, pass: pass, passes: passes),
+          DuaQueueItem(
+            number: duas[i].number,
+            position: i + 1,
+            pass: pass,
+            passes: passes,
+          ),
   ];
 }
 
@@ -121,6 +135,26 @@ class DuaAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
 
   static String assetFor(int number) => 'assets/duas/audio/$number.m4a';
 
+  /// The mark, as a file the lock screen can show. Assets are not files, so
+  /// it is written out once into the app's own folder; a failure here only
+  /// means the lock screen shows no artwork.
+  static Future<Uri?> _art() async {
+    try {
+      final Directory dir = await getApplicationSupportDirectory();
+      final File file = File('${dir.path}/dua_art.png');
+      if (!file.existsSync()) {
+        final ByteData data = await rootBundle.load(
+          'assets/images/dua_art.png',
+        );
+        await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
+      }
+      return file.uri;
+    } on Object catch (e) {
+      debugPrint('Layla Pro: dua artwork unavailable ($e)');
+      return null;
+    }
+  }
+
   /// Loads a section and starts at [startNumber], each dua read [repeat]
   /// times. Loading the same section again with the same settings just seeks,
   /// so tapping a different dua in the list is instant.
@@ -140,18 +174,22 @@ class DuaAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
     if (!same) {
       _items = items;
       _heading = heading;
+      final Uri? art = await _art();
       final List<AudioSource> sources = <AudioSource>[
         for (final DuaQueueItem item in items)
           AudioSource.asset(
             assetFor(item.number),
             tag: MediaItem(
               id: '${item.number}#${item.pass}',
-              title: 'Dua ${item.number}',
+              // "Dua 1 · Evening Adhkar", then the app's name — what the
+              // lock screen shows, in that order.
+              title: 'Dua ${item.position} · $heading',
               album: heading,
               displaySubtitle: item.passes > 1
-                  ? '$heading · ${item.pass} of ${item.passes}'
-                  : heading,
-              artist: 'Fortress of the Muslim',
+                  ? 'Layla Pro · ${item.pass} of ${item.passes}'
+                  : 'Layla Pro',
+              artist: 'Layla Pro',
+              artUri: art,
             ),
           ),
       ];

@@ -54,8 +54,18 @@ class DuaTextDetailScreen extends ConsumerWidget {
           Row(
             children: <Widget>[
               Text(
-                'DUA ${dua.number}',
+                'DUA ${section.positionOf(dua.number)}',
                 style: AppType.label.copyWith(color: AppColors.goldSoft),
+              ),
+              const SizedBox(width: Insets.sm),
+              // The book's own number, small: it is how the printed page is
+              // found, not how anyone thinks of the dua.
+              Text(
+                'No. ${dua.number} in the book',
+                style: AppType.bodySm.copyWith(
+                  fontSize: 11,
+                  color: AppColors.mistFaint,
+                ),
               ),
               if (dua.repeat > 1) ...<Widget>[
                 const SizedBox(width: Insets.sm),
