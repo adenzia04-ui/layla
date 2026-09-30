@@ -45,32 +45,47 @@ class VoiceTiming {
   int get ayahCount => _ayahs.length;
 
   /// The word sounding at [ms] into [ayahKey]'s recording, as a 1-based
-  /// position, or 0 before the first word and after the last. Between two
-  /// words the earlier one is kept, so the light never blinks out on a
-  /// breath.
+  /// position, or 0 when no word is.
+  ///
+  /// Between two words the earlier one stays lit, so the light never
+  /// blinks out on a breath. It does go out when the voice is somewhere
+  /// the timings cannot follow: [_afterWord] past a word's end in the
+  /// middle of an ayah — a reciter repeating an earlier phrase, which the
+  /// source data leaves untimed — or [_afterLast] past the last word, so a
+  /// held final word keeps its light to the end of the breath.
   int wordAt(String ayahKey, int ms) {
     final List<WordSpan> spans = of(ayahKey);
     if (spans.isEmpty || ms < spans.first.start) return 0;
-    int current = 0;
-    for (final WordSpan s in spans) {
-      if (s.start <= ms) {
-        current = s.position;
+    int at = 0;
+    for (int i = 1; i < spans.length; i++) {
+      if (spans[i].start <= ms) {
+        at = i;
       } else {
         break;
       }
     }
-    if (ms > spans.last.end + 400) return 0;
-    return current;
+    final WordSpan s = spans[at];
+    final int grace = at == spans.length - 1 ? _afterLast : _afterWord;
+    return ms > s.end + grace ? 0 : s.position;
   }
 
-  /// `assets/quran/timing/<voice>.json`: `{"1:1": [[start, end], …], …}`,
-  /// each ayah's words in order. A missing word has no entry, and the
-  /// positions are recovered from the order.
+  static const int _afterWord = 2500;
+  static const int _afterLast = 2000;
+
+  /// `assets/quran/timing/<voice>.json`: `{"1:1": [[word, start, end], …]}`,
+  /// one entry per word of our text, built by `tool/fetch_segments.py`.
+  /// A two-number entry is read as `[start, end]` with the word taken from
+  /// its place in the list.
   static VoiceTiming parse(String voice, String json) {
     final Map<String, Object?> raw = jsonDecode(json) as Map<String, Object?>;
     final Map<String, List<WordSpan>> out = <String, List<WordSpan>>{};
     raw.forEach((String key, Object? value) {
       final List<Object?> list = value! as List<Object?>;
+      // Kept in time order whatever the file says. [wordAt] walks the list
+      // and stops at the first word that starts later, so one entry out of
+      // order would freeze the light on an early word for the rest of the
+      // ayah — which is exactly how Sudais looked when his timings were
+      // sorted as text.
       out[key] = <WordSpan>[
         for (int i = 0; i < list.length; i++)
           () {
@@ -85,7 +100,7 @@ class VoiceTiming {
               at(pair.length - 1),
             );
           }(),
-      ];
+      ]..sort((WordSpan a, WordSpan b) => a.start.compareTo(b.start));
     });
     return VoiceTiming._(voice, out);
   }
