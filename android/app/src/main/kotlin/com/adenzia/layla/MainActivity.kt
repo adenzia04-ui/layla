@@ -1,10 +1,15 @@
 package com.adenzia.layla
 
 import android.content.Intent
-import io.flutter.embedding.android.FlutterActivity
+import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
 
-class MainActivity : FlutterActivity() {
+/**
+ * Extends the audio_service activity so the dua recitation keeps its
+ * lock-screen controls; it is a FlutterActivity underneath and everything
+ * else here is unchanged.
+ */
+class MainActivity : AudioServiceActivity() {
 
     /**
      * The `layla://` url the app was launched with, if it was.

@@ -123,6 +123,18 @@ Future<Map<int, DuaTextSection>> loadDuaText() async {
   );
 }
 
+/// The text chapter behind a section of the library.
+///
+/// The library's numbers are the printed book's, and its contents page opens
+/// with a chapter the digital edition does not carry — so for the first
+/// fifteen sections the text sits one chapter *earlier* than the number says,
+/// and from §16 (the beginning of prayer) the two agree again. Looking the
+/// text up by the book's number directly is what put the dua for *leaving the
+/// house* under "Completing Ablution": every Daily Life row was showing the
+/// next section's words.
+int chapterForSection(int bookSection) =>
+    bookSection <= 15 ? bookSection - 1 : bookSection;
+
 /// The text of one section, or null where the book has none under that number.
 Future<DuaTextSection?> loadSectionText(int number) async =>
     (await loadDuaText())[number];

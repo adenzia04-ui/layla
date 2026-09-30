@@ -69,6 +69,8 @@ dependencies:
   # So the Profile footer can state which build this actually is.
   package_info_plus: ^10.2.1
   image: ^4.10.1
+  audio_service: ^0.18.19
+  audio_session: ^0.2.4
 
 dev_dependencies:
   # Used by quran_passages_test to pin the fetched Arabic. Declared rather
@@ -86,6 +88,7 @@ flutter:
   assets:
     - assets/images/
     - assets/duas/
+    - assets/duas/audio/
     - assets/sounds/
     - assets/textures/
 

@@ -5,7 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../application/dua_audio_handler.dart';
+import '../application/dua_player.dart';
 import '../application/starred_duas.dart';
 import '../domain/dua_catalogue.dart';
 import '../domain/dua_text.dart';
@@ -76,7 +79,7 @@ class _CategoryCard extends StatelessWidget {
     // the number of rows that actually open when this card is tapped, since
     // anything without text behind it is dropped.
     final int rows = category.sections
-        .where((DuaSection s) => text.containsKey(s.number))
+        .where((DuaSection s) => text.containsKey(chapterForSection(s.number)))
         .length;
 
     return NightCard(
@@ -135,7 +138,7 @@ class _TextCategoryScreen extends StatelessWidget {
     // A section with no text behind it is left out rather than shown as a row
     // that opens onto nothing.
     final List<DuaSection> covered = category.sections
-        .where((DuaSection s) => text.containsKey(s.number))
+        .where((DuaSection s) => text.containsKey(chapterForSection(s.number)))
         .toList();
 
     return NightScaffold(
@@ -157,8 +160,9 @@ class _TextCategoryScreen extends StatelessWidget {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (BuildContext context) => _SectionScreen(
-                    section: text[s.number]!,
+                    section: text[chapterForSection(s.number)]!,
                     heading: s.title,
+                    bookSection: s.number,
                   ),
                 ),
               ),
@@ -183,7 +187,7 @@ class _TextCategoryScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: Insets.sm),
                   Text(
-                    '${text[s.number]!.duas.length}',
+                    '${text[chapterForSection(s.number)]!.duas.length}',
                     style: AppType.numeral.copyWith(
                       fontSize: 13,
                       color: AppColors.mist,
@@ -207,13 +211,20 @@ class _TextCategoryScreen extends StatelessWidget {
 }
 
 class _SectionScreen extends ConsumerWidget {
-  const _SectionScreen({required this.section, required this.heading});
+  const _SectionScreen({
+    required this.section,
+    required this.heading,
+    required this.bookSection,
+  });
 
   final DuaTextSection section;
 
   /// The catalogue's wording for this section. The source edition's own titles
   /// are long and inconsistent, and the library already shows the short ones.
   final String heading;
+
+  /// The book's number for this section, for the printed page.
+  final int bookSection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -222,6 +233,19 @@ class _SectionScreen extends ConsumerWidget {
       section.duas,
       starred,
       (DuaText d) => d.number,
+    );
+    final DuaAudioHandler? handler = ref.watch(duaAudioHandlerProvider);
+    final DuaNowPlaying? now = ref.watch(duaNowPlayingProvider).valueOrNull;
+    final bool hereNow =
+        now != null &&
+        section.duas.any((DuaText d) => d.number == now.item.number);
+    final int repeat = ref.watch(duaRepeatProvider);
+
+    Future<void> listen(int from) => handler!.playSection(
+      duas: section.duas,
+      heading: heading,
+      startNumber: from,
+      repeat: repeat,
     );
 
     return NightScaffold(
@@ -232,6 +256,33 @@ class _SectionScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const SizedBox(height: Insets.md),
+          // The whole section, read aloud in order. Learning a position of
+          // the prayer means hearing all of it, not one dua at a time.
+          if (handler != null && section.duas.any((DuaText d) => d.hasArabic))
+            Padding(
+              padding: const EdgeInsets.only(bottom: Insets.md),
+              child: PrimaryButton(
+                label: hereNow && now.playing
+                    ? 'Pause'
+                    : 'Listen to the whole section',
+                icon: hereNow && now.playing
+                    ? Icons.pause_rounded
+                    : Icons.headphones_rounded,
+                onPressed: () {
+                  if (hereNow && now.playing) {
+                    handler.pause();
+                  } else if (hereNow) {
+                    handler.play();
+                  } else {
+                    listen(
+                      section.duas
+                          .firstWhere((DuaText d) => d.hasArabic)
+                          .number,
+                    );
+                  }
+                },
+              ),
+            ),
           for (final DuaText dua in ordered) ...<Widget>[
             NightCard(
               padding: const EdgeInsets.all(Insets.lg),
@@ -239,8 +290,9 @@ class _SectionScreen extends ConsumerWidget {
                 MaterialPageRoute<void>(
                   builder: (BuildContext context) => DuaTextDetailScreen(
                     dua: dua,
-                    sectionTitle: section.title,
-                    sectionNumber: section.section,
+                    section: section,
+                    heading: heading,
+                    bookSection: bookSection,
                   ),
                 ),
               ),
@@ -281,6 +333,41 @@ class _SectionScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  // Play from here. A row that is being read shows a pause
+                  // instead, so the list itself says where the reciter is.
+                  if (handler != null && dua.hasArabic)
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 40,
+                        minHeight: 40,
+                      ),
+                      tooltip: now?.item.number == dua.number && now!.playing
+                          ? 'Pause'
+                          : 'Listen from this dua',
+                      icon: Icon(
+                        now?.item.number == dua.number && now!.playing
+                            ? Icons.pause_circle_rounded
+                            : Icons.play_circle_outline_rounded,
+                        size: 24,
+                        color: now?.item.number == dua.number
+                            ? AppColors.gold
+                            : AppColors.mistFaint,
+                      ),
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        if (now?.item.number == dua.number) {
+                          if (now!.playing) {
+                            handler.pause();
+                          } else {
+                            handler.play();
+                          }
+                        } else {
+                          listen(dua.number);
+                        }
+                      },
+                    ),
                   // The star sits in the row, not behind a long-press or a swipe:
                   // picking favourites out of twenty-four is the job, and a hidden
                   // gesture would make it a hunt.

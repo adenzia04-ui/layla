@@ -122,6 +122,11 @@ class PrefsService {
 
   /// How far through the after-prayer sequence, 0–2. Only meaningful in
   /// Sunnah mode.
+  /// How many times each dua is read aloud before the next, in the Dua
+  /// library. 1 until the person changes it.
+  int get duaRepeat => _prefs.getInt('dua_repeat') ?? 1;
+  Future<void> setDuaRepeat(int value) => _prefs.setInt('dua_repeat', value);
+
   int get tasbihStage => _prefs.getInt(_kTasbihStage) ?? 0;
   Future<void> setTasbihStage(int value) => _prefs.setInt(_kTasbihStage, value);
 

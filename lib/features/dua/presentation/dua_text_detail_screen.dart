@@ -12,6 +12,7 @@ import '../domain/dua_catalogue.dart';
 import '../domain/dua_pages.dart';
 import '../domain/dua_text.dart';
 import 'dua_page_screen.dart';
+import 'widgets/dua_player_card.dart';
 
 /// One supplication, set as text.
 ///
@@ -22,21 +23,28 @@ class DuaTextDetailScreen extends ConsumerWidget {
   const DuaTextDetailScreen({
     super.key,
     required this.dua,
-    required this.sectionTitle,
-    required this.sectionNumber,
+    required this.section,
+    required this.heading,
+    required this.bookSection,
   });
 
   final DuaText dua;
-  final String sectionTitle;
-  final int sectionNumber;
+
+  /// The whole section, so the player can go on to the next dua.
+  final DuaTextSection section;
+
+  /// The library's short title for the section.
+  final String heading;
+
+  /// The book's section number, which is what the printed pages are keyed by.
+  final int bookSection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final PageRange range =
-        duaSectionPages[sectionNumber] ?? (start: 1, end: 1);
+    final PageRange range = duaSectionPages[bookSection] ?? (start: 1, end: 1);
 
     return NightScaffold(
-      title: sectionTitle,
+      title: heading,
       showOrnaments: false,
       scrollable: true,
       child: Column(
@@ -135,15 +143,19 @@ class DuaTextDetailScreen extends ConsumerWidget {
                   'has it.',
             ),
 
-          const SizedBox(height: Insets.sm),
+          // Hear it. Sits right under the words so the eye can follow the
+          // reciter, and before the book link, which is a reference, not the
+          // thing most people came for.
+          DuaPlayerCard(dua: dua, section: section, heading: heading),
+          const SizedBox(height: Insets.md),
           NightCard(
             padding: const EdgeInsets.all(Insets.lg),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (BuildContext context) => DuaPageScreen(
                   section: DuaSection(
-                    number: sectionNumber,
-                    title: sectionTitle,
+                    number: bookSection,
+                    title: heading,
                     page: range.start,
                   ),
                 ),

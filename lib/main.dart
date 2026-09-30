@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +13,8 @@ import 'core/services/prefs_service.dart';
 import 'core/widgets/liquid_glass.dart';
 import 'core/widgets/noor_globe.dart';
 import 'core/widgets/setup_required_app.dart';
+import 'features/dua/application/dua_audio_handler.dart';
+import 'features/dua/application/dua_player.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -58,6 +61,23 @@ Future<void> main() async {
   // pays for it. Failure is handled inside — the bar falls back to painted
   // glass rather than to nothing.
   unawaited(LiquidGlassShader.load());
+
+  // The dua recitation player. Registered with the OS before the first frame
+  // so the lock screen and the earphones can drive it; if the service will
+  // not start, the library simply has no play button rather than no app.
+  try {
+    duaAudioHandler = await AudioService.init(
+      builder: DuaAudioHandler.new,
+      config: const AudioServiceConfig(
+        androidNotificationChannelId: 'com.adenzia.layla.dua',
+        androidNotificationChannelName: 'Dua recitation',
+        androidNotificationOngoing: true,
+        androidStopForegroundOnPause: true,
+      ),
+    );
+  } on Object catch (e) {
+    debugPrint('Layla Pro: dua audio service unavailable ($e)');
+  }
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await NotificationService.instance.init();
