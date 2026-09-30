@@ -14,6 +14,7 @@ import '../../../core/theme/app_typography.dart';
 import '../application/quran_player.dart';
 import '../application/quran_prefs.dart';
 import '../application/quran_word.dart';
+import '../data/mushaf_pages.dart';
 import '../domain/ayah_words.dart';
 import '../domain/mushaf_glyphs.dart';
 import '../domain/quran_data.dart';
@@ -72,6 +73,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
     final int wanted = widget.page ?? (widget.surah == null ? saved : _first);
     _page = wanted.clamp(_first, _last);
     _controller = PageController(initialPage: _page - _first);
+    MushafPages.instance.warmAround(_page, first: _first, last: _last);
   }
 
   @override
@@ -83,6 +85,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
   void _onPage(int index) {
     setState(() => _page = _first + index);
     unawaited(ref.read(lastPageProvider.notifier).set(_page));
+    MushafPages.instance.warmAround(_page, first: _first, last: _last);
   }
 
   Future<void> _jump(Quran q) async {
@@ -386,17 +389,7 @@ class _Page extends ConsumerWidget {
     final MushafGlyphs? glyphs = ref.watch(glyphsProvider).valueOrNull;
     final PageGlyphs? boxes = glyphs?.page(number);
 
-    Widget image = Image.asset(
-      'assets/quran/pages/$number.png',
-      fit: BoxFit.contain,
-      filterQuality: FilterQuality.medium,
-      errorBuilder: (_, __, ___) => Center(
-        child: Text(
-          'Page $number is not bundled.',
-          style: AppType.bodySm.copyWith(color: AppColors.mist),
-        ),
-      ),
-    );
+    Widget image = _PageImage(number: number, night: night);
     if (night) {
       image = ColorFiltered(
         colorFilter: const ColorFilter.matrix(_invert),
@@ -708,6 +701,71 @@ class _Sheet extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// One printed page. Bundled on the iPhone; on Android fetched the first
+/// time it is opened and kept, with a quiet spinner meanwhile and a way to
+/// try again when there is no signal.
+class _PageImage extends StatefulWidget {
+  const _PageImage({required this.number, required this.night});
+
+  final int number;
+  final bool night;
+
+  @override
+  State<_PageImage> createState() => _PageImageState();
+}
+
+class _PageImageState extends State<_PageImage> {
+  int _attempt = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color ink = widget.night ? AppColors.cream : const Color(0xFF1B2A44);
+    return Image(
+      key: ValueKey<int>(_attempt),
+      image: MushafPages.instance.pageImage(widget.number),
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.medium,
+      gaplessPlayback: true,
+      frameBuilder: (_, Widget child, int? frame, bool sync) =>
+          frame == null && !sync
+          ? Center(
+              child: SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: ink.withValues(alpha: 0.5),
+                ),
+              ),
+            )
+          : child,
+      errorBuilder: (_, __, ___) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(Insets.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(Icons.wifi_off_rounded, color: ink.withValues(alpha: 0.6)),
+              const SizedBox(height: Insets.sm),
+              Text(
+                'Page ${widget.number} needs a connection the first time it '
+                'opens. To read with no signal, download all the pages from '
+                'Downloads on the Qur’an screen.',
+                textAlign: TextAlign.center,
+                style: AppType.bodySm.copyWith(color: ink),
+              ),
+              TextButton(
+                onPressed: () => setState(() => _attempt++),
+                child: const Text('Try again'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

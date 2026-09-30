@@ -9,6 +9,11 @@ val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use { keystoreProperties.load(it) }
 }
+// Signed for Play only once the passwords are filled in; until then a
+// release build still works, with the debug key.
+val canSignRelease = keystorePropertiesFile.exists() &&
+    !keystoreProperties.getProperty("storePassword").isNullOrBlank() &&
+    !keystoreProperties.getProperty("keyPassword").isNullOrBlank()
 
 plugins {
     id("com.android.application")
@@ -57,7 +62,7 @@ android {
     }
 
     signingConfigs {
-        if (keystorePropertiesFile.exists()) {
+        if (canSignRelease) {
             create("release") {
                 storeFile = file(keystoreProperties.getProperty("storeFile"))
                 storePassword = keystoreProperties.getProperty("storePassword")
@@ -69,7 +74,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = if (keystorePropertiesFile.exists()) {
+            signingConfig = if (canSignRelease) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")

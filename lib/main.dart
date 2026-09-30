@@ -14,6 +14,7 @@ import 'core/widgets/liquid_glass.dart';
 import 'core/widgets/noor_globe.dart';
 import 'core/widgets/setup_required_app.dart';
 import 'core/audio/recitation_cache.dart';
+import 'features/quran/data/mushaf_pages.dart';
 import 'core/audio/recitation_handler.dart';
 import 'core/audio/recitation_player.dart';
 import 'firebase_options.dart';
@@ -82,6 +83,8 @@ Future<void> main() async {
   }
 
   await RecitationCache.init();
+
+  await MushafPages.init();
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await NotificationService.instance.init();

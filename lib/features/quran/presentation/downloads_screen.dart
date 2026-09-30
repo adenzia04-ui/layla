@@ -8,6 +8,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../application/mushaf_download.dart';
 import '../application/quran_downloads.dart';
 import '../application/quran_prefs.dart';
 import '../domain/quran_data.dart';
@@ -86,6 +87,7 @@ class DownloadsScreen extends ConsumerWidget {
                 style: AppType.bodySm.copyWith(color: AppColors.mist),
               ),
               const SizedBox(height: Insets.lg),
+              const _MushafPagesCard(),
               for (final MapEntry<String, DownloadProgress> e
                   in running.entries)
                 if (SurahDownload.parse(e.key) case final SurahDownload d)
@@ -204,6 +206,45 @@ class _Row extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Android only: the printed pages, fetched as they are read, or all at
+/// once for reading with no signal. Nothing to show where they are bundled.
+class _MushafPagesCard extends ConsumerWidget {
+  const _MushafPagesCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final MushafPagesState m = ref.watch(mushafDownloadProvider);
+    if (m.bundled) return const SizedBox.shrink();
+    final MushafDownload d = ref.read(mushafDownloadProvider.notifier);
+    final String line = m.running
+        ? '${m.done} of ${Quran.pageCount} pages'
+        : m.complete
+        ? 'All ${Quran.pageCount} pages on this phone · ${formatBytes(m.bytes)}'
+        : '${m.onPhone} of ${Quran.pageCount} pages on this phone · '
+              'the rest load as you read (about 72 MB for all)';
+    return _Row(
+      title: 'Mushaf pages',
+      line: line,
+      icon: m.complete
+          ? Icons.offline_pin_rounded
+          : Icons.auto_stories_outlined,
+      color: m.complete ? AppColors.emerald : AppColors.gold,
+      progress: m.running ? (m.done ?? 0) / Quran.pageCount : null,
+      onOpen: () => context.push(Routes.quranMushaf),
+      onRemove: m.running
+          ? d.cancel
+          : m.complete
+          ? () => d.remove()
+          : () => d.start(),
+      removeLabel: m.running
+          ? 'Cancel'
+          : m.complete
+          ? 'Remove'
+          : 'Download all',
     );
   }
 }
