@@ -29,10 +29,22 @@ class TasbihDuaHomeScreen extends StatelessWidget {
           Text('Soul', style: AppType.displayLg),
           const SizedBox(height: Insets.sm),
           Text(
-            'Remember Allah. Make Dhikr. Learn authentic supplications.',
+            'Read the Qur’an. Remember Allah. Learn authentic supplications.',
             style: AppType.bodySm.copyWith(color: AppColors.mist),
           ),
           const SizedBox(height: Insets.xxl),
+          _Entry(
+            title: 'Qur’an',
+            description: 'The Madinah mushaf, read and recited',
+            accent: AppColors.goldSoft,
+            icon: const Icon(
+              Icons.auto_stories_rounded,
+              size: 28,
+              color: AppColors.goldSoft,
+            ),
+            onTap: () => context.push(Routes.quran),
+          ),
+          const SizedBox(height: Insets.md),
           _Entry(
             title: 'Tasbih',
             description: 'Count your dhikr with ease',

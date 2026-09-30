@@ -52,5 +52,6 @@ String? widgetLinkTarget(Uri uri) {
 /// jumping over it lands somebody who has never opened the app on the Qibla
 /// compass. So the destination waits here and the splash spends it once it
 /// knows those two things.
-final StateProvider<String?> pendingWidgetLinkProvider =
-    StateProvider<String?>((Ref ref) => null);
+final StateProvider<String?> pendingWidgetLinkProvider = StateProvider<String?>(
+  (Ref ref) => null,
+);

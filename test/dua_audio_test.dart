@@ -121,7 +121,7 @@ void main() {
     for (final DuaTextSection section in text.values) {
       for (final DuaText dua in section.duas) {
         if (!dua.hasArabic) continue;
-        if (!File(DuaAudioHandler.assetFor(dua.number)).existsSync()) {
+        if (!File(duaAssetFor(dua.number)).existsSync()) {
           missing.add(dua.number);
         }
       }

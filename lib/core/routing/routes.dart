@@ -17,6 +17,12 @@ abstract final class Routes {
   static const String tasbihCounter = '/tasbih/counter';
 
   /// The Ninety-Nine Names, one a day.
+  static const String quran = '/tasbih/quran';
+  static const String quranMushaf = '/tasbih/quran/mushaf';
+
+  /// `/tasbih/quran/surah/2` — the reader, one surah at a time.
+  static String quranSurah(int surah) => '/tasbih/quran/surah/$surah';
+
   static const String soulNames = '/tasbih/names';
   static const String soulNamesQuiz = '/tasbih/names/quiz';
 
@@ -83,8 +89,7 @@ abstract final class Routes {
 
   /// Which apps the Android prayer focus covers. Android only — Apple's
   /// picker is Apple's, and never says what was chosen.
-  static const String pausedApps =
-      '/home/profile/settings/notifications/apps';
+  static const String pausedApps = '/home/profile/settings/notifications/apps';
 
   /// Layla Pro Premium — the paywall, over everything.
   static const String paywall = '/paywall';

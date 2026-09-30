@@ -40,6 +40,9 @@ import '../../features/friends/application/invite.dart'
     show pendingInviteProvider;
 import '../../features/friends/presentation/friends_screen.dart';
 import '../../features/soul/presentation/names_quiz_screen.dart';
+import '../../features/quran/presentation/mushaf_screen.dart';
+import '../../features/quran/presentation/quran_home_screen.dart';
+import '../../features/quran/presentation/surah_reader_screen.dart';
 import '../../features/soul/presentation/names_screen.dart';
 import '../../features/tasbih/presentation/tasbih_screen.dart';
 import '../../features/streaks/presentation/streak_screen.dart';
@@ -307,10 +310,7 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
                                     (
                                       BuildContext context,
                                       GoRouterState state,
-                                    ) => _rise(
-                                      state,
-                                      const PausedAppsScreen(),
-                                    ),
+                                    ) => _rise(state, const PausedAppsScreen()),
                               ),
                             ],
                           ),
@@ -380,6 +380,37 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
                     path: 'counter',
                     pageBuilder: (BuildContext context, GoRouterState state) =>
                         _rise(state, const TasbihScreen()),
+                  ),
+                  GoRoute(
+                    path: 'quran',
+                    pageBuilder: (BuildContext context, GoRouterState state) =>
+                        _rise(state, const QuranHomeScreen()),
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: 'mushaf',
+                        pageBuilder:
+                            (BuildContext context, GoRouterState state) =>
+                                _rise(state, const MushafScreen()),
+                      ),
+                      GoRoute(
+                        path: 'surah/:n',
+                        pageBuilder:
+                            (BuildContext context, GoRouterState state) =>
+                                _rise(
+                                  state,
+                                  SurahReaderScreen(
+                                    surah:
+                                        int.tryParse(
+                                          state.pathParameters['n'] ?? '',
+                                        ) ??
+                                        1,
+                                    ayah: int.tryParse(
+                                      state.uri.queryParameters['ayah'] ?? '',
+                                    ),
+                                  ),
+                                ),
+                      ),
+                    ],
                   ),
                   GoRoute(
                     path: 'names',

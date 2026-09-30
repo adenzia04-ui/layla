@@ -7,7 +7,8 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_scaffold.dart';
-import '../application/dua_audio_handler.dart';
+import '../../../core/audio/recitation_handler.dart';
+import '../../../core/audio/recitation_player.dart';
 import '../application/dua_player.dart';
 import '../application/starred_duas.dart';
 import '../domain/dua_catalogue.dart';
@@ -234,18 +235,18 @@ class _SectionScreen extends ConsumerWidget {
       starred,
       (DuaText d) => d.number,
     );
-    final DuaAudioHandler? handler = ref.watch(duaAudioHandlerProvider);
-    final DuaNowPlaying? now = ref.watch(duaNowPlayingProvider).valueOrNull;
-    final bool hereNow =
-        now != null &&
-        section.duas.any((DuaText d) => d.number == now.item.number);
-    final int repeat = ref.watch(duaRepeatProvider);
+    final RecitationHandler? handler = ref.watch(recitationHandlerProvider);
+    final NowPlaying? now = duaNowPlaying(
+      ref.watch(nowPlayingProvider).valueOrNull,
+      section,
+    );
+    final bool hereNow = now != null;
 
-    Future<void> listen(int from) => handler!.playSection(
-      duas: section.duas,
+    Future<void> listen(int from) => playDuaSection(
+      ref,
+      section: section,
       heading: heading,
       startNumber: from,
-      repeat: repeat,
     );
 
     return NightScaffold(
@@ -343,21 +344,22 @@ class _SectionScreen extends ConsumerWidget {
                         minWidth: 40,
                         minHeight: 40,
                       ),
-                      tooltip: now?.item.number == dua.number && now!.playing
+                      tooltip:
+                          now?.track.group == '${dua.number}' && now!.playing
                           ? 'Pause'
                           : 'Listen from this dua',
                       icon: Icon(
-                        now?.item.number == dua.number && now!.playing
+                        now?.track.group == '${dua.number}' && now!.playing
                             ? Icons.pause_circle_rounded
                             : Icons.play_circle_outline_rounded,
                         size: 24,
-                        color: now?.item.number == dua.number
+                        color: now?.track.group == '${dua.number}'
                             ? AppColors.gold
                             : AppColors.mistFaint,
                       ),
                       onPressed: () {
                         HapticFeedback.lightImpact();
-                        if (now?.item.number == dua.number) {
+                        if (now?.track.group == '${dua.number}') {
                           if (now!.playing) {
                             handler.pause();
                           } else {

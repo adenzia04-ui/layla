@@ -127,6 +127,45 @@ class PrefsService {
   int get duaRepeat => _prefs.getInt('dua_repeat') ?? 1;
   Future<void> setDuaRepeat(int value) => _prefs.setInt('dua_repeat', value);
 
+  // ── Qur'an ────────────────────────────────────────────────────────────
+
+  String get quranReciter => _prefs.getString('quran_reciter') ?? 'alafasy';
+  Future<void> setQuranReciter(String id) =>
+      _prefs.setString('quran_reciter', id);
+
+  /// Which lines the reader shows: any of `arabic`, `transliteration`,
+  /// `translation`. Arabic and translation until changed.
+  Set<String> get quranLines =>
+      (_prefs.getStringList('quran_lines') ??
+              const <String>['arabic', 'translation'])
+          .toSet();
+  Future<void> setQuranLines(Set<String> lines) =>
+      _prefs.setStringList('quran_lines', lines.toList());
+
+  /// 1.0 is the reader's default size; the range is 0.8–1.6.
+  double get quranTextScale => _prefs.getDouble('quran_scale') ?? 1.0;
+  Future<void> setQuranTextScale(double v) =>
+      _prefs.setDouble('quran_scale', v);
+
+  /// `surah` or `ayah`.
+  String get quranPlayMode => _prefs.getString('quran_mode') ?? 'surah';
+  Future<void> setQuranPlayMode(String v) => _prefs.setString('quran_mode', v);
+
+  int get quranRepeat => _prefs.getInt('quran_repeat') ?? 3;
+  Future<void> setQuranRepeat(int v) => _prefs.setInt('quran_repeat', v);
+
+  bool get quranLoopSurah => _prefs.getBool('quran_loop') ?? false;
+  Future<void> setQuranLoopSurah(bool v) => _prefs.setBool('quran_loop', v);
+
+  /// `2:255` — the ayah last on screen in the reader, or null.
+  String? get quranLastRead => _prefs.getString('quran_last_read');
+  Future<void> setQuranLastRead(String key) =>
+      _prefs.setString('quran_last_read', key);
+
+  int get quranLastPage => _prefs.getInt('quran_last_page') ?? 1;
+  Future<void> setQuranLastPage(int page) =>
+      _prefs.setInt('quran_last_page', page);
+
   int get tasbihStage => _prefs.getInt(_kTasbihStage) ?? 0;
   Future<void> setTasbihStage(int value) => _prefs.setInt(_kTasbihStage, value);
 

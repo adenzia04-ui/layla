@@ -1,0 +1,191 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:noor/core/audio/recitation_handler.dart';
+import 'package:noor/features/quran/application/tafsir_service.dart';
+import 'package:noor/features/quran/domain/quran_data.dart';
+import 'package:noor/features/quran/domain/quran_queue.dart';
+import 'package:noor/features/quran/domain/reciters.dart';
+
+/// The bundled Qur'an, checked as a whole: 114 surahs, 6,236 ayahs, 604
+/// pages with none missing, and a page image for every page. A book with a
+/// page missing is not the book.
+void main() {
+  late Quran quran;
+
+  setUpAll(() {
+    quran = parseQuran(File('assets/quran/quran.json').readAsStringSync());
+  });
+
+  group('The bundled book', () {
+    test('has every surah and every ayah', () {
+      expect(quran.surahs.length, 114);
+      expect(quran.ayahCount, 6236);
+      for (final Surah s in quran.surahs) {
+        expect(quran.ayahsOf(s.number).length, s.ayahCount, reason: s.name);
+        expect(quran.surah(s.number).number, s.number);
+      }
+      expect(quran.surah(1).name, 'Al-Fatihah');
+      expect(quran.surah(114).name, 'An-Nas');
+    });
+
+    test('ayahs are numbered in order with no gaps', () {
+      for (final Surah s in quran.surahs) {
+        final List<Ayah> ayahs = quran.ayahsOf(s.number);
+        for (int i = 0; i < ayahs.length; i++) {
+          expect(ayahs[i].number, i + 1, reason: '${s.number}:${i + 1}');
+          expect(ayahs[i].surah, s.number);
+        }
+      }
+    });
+
+    test('every ayah has Arabic, a translation and a transliteration', () {
+      for (final Surah s in quran.surahs) {
+        for (final Ayah a in quran.ayahsOf(s.number)) {
+          expect(a.arabic.trim(), isNotEmpty, reason: a.key);
+          expect(a.translation.trim(), isNotEmpty, reason: a.key);
+          expect(a.transliteration.trim(), isNotEmpty, reason: a.key);
+          // No markup leaks into the text people read.
+          expect(a.translation, isNot(contains('<')), reason: a.key);
+          expect(a.transliteration, isNot(contains('<')), reason: a.key);
+        }
+      }
+    });
+
+    test('covers all 604 pages, in order, with a bundled image for each', () {
+      final Set<int> pages = <int>{};
+      int last = 0;
+      for (final Surah s in quran.surahs) {
+        for (final Ayah a in quran.ayahsOf(s.number)) {
+          expect(a.page, greaterThanOrEqualTo(last), reason: a.key);
+          last = a.page;
+          pages.add(a.page);
+        }
+      }
+      expect(pages.length, Quran.pageCount);
+      expect(pages.reduce((int a, int b) => a < b ? a : b), 1);
+      expect(pages.reduce((int a, int b) => a > b ? a : b), Quran.pageCount);
+      final List<int> missing = <int>[
+        for (int p = 1; p <= Quran.pageCount; p++)
+          if (!File('assets/quran/pages/$p.png').existsSync()) p,
+      ];
+      expect(missing, isEmpty, reason: 'no image for pages $missing');
+    });
+
+    test('knows what is on a page', () {
+      expect(quran.onPage(1).map((Ayah a) => a.key), <String>[
+        for (int i = 1; i <= 7; i++) '1:$i',
+      ]);
+      expect(quran.surahsOnPage(1).single.number, 1);
+      // Page 2 opens Al-Baqarah; page 604 closes the book.
+      expect(quran.onPage(2).first.key, '2:1');
+      expect(quran.onPage(604).last.key, '114:6');
+      expect(quran.juzOfPage(604), 30);
+      expect(quran.surah(2).firstPage, 2);
+      expect(quran.surah(2).lastPage, 49);
+    });
+
+    test('knows where the basmalah is printed', () {
+      // Al-Fatihah's basmalah is its own first ayah, so nothing is printed
+      // before it — the source marks it false, and the reader relies on that.
+      expect(quran.surah(1).hasBismillah, isFalse);
+      expect(quran.ayah(1, 1).arabic, startsWith('بِسْمِ'));
+      expect(quran.surah(9).hasBismillah, isFalse);
+      expect(quran.surah(2).hasBismillah, isTrue);
+    });
+
+    test('the JSON on disk is what the loader parses', () {
+      final Map<String, Object?> raw =
+          jsonDecode(File('assets/quran/quran.json').readAsStringSync())
+              as Map<String, Object?>;
+      expect((raw['chapters']! as List<Object?>).length, 114);
+    });
+  });
+
+  group('The recitation queue', () {
+    test('a whole surah is each ayah once, in order', () {
+      final List<RecitationTrack> q = surahTracks(
+        quran,
+        112,
+        reciter: reciters.first,
+        mode: PlayMode.surah,
+        repeat: 5,
+      );
+      expect(q.map((RecitationTrack t) => t.group), <String>[
+        '112:1',
+        '112:2',
+        '112:3',
+        '112:4',
+      ]);
+      expect(q.every((RecitationTrack t) => t.passes == 1), isTrue);
+    });
+
+    test('ayah by ayah repeats each one the chosen number of times', () {
+      final List<RecitationTrack> q = surahTracks(
+        quran,
+        112,
+        reciter: reciters.first,
+        mode: PlayMode.ayahByAyah,
+        repeat: 3,
+      );
+      expect(q.length, 12);
+      expect(q[0].group, '112:1');
+      expect(q[2].group, '112:1');
+      expect(q[2].pass, 3);
+      expect(q[3].group, '112:2');
+      expect(trackIndexOf(q, 2), 3);
+      expect(trackIndexOf(q, 4), 9);
+      expect(trackIndexOf(q, 5), -1);
+    });
+
+    test('the count is held to one to ten', () {
+      expect(
+        surahTracks(
+          quran,
+          112,
+          reciter: reciters.first,
+          mode: PlayMode.ayahByAyah,
+          repeat: 99,
+        ).length,
+        40,
+      );
+    });
+
+    test('every track points at the reciter’s file for that ayah', () {
+      for (final Reciter r in reciters) {
+        expect(
+          r.url(2, 255).toString(),
+          'https://everyayah.com/data/${r.folder}/002255.mp3',
+        );
+      }
+      final RecitationTrack t = surahTracks(
+        quran,
+        2,
+        reciter: reciterById('husary'),
+        mode: PlayMode.surah,
+        repeat: 1,
+      )[254];
+      expect(t.group, '2:255');
+      expect(t.url.toString(), contains('Husary_128kbps/002255.mp3'));
+      expect(t.title, 'Al-Baqarah · Ayah 255');
+    });
+
+    test('four reciters, each distinct, and an unknown id falls back', () {
+      expect(reciters.length, 4);
+      expect(reciters.map((Reciter r) => r.id).toSet().length, 4);
+      expect(reciterById('nobody').id, reciters.first.id);
+    });
+  });
+
+  group('Tafsir text', () {
+    test('drops the markup and keeps the paragraphs', () {
+      expect(
+        TafsirService.plainText(
+          '<h2>Title</h2><p>One &amp; two.</p><p>Three<br/>four.</p>',
+        ),
+        'Title\n\nOne & two.\n\nThree\nfour.',
+      );
+    });
+  });
+}
