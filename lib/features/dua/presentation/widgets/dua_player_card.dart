@@ -75,7 +75,7 @@ class DuaPlayerCard extends ConsumerWidget {
                 child: Text(
                   mine
                       ? (now.track.passes > 1
-                            ? 'Reading ${now.track.pass} of ${now.track.passes}'
+                            ? 'Reading ${now.pass} of ${now.track.passes}'
                             : 'Reading')
                       : 'Listen',
                   style: AppType.titleSm,

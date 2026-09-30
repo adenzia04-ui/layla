@@ -15,41 +15,43 @@ enum PlayMode {
 /// from another surah's or from a dua.
 String surahOwner(int surah, Reciter reciter) => 'quran:$surah:${reciter.id}';
 
-/// The tracks for [surah], from its first ayah, in [reciter]'s voice.
+/// The tracks for [surah], one per ayah, in [reciter]'s voice.
 ///
-/// In [PlayMode.ayahByAyah] every ayah is repeated [repeat] times in a row
-/// (held to 1–10); in [PlayMode.surah] once. Each ayah is its own group, so
-/// next and previous on the lock screen move by ayah. The basmalah is not
-/// prepended: the reciters' files for ayah 1 already open with it where the
-/// mushaf prints it.
+/// In [PlayMode.ayahByAyah] every ayah is read [repeat] times (held to 1–10)
+/// before the next; in [PlayMode.surah] once. The basmalah is not
+/// prepended: the reciters' files for ayah 1 already open with it where
+/// the mushaf prints it.
+///
+/// [localFile] answers with a path when the recording is already on the
+/// device, so it plays from there instead of the network.
 List<RecitationTrack> surahTracks(
   Quran quran,
   int surah, {
   required Reciter reciter,
   required PlayMode mode,
   required int repeat,
+  String? Function(Uri url)? localFile,
 }) {
   final Surah s = quran.surah(surah);
   final int passes = mode == PlayMode.ayahByAyah ? repeat.clamp(1, 10) : 1;
   return <RecitationTrack>[
     for (final Ayah a in quran.ayahsOf(surah))
-      for (int pass = 1; pass <= passes; pass++)
-        RecitationTrack(
-          id: '${a.key}#$pass',
+      () {
+        final Uri url = reciter.url(surah, a.number);
+        return RecitationTrack(
+          id: a.key,
           group: a.key,
           title: '${s.name} · Ayah ${a.number}',
-          subtitle: passes > 1
-              ? '${reciter.name} · $pass of $passes'
-              : reciter.name,
+          subtitle: reciter.name,
           album: '${s.name} (${s.meaning})',
-          url: reciter.url(surah, a.number),
-          pass: pass,
+          url: url,
+          file: localFile?.call(url),
           passes: passes,
-        ),
+        );
+      }(),
   ];
 }
 
-/// Where [ayah] starts in a queue built by [surahTracks], or -1.
-int trackIndexOf(List<RecitationTrack> tracks, int ayah) => tracks.indexWhere(
-  (RecitationTrack t) => t.group.endsWith(':$ayah') && t.pass == 1,
-);
+/// Where [ayah] sits in a queue built by [surahTracks], or -1.
+int trackIndexOf(List<RecitationTrack> tracks, int ayah) =>
+    tracks.indexWhere((RecitationTrack t) => t.group.endsWith(':$ayah'));

@@ -121,7 +121,7 @@ void main() {
       expect(q.every((RecitationTrack t) => t.passes == 1), isTrue);
     });
 
-    test('ayah by ayah repeats each one the chosen number of times', () {
+    test('ayah by ayah reads each one the chosen number of times', () {
       final List<RecitationTrack> q = surahTracks(
         quran,
         112,
@@ -129,13 +129,12 @@ void main() {
         mode: PlayMode.ayahByAyah,
         repeat: 3,
       );
-      expect(q.length, 12);
-      expect(q[0].group, '112:1');
-      expect(q[2].group, '112:1');
-      expect(q[2].pass, 3);
-      expect(q[3].group, '112:2');
-      expect(trackIndexOf(q, 2), 3);
-      expect(trackIndexOf(q, 4), 9);
+      // Still one track per ayah — the repeats are counted by the player,
+      // so a long surah at 10× is not thousands of queued items.
+      expect(q.length, 4);
+      expect(q.every((RecitationTrack t) => t.passes == 3), isTrue);
+      expect(trackIndexOf(q, 2), 1);
+      expect(trackIndexOf(q, 4), 3);
       expect(trackIndexOf(q, 5), -1);
     });
 
@@ -147,9 +146,24 @@ void main() {
           reciter: reciters.first,
           mode: PlayMode.ayahByAyah,
           repeat: 99,
-        ).length,
-        40,
+        ).first.passes,
+        10,
       );
+    });
+
+    test('a recording already on the device plays from the file', () {
+      final List<RecitationTrack> q = surahTracks(
+        quran,
+        112,
+        reciter: reciters.first,
+        mode: PlayMode.surah,
+        repeat: 1,
+        localFile: (Uri u) =>
+            u.path.endsWith('112002.mp3') ? '/tmp/x.mp3' : null,
+      );
+      expect(q[0].file, isNull);
+      expect(q[1].file, '/tmp/x.mp3');
+      expect(q[1].url, isNotNull);
     });
 
     test('every track points at the reciter’s file for that ayah', () {

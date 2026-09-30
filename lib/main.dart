@@ -13,6 +13,7 @@ import 'core/services/prefs_service.dart';
 import 'core/widgets/liquid_glass.dart';
 import 'core/widgets/noor_globe.dart';
 import 'core/widgets/setup_required_app.dart';
+import 'core/audio/recitation_cache.dart';
 import 'core/audio/recitation_handler.dart';
 import 'core/audio/recitation_player.dart';
 import 'firebase_options.dart';
@@ -79,6 +80,8 @@ Future<void> main() async {
   } on Object catch (e) {
     debugPrint('Layla Pro: recitation service unavailable ($e)');
   }
+
+  await RecitationCache.init();
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await NotificationService.instance.init();

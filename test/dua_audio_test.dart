@@ -91,10 +91,8 @@ void main() {
 
     test('reads each dua the chosen number of times, then moves on', () {
       final List<DuaQueueItem> q = buildDuaQueue(duas, repeat: 3);
-      expect(
-        q.map((DuaQueueItem i) => '${i.number}/${i.pass}').toList(),
-        <String>['13/1', '13/2', '13/3', '14/1', '14/2', '14/3'],
-      );
+      // One item per dua; the repeats are the player's job, not copies.
+      expect(q.map((DuaQueueItem i) => i.number).toList(), <int>[13, 14]);
       expect(q.every((DuaQueueItem i) => i.passes == 3), isTrue);
       // Shown as its place in the section, not the book's running number.
       expect(q.first.position, 1);
@@ -102,9 +100,9 @@ void main() {
     });
 
     test('once is once, and the count is held to one to ten', () {
-      expect(buildDuaQueue(duas, repeat: 1).length, 2);
-      expect(buildDuaQueue(duas, repeat: 0).length, 2);
-      expect(buildDuaQueue(duas, repeat: 99).length, 20);
+      expect(buildDuaQueue(duas, repeat: 1).first.passes, 1);
+      expect(buildDuaQueue(duas, repeat: 0).first.passes, 1);
+      expect(buildDuaQueue(duas, repeat: 99).first.passes, 10);
     });
 
     test('a dua with no Arabic has no recording and is skipped', () {

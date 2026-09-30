@@ -7,14 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
-/// One item in the recitation queue: a bundled file or a URL, what the lock
-/// screen says about it, and which *group* it belongs to.
+/// One item in the recitation queue: where the sound comes from, what the
+/// lock screen says about it, and how many times it is read before the
+/// next one.
 ///
-/// A group is the unit "next" and "previous" move by. For the duas it is the
-/// dua; for the Qur'an it is the ayah. A dua read three times is three
-/// tracks in one group, and the forward button skips the group, because
-/// "forward" means the next supplication to the person holding the phone,
-/// not the next repeat of the one they are on.
+/// A track is one dua or one ayah. Repeats are not extra copies in the
+/// queue — the player loops the item [passes] times and counts — so a
+/// 286-ayah surah at 10× is still a queue of 286, and "next" and
+/// "previous" are simply the next and previous track.
 @immutable
 class RecitationTrack {
   const RecitationTrack({
@@ -24,10 +24,13 @@ class RecitationTrack {
     required this.subtitle,
     required this.album,
     this.asset,
+    this.file,
     this.url,
-    this.pass = 1,
     this.passes = 1,
-  }) : assert(asset != null || url != null, 'a track needs a source');
+  }) : assert(
+         asset != null || file != null || url != null,
+         'a track needs a source',
+       );
 
   /// Unique within the queue.
   final String id;
@@ -41,11 +44,14 @@ class RecitationTrack {
   /// A bundled file, `assets/…`.
   final String? asset;
 
-  /// A remote file, fetched once and kept on the device after that.
+  /// A file already on the device — a recording fetched earlier.
+  final String? file;
+
+  /// The recording on the network, played straight from there when it is
+  /// not on the device yet.
   final Uri? url;
 
-  /// 1-based repeat within the group.
-  final int pass;
+  /// How many times this track is read before the next.
   final int passes;
 
   @override
@@ -54,12 +60,12 @@ class RecitationTrack {
       other.id == id &&
       other.group == group &&
       other.asset == asset &&
+      other.file == file &&
       other.url == url &&
-      other.pass == pass &&
       other.passes == passes;
 
   @override
-  int get hashCode => Object.hash(id, group, asset, url, pass, passes);
+  int get hashCode => Object.hash(id, group, asset, file, url, passes);
 }
 
 /// What is being recited right now, as the screens see it.
@@ -69,15 +75,19 @@ class NowPlaying {
     required this.owner,
     required this.track,
     required this.index,
+    required this.pass,
     required this.playing,
     required this.loading,
   });
 
-  /// Who loaded the queue — `dua:27`, `quran:2` — so a screen can tell its
-  /// own recitation from another screen's.
+  /// Who loaded the queue — `dua:27`, `quran:2:alafasy` — so a screen can
+  /// tell its own recitation from another screen's.
   final String owner;
   final RecitationTrack track;
   final int index;
+
+  /// 1-based: which reading of [track] this is, of `track.passes`.
+  final int pass;
   final bool playing;
   final bool loading;
 }
@@ -89,6 +99,13 @@ class NowPlaying {
 /// ayah mid-word. One player for every recitation in the app — the duas,
 /// the Qur'an — because iOS shows one "now playing" and it should always be
 /// the thing that is actually sounding.
+///
+/// Network recordings are played straight from their https address, never
+/// through just_audio's local proxy: the proxy answers on plain http at
+/// 127.0.0.1, which iOS App Transport Security refuses unless the app opens
+/// itself to arbitrary loads. That is why streamed ayahs were silent on the
+/// phone while bundled duas played. Keeping recordings for offline use is
+/// `RecitationCache`'s job, and a cached track arrives here as a [file].
 ///
 /// Deliberately its own player rather than the app-wide plumbing that
 /// `just_audio_background` offers: that package allows exactly one
@@ -104,22 +121,21 @@ class RecitationHandler extends BaseAudioHandler
         debugPrint('Layla Pro: recitation player error ($e)');
       },
     );
-    _player.sequenceStateStream.listen(_onSequence);
-    // The queue ends: back to the start, stopped, so the lock screen shows
-    // something that makes sense rather than a spinner on the last item.
-    _player.processingStateStream.listen((ProcessingState state) {
-      if (state == ProcessingState.completed) {
-        unawaited(_player.pause());
-        unawaited(_player.seek(Duration.zero, index: 0));
-      }
-    });
+    _player.currentIndexStream.listen(_onIndex);
+    _player.positionDiscontinuityStream.listen(_onDiscontinuity);
+    _player.processingStateStream.listen(_onProcessing);
   }
 
   final AudioPlayer _player = AudioPlayer();
 
   List<RecitationTrack> _tracks = const <RecitationTrack>[];
   String _owner = '';
-  bool _loop = false;
+  bool _loopAll = false;
+
+  /// Which reading of the current track is sounding.
+  int _pass = 1;
+  int? _index;
+  LoopMode? _applied;
 
   final StreamController<NowPlaying?> _now =
       StreamController<NowPlaying?>.broadcast();
@@ -157,7 +173,7 @@ class RecitationHandler extends BaseAudioHandler
   /// the same settings just seeks, so tapping another item in a list is
   /// instant.
   ///
-  /// [loop] repeats the whole queue when it ends — a surah played on repeat.
+  /// [loop] starts the queue again when it ends — a surah on repeat.
   Future<void> load(
     List<RecitationTrack> tracks, {
     required String owner,
@@ -167,39 +183,53 @@ class RecitationHandler extends BaseAudioHandler
     if (tracks.isEmpty || start < 0 || start >= tracks.length) return;
 
     final bool same =
-        owner == _owner && loop == _loop && listEquals(tracks, _tracks);
-    if (!same) {
-      _tracks = tracks;
-      _owner = owner;
-      _loop = loop;
-      final Uri? art = await _art();
-      final List<MediaItem> items = <MediaItem>[
-        for (final RecitationTrack t in tracks)
-          MediaItem(
-            id: t.id,
-            title: t.title,
-            album: t.album,
-            artist: 'Layla Pro',
-            displaySubtitle: t.subtitle,
-            artUri: art,
-          ),
-      ];
-      final List<AudioSource> sources = <AudioSource>[
-        for (int i = 0; i < tracks.length; i++)
-          if (tracks[i].asset != null)
-            AudioSource.asset(tracks[i].asset!, tag: items[i])
-          else
-            // ignore: experimental_member_use
-            LockCachingAudioSource(tracks[i].url!, tag: items[i]),
-      ];
-      queue.add(items);
-      await _player.setLoopMode(loop ? LoopMode.all : LoopMode.off);
-      await _player.setAudioSources(sources, initialIndex: start);
-    } else {
+        owner == _owner && loop == _loopAll && listEquals(tracks, _tracks);
+    if (same) {
       await _player.seek(Duration.zero, index: start);
+      await _player.play();
+      return;
     }
+
+    _tracks = tracks;
+    _owner = owner;
+    _loopAll = loop;
+    _pass = 1;
+    _index = null;
+    _applied = null;
+    final Uri? art = await _art();
+    final List<MediaItem> items = <MediaItem>[
+      for (final RecitationTrack t in tracks) _mediaItem(t, 1, art),
+    ];
+    final List<AudioSource> sources = <AudioSource>[
+      for (int i = 0; i < tracks.length; i++)
+        if (tracks[i].asset != null)
+          AudioSource.asset(tracks[i].asset!, tag: items[i])
+        else if (tracks[i].file != null)
+          AudioSource.file(tracks[i].file!, tag: items[i])
+        else
+          AudioSource.uri(tracks[i].url!, tag: items[i]),
+    ];
+    queue.add(items);
+    try {
+      await _player.setAudioSources(sources, initialIndex: start);
+    } on Object catch (e) {
+      debugPrint('Layla Pro: recitation would not load ($e)');
+      return;
+    }
+    _applyLoop();
     await _player.play();
   }
+
+  MediaItem _mediaItem(RecitationTrack t, int pass, Uri? art) => MediaItem(
+    id: t.id,
+    title: t.title,
+    album: t.album,
+    artist: 'Layla Pro',
+    displaySubtitle: t.passes > 1
+        ? '${t.subtitle} · $pass of ${t.passes}'
+        : t.subtitle,
+    artUri: art,
+  );
 
   /// Whether [owner]'s queue is the one loaded.
   bool owns(String owner) => _owner == owner && _tracks.isNotEmpty;
@@ -216,6 +246,7 @@ class RecitationHandler extends BaseAudioHandler
     _tracks = const <RecitationTrack>[];
     _owner = '';
     _last = null;
+    _index = null;
     _now.add(null);
     await super.stop();
   }
@@ -223,41 +254,37 @@ class RecitationHandler extends BaseAudioHandler
   @override
   Future<void> seek(Duration position) => _player.seek(position);
 
-  /// Next group, not next repeat.
+  /// The next track — the next dua or ayah, whatever repeat this one is on.
   @override
   Future<void> skipToNext() async {
     final int? i = _player.currentIndex;
     if (i == null || _tracks.isEmpty) return;
-    final String group = _tracks[i].group;
-    int next = _tracks.indexWhere((RecitationTrack t) => t.group != group, i);
-    if (next < 0) {
-      if (!_loop) return;
+    int next = i + 1;
+    if (next >= _tracks.length) {
+      if (!_loopAll) return;
       next = 0;
     }
     await _player.seek(Duration.zero, index: next);
   }
 
-  /// Back to the start of this group's first repeat; pressed again within
-  /// the first two seconds, the previous group.
+  /// Back to the start of this track's first reading; pressed again within
+  /// the first two seconds of it, the previous track.
   @override
   Future<void> skipToPrevious() async {
     final int? i = _player.currentIndex;
     if (i == null || _tracks.isEmpty) return;
-    final String group = _tracks[i].group;
-    int first = i;
-    while (first > 0 && _tracks[first - 1].group == group) {
-      first--;
+    final bool atStart =
+        _pass == 1 && _player.position < const Duration(seconds: 2);
+    if (!atStart) {
+      _pass = 1;
+      _applyLoop();
+      await _player.seek(Duration.zero, index: i);
+      _announce(i);
+      _emit(i);
+      return;
     }
-    if (first == i && _player.position < const Duration(seconds: 2)) {
-      int prev = first - 1;
-      if (prev < 0) return;
-      final String prevGroup = _tracks[prev].group;
-      while (prev > 0 && _tracks[prev - 1].group == prevGroup) {
-        prev--;
-      }
-      first = prev;
-    }
-    await _player.seek(Duration.zero, index: first);
+    if (i == 0) return;
+    await _player.seek(Duration.zero, index: i - 1);
   }
 
   @override
@@ -266,12 +293,79 @@ class RecitationHandler extends BaseAudioHandler
     await _player.seek(Duration.zero, index: index);
   }
 
-  void _onSequence(SequenceState? state) {
-    final int? i = state?.currentIndex;
+  // ── Repeats ────────────────────────────────────────────────────────────
+
+  /// While a track has readings left, the player loops it; on its last
+  /// reading the loop is released so the queue moves on — or starts over,
+  /// when the whole queue is on repeat.
+  void _applyLoop() {
+    final int? i = _player.currentIndex;
+    if (i == null || i >= _tracks.length) return;
+    final LoopMode wanted = _pass < _tracks[i].passes
+        ? LoopMode.one
+        : _loopAll
+        ? LoopMode.all
+        : LoopMode.off;
+    if (wanted == _applied) return;
+    _applied = wanted;
+    unawaited(_player.setLoopMode(wanted));
+  }
+
+  void _onIndex(int? i) {
     if (i == null || i < 0 || i >= _tracks.length) return;
-    final MediaItem? tag = state?.currentSource?.tag as MediaItem?;
-    if (tag != null) mediaItem.add(tag);
+    if (i == _index) return;
+    _index = i;
+    _pass = 1;
+    _applyLoop();
+    _announce(i);
     _emit(i);
+  }
+
+  /// The player reached the end of the current track and started it again:
+  /// one more reading done.
+  void _onDiscontinuity(PositionDiscontinuity d) {
+    if (d.reason != PositionDiscontinuityReason.autoAdvance) return;
+    final int? i = _player.currentIndex;
+    if (i == null ||
+        i >= _tracks.length ||
+        d.previousEvent.currentIndex != d.event.currentIndex) {
+      return;
+    }
+    if (_pass < _tracks[i].passes) _pass++;
+    _applyLoop();
+    _announce(i);
+    _emit(i);
+  }
+
+  void _onProcessing(ProcessingState state) {
+    if (state != ProcessingState.completed) return;
+    // The queue ends: back to the start. Stopped, so the lock screen shows
+    // something that makes sense rather than a spinner on the last item —
+    // unless the whole thing is on repeat, in which case it goes round.
+    if (_loopAll) {
+      unawaited(
+        _player.seek(Duration.zero, index: 0).then((_) => _player.play()),
+      );
+    } else {
+      unawaited(_player.pause());
+      unawaited(_player.seek(Duration.zero, index: 0));
+    }
+  }
+
+  /// The lock screen's line for the current reading.
+  void _announce(int i) {
+    final MediaItem? base = _player.sequence.length > i
+        ? _player.sequence[i].tag as MediaItem?
+        : null;
+    if (base == null) return;
+    final RecitationTrack t = _tracks[i];
+    mediaItem.add(
+      base.copyWith(
+        displaySubtitle: t.passes > 1
+            ? '${t.subtitle} · $_pass of ${t.passes}'
+            : t.subtitle,
+      ),
+    );
   }
 
   void _emit(int i) {
@@ -279,6 +373,7 @@ class RecitationHandler extends BaseAudioHandler
       owner: _owner,
       track: _tracks[i],
       index: i,
+      pass: _pass,
       playing: _player.playing,
       loading:
           _player.processingState == ProcessingState.loading ||

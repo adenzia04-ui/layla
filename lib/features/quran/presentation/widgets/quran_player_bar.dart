@@ -76,7 +76,7 @@ class QuranPlayerBar extends ConsumerWidget {
                       now == null
                           ? s.name
                           : 'Ayah ${ayahOf(now)} of ${s.ayahCount}'
-                                '${now.track.passes > 1 ? ' · ${now.track.pass}/${now.track.passes}' : ''}',
+                                '${now.track.passes > 1 ? ' · ${now.pass}/${now.track.passes}' : ''}',
                       style: AppType.titleSm,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
