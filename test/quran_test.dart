@@ -114,12 +114,37 @@ void main() {
         repeat: 5,
       );
       expect(q.map((RecitationTrack t) => t.group), <String>[
+        '112:bismillah',
         '112:1',
         '112:2',
         '112:3',
         '112:4',
       ]);
       expect(q.every((RecitationTrack t) => t.passes == 1), isTrue);
+    });
+
+    test('a surah opens with its Bismillah, where the mushaf prints one', () {
+      final Reciter alafasy = reciterById('alafasy');
+      List<RecitationTrack> of(int surah, Reciter r) => surahTracks(
+        quran,
+        surah,
+        reciter: r,
+        mode: PlayMode.surah,
+        repeat: 1,
+      );
+      final RecitationTrack b = of(2, alafasy).first;
+      expect(isBismillah(b), isTrue);
+      // The voice's own Bismillah: its Al-Fatihah 1:1.
+      expect(b.url.toString(), endsWith('Alafasy_128kbps/001001.mp3'));
+      expect(b.title, 'Al-Baqarah · Bismillah');
+      // Al-Fatihah's first ayah is the Bismillah; At-Tawbah has none; a
+      // whole-surah file already opens with it.
+      expect(of(1, alafasy).any(isBismillah), isFalse);
+      expect(of(9, alafasy).any(isBismillah), isFalse);
+      expect(of(2, reciterById('luhaidan')).any(isBismillah), isFalse);
+      // Starting from the top plays it; starting further in does not.
+      expect(trackIndexOf(of(2, alafasy), 1), 0);
+      expect(trackIndexOf(of(2, alafasy), 2), 2);
     });
 
     test('ayah by ayah reads each one the chosen number of times', () {
@@ -132,10 +157,13 @@ void main() {
       );
       // Still one track per ayah — the repeats are counted by the player,
       // so a long surah at 10× is not thousands of queued items.
-      expect(q.length, 4);
-      expect(q.every((RecitationTrack t) => t.passes == 3), isTrue);
-      expect(trackIndexOf(q, 2), 1);
-      expect(trackIndexOf(q, 4), 3);
+      expect(q.length, 5);
+      // The Bismillah is read once; each ayah the chosen number of times.
+      expect(q.first.passes, 1);
+      expect(q.skip(1).every((RecitationTrack t) => t.passes == 3), isTrue);
+      expect(trackIndexOf(q, 1), 0);
+      expect(trackIndexOf(q, 2), 2);
+      expect(trackIndexOf(q, 4), 4);
       expect(trackIndexOf(q, 5), -1);
     });
 
@@ -147,7 +175,7 @@ void main() {
           reciter: reciters.first,
           mode: PlayMode.ayahByAyah,
           repeat: 99,
-        ).first.passes,
+        )[1].passes,
         10,
       );
     });
@@ -162,9 +190,9 @@ void main() {
         localFile: (Uri u) =>
             u.path.endsWith('112002.mp3') ? '/tmp/x.mp3' : null,
       );
-      expect(q[0].file, isNull);
-      expect(q[1].file, '/tmp/x.mp3');
-      expect(q[1].url, isNotNull);
+      expect(q[1].file, isNull);
+      expect(q[2].file, '/tmp/x.mp3');
+      expect(q[2].url, isNotNull);
     });
 
     test('every track points at the reciter’s file for that ayah', () {
@@ -180,7 +208,7 @@ void main() {
         reciter: reciterById('husary'),
         mode: PlayMode.surah,
         repeat: 1,
-      )[254];
+      )[255];
       expect(t.group, '2:255');
       expect(t.url.toString(), contains('Husary_128kbps/002255.mp3'));
       expect(t.title, 'Al-Baqarah · Ayah 255');

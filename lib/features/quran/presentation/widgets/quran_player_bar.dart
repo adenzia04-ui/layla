@@ -68,6 +68,8 @@ class QuranPlayerBar extends ConsumerWidget {
 
     final String line = now == null
         ? s.name
+        : isBismillah(now.track)
+        ? '${s.name} · Bismillah'
         : ayahOf(now) == 0
         ? '${s.name} · whole surah'
         : 'Ayah ${ayahOf(now)} of ${s.ayahCount}'

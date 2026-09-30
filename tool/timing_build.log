@@ -1,274 +1,2219 @@
 alafasy 10:1: 2 unused indices for 1 phantom(s); dropped the first
-alafasy 2:97: word 10 held 8340 ms against ~853; ended at 1279 ms
-alafasy 2:213: word 9 held 9690 ms against ~2305; ended at 3457 ms
-alafasy 3:25: word 7 held 8750 ms against ~831; ended at 1246 ms
-alafasy 3:36: word 11 held 13060 ms against ~1270; ended at 1906 ms
-alafasy 3:135: word 16 held 11390 ms against ~1634; ended at 2451 ms
-alafasy 3:147: word 13 held 9670 ms against ~1696; ended at 2544 ms
-alafasy 3:191: word 18 held 8240 ms against ~1391; ended at 2086 ms
-alafasy 3:195: word 35 held 12300 ms against ~1386; ended at 2078 ms
-alafasy 4:3: word 12 held 10930 ms against ~2399; ended at 3598 ms
-alafasy 4:7: word 12 held 12970 ms against ~1859; ended at 2789 ms
-alafasy 4:35: word 11 held 9480 ms against ~1403; ended at 2105 ms
-alafasy 4:43: word 32 held 8540 ms against ~375; ended at 600 ms
-alafasy 4:64: word 15 held 8110 ms against ~1536; ended at 2304 ms
-alafasy 4:69: word 10 held 8990 ms against ~1442; ended at 2163 ms
-alafasy 4:93: word 8 held 8150 ms against ~1104; ended at 1655 ms
-alafasy 4:104: word 10 held 8850 ms against ~1194; ended at 1791 ms
-alafasy 5:2: word 6 held 9670 ms against ~1855; ended at 2782 ms
-alafasy 5:5: word 23 held 8860 ms against ~1145; ended at 1718 ms
-alafasy 5:6: word 34 held 9050 ms against ~371; ended at 600 ms
-alafasy 5:6: word 59 held 9420 ms against ~1082; ended at 1623 ms
-alafasy 5:12: word 32 held 8890 ms against ~1932; ended at 2898 ms
-alafasy 5:15: word 13 held 11800 ms against ~1146; ended at 1718 ms
-alafasy 6:61: word 14 held 11820 ms against ~1113; ended at 1669 ms
-alafasy 6:93: word 32 held 9040 ms against ~1759; ended at 2638 ms
-alafasy 6:111: word 17 held 8420 ms against ~963; ended at 1444 ms
-alafasy 7:40: word 11 held 8740 ms against ~2094; ended at 3141 ms
-alafasy 7:48: word 11 held 8080 ms against ~1210; ended at 1815 ms
-alafasy 7:77: word 11 held 8660 ms against ~1353; ended at 2030 ms
-alafasy 7:136: word 7 held 8370 ms against ~1119; ended at 1678 ms
-alafasy 7:157: word 9 held 8250 ms against ~1636; ended at 2454 ms
-alafasy 7:165: word 10 held 10110 ms against ~2067; ended at 3101 ms
-alafasy 7:169: word 13 held 8320 ms against ~841; ended at 1262 ms
-alafasy 8:2: word 14 held 9190 ms against ~1092; ended at 1639 ms
-alafasy 8:41: word 9 held 8730 ms against ~1826; ended at 2739 ms
-alafasy 8:41: word 19 held 9450 ms against ~1040; ended at 1560 ms
-alafasy 9:48: word 13 held 8660 ms against ~754; ended at 1130 ms
-alafasy 9:54: word 11 held 10910 ms against ~1849; ended at 2774 ms
-alafasy 9:77: word 12 held 8640 ms against ~1335; ended at 2003 ms
-alafasy 9:107: word 8 held 8430 ms against ~1606; ended at 2409 ms
-alafasy 10:2: word 14 held 11020 ms against ~2074; ended at 3111 ms
-alafasy 10:22: word 20 held 8060 ms against ~1692; ended at 2538 ms
-alafasy 10:22: word 34 held 8370 ms against ~1152; ended at 1727 ms
-alafasy 10:37: word 14 held 8670 ms against ~1198; ended at 1797 ms
-alafasy 11:36: word 12 held 10600 ms against ~1081; ended at 1622 ms
-alafasy 11:40: word 13 held 10130 ms against ~824; ended at 1236 ms
-alafasy 11:52: word 10 held 8120 ms against ~1477; ended at 2215 ms
-alafasy 11:53: word 13 held 8170 ms against ~666; ended at 999 ms
-alafasy 13:30: word 14 held 12080 ms against ~2294; ended at 3441 ms
-alafasy 14:11: word 14 held 11150 ms against ~2357; ended at 3535 ms
-alafasy 14:21: word 7 held 9890 ms against ~2460; ended at 3690 ms
-alafasy 14:50: word 3 held 8570 ms against ~1648; ended at 2472 ms
-alafasy 16:106: word 12 held 10750 ms against ~1707; ended at 2561 ms
-alafasy 17:18: word 11 held 11270 ms against ~1203; ended at 1804 ms
-alafasy 17:61: word 8 held 9270 ms against ~1161; ended at 1741 ms
-alafasy 18:10: word 11 held 8430 ms against ~1194; ended at 1792 ms
-alafasy 18:74: word 11 held 8480 ms against ~877; ended at 1315 ms
-alafasy 18:109: word 14 held 8310 ms against ~887; ended at 1331 ms
-alafasy 19:21: word 10 held 10040 ms against ~1979; ended at 2969 ms
-alafasy 19:26: word 14 held 8430 ms against ~958; ended at 1437 ms
-alafasy 21:39: word 13 held 10940 ms against ~1580; ended at 2370 ms
-alafasy 22:5: word 12 held 9150 ms against ~1844; ended at 2766 ms
-alafasy 22:15: word 16 held 8600 ms against ~1150; ended at 1726 ms
-alafasy 22:25: word 11 held 9860 ms against ~1270; ended at 1905 ms
-alafasy 22:52: word 20 held 8430 ms against ~1811; ended at 2717 ms
-alafasy 22:62: word 13 held 8420 ms against ~1538; ended at 2306 ms
-alafasy 23:109: word 10 held 8740 ms against ~826; ended at 1238 ms
-alafasy 24:15: word 10 held 8850 ms against ~1302; ended at 1953 ms
-alafasy 24:39: word 9 held 8230 ms against ~1032; ended at 1547 ms
-alafasy 24:39: word 14 held 9350 ms against ~2087; ended at 3130 ms
-alafasy 25:2: word 14 held 9720 ms against ~1121; ended at 1682 ms
-alafasy 27:36: word 12 held 14610 ms against ~2103; ended at 3154 ms
-alafasy 28:9: word 15 held 10340 ms against ~793; ended at 1190 ms
-alafasy 28:32: word 8 held 8610 ms against ~711; ended at 1067 ms
-alafasy 28:46: word 16 held 9990 ms against ~1641; ended at 2462 ms
-alafasy 28:72: word 17 held 9560 ms against ~1373; ended at 2060 ms
-alafasy 28:75: word 12 held 8390 ms against ~1663; ended at 2494 ms
-alafasy 29:58: word 8 held 8170 ms against ~1314; ended at 1971 ms
-alafasy 33:50: word 33 held 8970 ms against ~1637; ended at 2456 ms
-alafasy 34:37: word 19 held 8680 ms against ~1430; ended at 2145 ms
-alafasy 34:43: word 13 held 9560 ms against ~1763; ended at 2645 ms
-alafasy 35:25: word 10 held 9170 ms against ~1679; ended at 2518 ms
-alafasy 39:54: word 10 held 9510 ms against ~1156; ended at 1733 ms
-alafasy 39:55: word 12 held 9520 ms against ~1465; ended at 2198 ms
-alafasy 39:61: word 8 held 8220 ms against ~1958; ended at 2937 ms
-alafasy 40:43: word 16 held 8320 ms against ~389; ended at 600 ms
-alafasy 46:17: word 13 held 10740 ms against ~1459; ended at 2189 ms
-alafasy 46:30: word 9 held 9440 ms against ~944; ended at 1416 ms
 alafasy 50:34: words 3-5 spread to 10380 ms (recording 10423 ms)
-alafasy 57:13: word 20 held 9210 ms against ~1749; ended at 2623 ms
-alafasy 57:14: word 9 held 9720 ms against ~2192; ended at 3287 ms
-alafasy 57:25: word 18 held 11630 ms against ~1952; ended at 2929 ms
-alafasy 59:10: word 12 held 13010 ms against ~1777; ended at 2665 ms
-alafasy 61:14: word 12 held 9280 ms against ~1961; ended at 2942 ms
-alafasy 66:8: word 14 held 8680 ms against ~1715; ended at 2572 ms
-alafasy 71:7: word 9 held 8740 ms against ~1417; ended at 2125 ms
-alafasy 10:1: hand-timed override (measured from the recording, high confidence)
-abdulbasit 2:109: word 17 held 12880 ms against ~915; ended at 1372 ms
-abdulbasit 2:123: word 16 held 11160 ms against ~1824; ended at 2735 ms
-abdulbasit 2:128: word 13 held 9710 ms against ~2320; ended at 3479 ms
-abdulbasit 3:84: word 15 held 16940 ms against ~786; ended at 1178 ms
-abdulbasit 4:23: word 23 held 10580 ms against ~1829; ended at 2744 ms
-abdulbasit 6:44: word 15 held 10620 ms against ~1424; ended at 2136 ms
-abdulbasit 6:60: word 15 held 12060 ms against ~1833; ended at 2749 ms
 abdulbasit 6:70: words 14-45 spread to 79860 ms (recording 79856 ms)
-abdulbasit 7:38: word 29 held 14990 ms against ~2005; ended at 3008 ms
-abdulbasit 7:53: word 23 held 11240 ms against ~711; ended at 1067 ms
-abdulbasit 7:146: word 18 held 8450 ms against ~802; ended at 1203 ms
-abdulbasit 7:153: word 8 held 12260 ms against ~2630; ended at 3945 ms
-abdulbasit 8:31: word 12 held 11450 ms against ~1012; ended at 1518 ms
-abdulbasit 9:37: word 13 held 9400 ms against ~695; ended at 1042 ms
-abdulbasit 10:24: word 27 held 10870 ms against ~924; ended at 1386 ms
-abdulbasit 10:88: word 13 held 13750 ms against ~1079; ended at 1619 ms
 abdulbasit 15:5: words 4-7 spread to 7690 ms (recording 7680 ms)
-abdulbasit 16:119: word 13 held 11630 ms against ~2370; ended at 3554 ms
-abdulbasit 27:60: word 14 held 11370 ms against ~1899; ended at 2848 ms
-abdulbasit 27:82: word 6 held 8990 ms against ~778; ended at 1167 ms
-abdulbasit 49:7: word 17 held 9220 ms against ~1396; ended at 2093 ms
-abdulbasit 49:11: word 13 held 8980 ms against ~2130; ended at 3195 ms
-sudais 2:249: word 55 held 8080 ms against ~1643; ended at 2465 ms
-sudais 4:93: word 8 held 8050 ms against ~928; ended at 1393 ms
-sudais 5:118: word 4 held 11860 ms against ~1348; ended at 2022 ms
-sudais 10:90: word 24 held 12860 ms against ~2246; ended at 3368 ms
-sudais 11:114: word 11 held 8530 ms against ~2030; ended at 3045 ms
-sudais 16:92: word 9 held 9060 ms against ~1855; ended at 2783 ms
-sudais 33:36: word 14 held 8370 ms against ~903; ended at 1354 ms
-sudais 34:14: word 11 held 8380 ms against ~648; ended at 972 ms
-sudais 39:71: word 6 held 8480 ms against ~1390; ended at 2085 ms
-sudais 39:72: word 1 held 8880 ms against ~438; ended at 656 ms
-sudais 40:47: word 11 held 8200 ms against ~439; ended at 659 ms
-sudais 42:25: word 9 held 11360 ms against ~2028; ended at 3042 ms
-sudais 57:16: word 9 held 8150 ms against ~705; ended at 1058 ms
-sudais 57:21: word 10 held 11190 ms against ~871; ended at 1307 ms
-sudais 13:43: hand-timed override (measured from the recording, high confidence)
-husary 2:229: word 18 held 12010 ms against ~2010; ended at 3015 ms
-husary 2:249: word 19 held 20220 ms against ~3154; ended at 4731 ms
-husary 3:39: word 13 held 9240 ms against ~1807; ended at 2711 ms
-husary 3:55: word 18 held 14560 ms against ~2016; ended at 3024 ms
-husary 3:119: word 13 held 9680 ms against ~1330; ended at 1995 ms
-husary 4:60: word 17 held 9450 ms against ~2095; ended at 3142 ms
-husary 4:141: word 18 held 14160 ms against ~3175; ended at 4762 ms
-husary 5:12: word 27 held 10480 ms against ~1241; ended at 1862 ms
-husary 5:24: word 13 held 12520 ms against ~2372; ended at 3559 ms
-husary 5:32: word 24 held 12340 ms against ~2966; ended at 4449 ms
-husary 6:99: word 14 held 9800 ms against ~1903; ended at 2855 ms
-husary 7:11: word 10 held 14240 ms against ~2682; ended at 4023 ms
-husary 7:146: word 18 held 9080 ms against ~882; ended at 1323 ms
-husary 7:162: word 12 held 9750 ms against ~1151; ended at 1726 ms
-husary 8:70: word 17 held 14980 ms against ~2133; ended at 3199 ms
-husary 9:24: word 17 held 14720 ms against ~2617; ended at 3926 ms
-husary 9:54: word 18 held 9410 ms against ~1062; ended at 1593 ms
-husary 10:12: word 18 held 15400 ms against ~1819; ended at 2729 ms
-husary 10:22: word 26 held 16700 ms against ~4061; ended at 6092 ms
-husary 14:21: word 7 held 14090 ms against ~3208; ended at 4812 ms
-husary 16:119: word 13 held 13630 ms against ~2927; ended at 4391 ms
-husary 18:14: word 15 held 18920 ms against ~2339; ended at 3509 ms
-husary 18:40: word 10 held 10510 ms against ~2200; ended at 3300 ms
-husary 23:24: word 20 held 17820 ms against ~3995; ended at 5993 ms
-husary 25:3: word 17 held 12110 ms against ~1879; ended at 2819 ms
-husary 28:46: word 12 held 13520 ms against ~1037; ended at 1555 ms
-husary 30:54: word 15 held 9580 ms against ~846; ended at 1269 ms
-husary 39:21: word 16 held 8680 ms against ~1550; ended at 2325 ms
-husary 40:47: word 8 held 14670 ms against ~2883; ended at 4324 ms
-husary 46:15: word 23 held 8730 ms against ~1937; ended at 2905 ms
-husary 59:9: word 15 held 13410 ms against ~2481; ended at 3721 ms
-shuraym 4:69: word 13 held 9890 ms against ~1381; ended at 2071 ms
-shuraym 7:146: word 29 held 20030 ms against ~1366; ended at 2050 ms
 shuraym 12:76: words 1-33 spread to 27706 ms (recording 28029 ms)
-shuraym 26:61: word 5 held 8120 ms against ~660; ended at 990 ms
-shuraym 69:19: word 2 held 17500 ms against ~287; ended at 600 ms
 shuraym 91:14: words 2-7 spread to 7435 ms (recording 7758 ms)
-shuraym 78:40: hand-timed override (measured from the recording, medium confidence)
-minshawi 2:76: word 12 held 9370 ms against ~2151; ended at 3227 ms
-minshawi 3:55: word 18 held 9820 ms against ~1215; ended at 1822 ms
-minshawi 3:79: word 14 held 9480 ms against ~926; ended at 1389 ms
-minshawi 4:23: word 23 held 9020 ms against ~1814; ended at 2722 ms
-minshawi 4:47: word 10 held 10160 ms against ~1655; ended at 2483 ms
-minshawi 4:65: word 15 held 9060 ms against ~737; ended at 1106 ms
-minshawi 4:90: word 15 held 8270 ms against ~374; ended at 600 ms
-minshawi 4:141: word 18 held 9690 ms against ~1984; ended at 2976 ms
-minshawi 5:12: word 27 held 8220 ms against ~1095; ended at 1643 ms
-minshawi 5:57: word 10 held 10300 ms against ~1631; ended at 2447 ms
-minshawi 5:106: word 35 held 8060 ms against ~1139; ended at 1709 ms
-minshawi 8:42: word 21 held 9830 ms against ~1952; ended at 2928 ms
-minshawi 11:78: word 22 held 9990 ms against ~2022; ended at 3033 ms
-minshawi 18:31: word 20 held 12620 ms against ~2783; ended at 4174 ms
-minshawi 20:10: word 9 held 10540 ms against ~774; ended at 1160 ms
-minshawi 20:87: word 8 held 10130 ms against ~1134; ended at 1702 ms
-minshawi 25:3: word 17 held 8510 ms against ~1280; ended at 1920 ms
-minshawi 27:18: word 12 held 11170 ms against ~1928; ended at 2892 ms
-minshawi 42:13: word 17 held 14280 ms against ~1594; ended at 2391 ms
 minshawi 46:14: words 6-9 spread to 12230 ms (recording 12251 ms)
 minshawi 56:52: words 4-5 spread to 7630 ms (recording 7654 ms)
 minshawi 81:21: words 1-3 spread to 5260 ms (recording 5277 ms)
-minshawi 15:1: hand-timed override (measured from the recording, high confidence)
-shatri 2:24: word 10 held 8590 ms against ~1407; ended at 2111 ms
-shatri 2:136: word 11 held 8860 ms against ~1559; ended at 2338 ms
-shatri 2:234: word 20 held 9350 ms against ~2263; ended at 3395 ms
-shatri 3:152: word 18 held 15380 ms against ~1482; ended at 2223 ms
-shatri 3:183: word 23 held 10550 ms against ~972; ended at 1459 ms
-shatri 3:195: word 8 held 9000 ms against ~1447; ended at 2170 ms
-shatri 4:56: word 15 held 10460 ms against ~2301; ended at 3452 ms
-shatri 5:3: word 50 held 12010 ms against ~1255; ended at 1883 ms
-shatri 6:19: word 36 held 8590 ms against ~1256; ended at 1883 ms
-shatri 6:78: word 16 held 8170 ms against ~1332; ended at 1999 ms
-shatri 6:80: word 5 held 9980 ms against ~331; ended at 600 ms
-shatri 7:71: word 17 held 10680 ms against ~747; ended at 1121 ms
-shatri 8:70: word 21 held 10240 ms against ~1139; ended at 1709 ms
-shatri 10:25: word 5 held 11550 ms against ~1376; ended at 2064 ms
-shatri 10:26: word 3 held 9100 ms against ~1587; ended at 2381 ms
-shatri 10:26: word 4 held 21870 ms against ~3037; ended at 4555 ms
-shatri 10:26: word 6 held 19750 ms against ~1389; ended at 2083 ms
-shatri 10:62: word 7 held 11380 ms against ~986; ended at 1479 ms
-shatri 11:14: word 7 held 8210 ms against ~706; ended at 1059 ms
-shatri 12:100: word 34 held 11360 ms against ~1781; ended at 2671 ms
-shatri 16:27: word 9 held 19070 ms against ~1502; ended at 2252 ms
-shatri 18:53: word 6 held 10130 ms against ~1687; ended at 2531 ms
-shatri 20:124: word 8 held 8380 ms against ~1557; ended at 2335 ms
-shatri 22:52: word 22 held 21940 ms against ~1035; ended at 1552 ms
-shatri 24:16: word 10 held 8740 ms against ~1343; ended at 2015 ms
-shatri 28:23: word 10 held 8030 ms against ~1401; ended at 2102 ms
-shatri 31:32: word 15 held 8160 ms against ~1366; ended at 2049 ms
-shatri 37:66: word 1 held 20148 ms against ~1367; ended at 2050 ms
-shatri 37:66: word 2 held 17879 ms against ~1213; ended at 1820 ms
-shatri 37:66: word 3 held 10007 ms against ~679; ended at 1018 ms
-shatri 37:66: word 4 held 18680 ms against ~1267; ended at 1901 ms
-shatri 37:66: word 6 held 16812 ms against ~1141; ended at 1711 ms
-shatri 40:5: word 12 held 10620 ms against ~2188; ended at 3283 ms
-shatri 43:23: word 16 held 9170 ms against ~458; ended at 687 ms
-shatri 43:77: word 8 held 15710 ms against ~1651; ended at 2476 ms
-shatri 46:31: word 8 held 15440 ms against ~1124; ended at 1686 ms
-shatri 50:28: word 1 held 12330 ms against ~586; ended at 879 ms
-shatri 65:12: word 18 held 8880 ms against ~1582; ended at 2374 ms
-shatri 74:31: word 33 held 8440 ms against ~1503; ended at 2255 ms
-shatri 37:66: hand-timed override (the recording repeats the ayah; ayah-level light only)
-shatri 37:67: hand-timed override (the recording repeats the ayah; ayah-level light only)
-shatri 44:2: hand-timed override (measured from the recording, medium confidence)
-shatri 44:5: hand-timed override (measured from the recording, medium confidence)
-shatri 44:6: hand-timed override (measured from the recording, medium confidence)
-shatri 44:7: hand-timed override (measured from the recording, high confidence)
-shatri 36:1: hand-timed override (measured from the recording, high confidence)
-rifai 2:110: word 12 held 11260 ms against ~1774; ended at 2661 ms
-rifai 2:145: word 28 held 9770 ms against ~853; ended at 1279 ms
-rifai 2:249: word 47 held 8120 ms against ~768; ended at 1152 ms
-rifai 2:264: word 8 held 8270 ms against ~973; ended at 1459 ms
-rifai 3:188: word 17 held 9470 ms against ~2146; ended at 3219 ms
-rifai 4:140: word 14 held 8610 ms against ~605; ended at 907 ms
-rifai 5:17: word 24 held 8730 ms against ~1943; ended at 2914 ms
-rifai 6:27: word 13 held 9630 ms against ~1122; ended at 1684 ms
-rifai 6:53: word 11 held 9770 ms against ~1720; ended at 2579 ms
-rifai 7:17: word 5 held 8480 ms against ~1120; ended at 1680 ms
-rifai 7:156: word 24 held 11560 ms against ~1273; ended at 1909 ms
-rifai 7:169: word 6 held 9510 ms against ~1082; ended at 1624 ms
-rifai 8:11: word 19 held 11450 ms against ~2018; ended at 3028 ms
-rifai 8:36: word 8 held 20780 ms against ~904; ended at 1356 ms
-rifai 9:37: word 13 held 10670 ms against ~696; ended at 1044 ms
-rifai 9:69: word 20 held 8820 ms against ~1564; ended at 2346 ms
-rifai 10:21: word 4 held 10600 ms against ~1454; ended at 2180 ms
-rifai 10:68: word 19 held 8410 ms against ~1870; ended at 2805 ms
-rifai 10:83: word 7 held 8940 ms against ~879; ended at 1318 ms
-rifai 11:52: word 6 held 8620 ms against ~762; ended at 1143 ms
-rifai 11:123: word 8 held 9320 ms against ~1058; ended at 1587 ms
-rifai 17:68: word 9 held 9890 ms against ~1083; ended at 1624 ms
-rifai 18:31: word 20 held 11350 ms against ~2249; ended at 3374 ms
-rifai 18:53: word 6 held 9990 ms against ~1676; ended at 2514 ms
-rifai 20:108: word 9 held 8060 ms against ~1493; ended at 2240 ms
-rifai 24:47: word 4 held 8750 ms against ~1393; ended at 2089 ms
-rifai 25:31: word 7 held 11910 ms against ~2435; ended at 3653 ms
-rifai 27:24: word 7 held 9730 ms against ~900; ended at 1350 ms
-rifai 35:37: word 6 held 8050 ms against ~763; ended at 1144 ms
-rifai 39:16: word 6 held 8140 ms against ~1538; ended at 2307 ms
-rifai 40:83: word 9 held 14500 ms against ~1080; ended at 1619 ms
-rifai 45:5: word 10 held 11070 ms against ~1330; ended at 1994 ms
-rifai 61:14: word 17 held 8590 ms against ~501; ended at 752 ms
+alafasy 2:164: word 28 ends 1150 ms in; untimed speech follows to 32400 ms
+alafasy 2:177: word 13 ends 690 ms in; untimed speech follows to 17210 ms
+alafasy 2:213: word 9 ends 1830 ms in; untimed speech follows to 19250 ms
+alafasy 2:266: word 13 ends 1590 ms in; untimed speech follows to 18620 ms
+alafasy 2:266: word 23 ends 1550 ms in; untimed speech follows to 34440 ms
+alafasy 2:273: word 11 ends 870 ms in; untimed speech follows to 15490 ms
+alafasy 3:25: word 7 ends 650 ms in; untimed speech follows to 13870 ms
+alafasy 3:26: word 15 ends 2590 ms in; untimed speech follows to 25490 ms
+alafasy 3:36: word 11 ends 1010 ms in; untimed speech follows to 26860 ms
+alafasy 3:39: word 10 ends 1090 ms in; untimed speech follows to 18490 ms
+alafasy 3:55: word 12 ends 1080 ms in; untimed speech follows to 17880 ms
+alafasy 3:64: word 12 ends 450 ms in; untimed speech follows to 19960 ms
+alafasy 3:73: word 11 ends 1310 ms in; untimed speech follows to 16000 ms
+alafasy 3:83: word 4 ends 2000 ms in; untimed speech follows to 9550 ms
+alafasy 3:107: word 7 ends 2280 ms in; untimed speech follows to 12320 ms
+alafasy 3:143: word 10 ends 1520 ms in; untimed speech follows to 16500 ms
+alafasy 3:147: word 13 ends 1350 ms in; untimed speech follows to 23290 ms
+alafasy 3:153: word 10 ends 1090 ms in; untimed speech follows to 18900 ms
+alafasy 3:191: word 18 ends 1110 ms in; untimed speech follows to 30680 ms
+alafasy 3:195: hand-timed override
+alafasy 3:200: word 6 ends 1390 ms in; untimed speech follows to 12920 ms
+alafasy 4:3: word 12 ends 2990 ms in; untimed speech follows to 20010 ms
+alafasy 4:9: word 11 ends 1260 ms in; untimed speech follows to 15580 ms
+alafasy 4:10: word 11 ends 1190 ms in; untimed speech follows to 18550 ms
+alafasy 4:15: word 17 ends 1960 ms in; untimed speech follows to 31060 ms
+alafasy 4:18: word 13 ends 590 ms in; untimed speech follows to 20110 ms
+alafasy 4:19: word 29 ends 640 ms in; untimed speech follows to 50060 ms
+alafasy 4:23: word 17 ends 1070 ms in; untimed speech follows to 25750 ms
+alafasy 4:23: word 23 ends 1210 ms in; untimed speech follows to 41450 ms
+alafasy 4:23: word 33 ends 800 ms in; untimed speech follows to 58710 ms
+alafasy 4:25: word 13 ends 1690 ms in; untimed speech follows to 17760 ms
+alafasy 4:31: word 9 ends 1450 ms in; untimed speech follows to 15750 ms
+alafasy 4:35: word 11 ends 1180 ms in; untimed speech follows to 19190 ms
+alafasy 4:43: word 12 ends 1030 ms in; untimed speech follows to 17040 ms
+alafasy 4:43: word 32 ends 1950 ms in; untimed speech follows to 47720 ms
+alafasy 4:43: word 36 ends 810 ms in; untimed speech follows to 59120 ms
+alafasy 4:46: word 32 ends 1140 ms in; untimed speech follows to 42370 ms
+alafasy 4:62: word 9 ends 2010 ms in; untimed speech follows to 18580 ms
+alafasy 4:64: word 15 ends 1210 ms in; untimed speech follows to 27250 ms
+alafasy 4:69: word 10 ends 1140 ms in; untimed speech follows to 18780 ms
+alafasy 4:92: word 17 ends 1150 ms in; untimed speech follows to 21710 ms
+alafasy 4:93: word 8 ends 870 ms in; untimed speech follows to 21150 ms
+alafasy 4:100: word 22 ends 900 ms in; untimed speech follows to 26430 ms
+alafasy 4:102: word 10 ends 970 ms in; untimed speech follows to 18270 ms
+alafasy 4:102: word 15 ends 1520 ms in; untimed speech follows to 28670 ms
+alafasy 4:102: word 22 ends 1150 ms in; untimed speech follows to 44250 ms
+alafasy 4:102: word 51 ends 1220 ms in; untimed speech follows to 79220 ms
+alafasy 4:104: word 10 ends 940 ms in; untimed speech follows to 19100 ms
+alafasy 4:112: word 9 ends 1760 ms in; untimed speech follows to 16570 ms
+alafasy 4:115: word 13 ends 2150 ms in; untimed speech follows to 16620 ms
+alafasy 4:127: word 15 ends 2000 ms in; untimed speech follows to 22030 ms
+alafasy 4:155: word 8 ends 2140 ms in; untimed speech follows to 17340 ms
+alafasy 4:175: word 11 ends 980 ms in; untimed speech follows to 17250 ms
+alafasy 5:2: word 6 ends 1480 ms in; untimed speech follows to 16620 ms
+alafasy 5:5: word 23 ends 1050 ms in; untimed speech follows to 31820 ms
+alafasy 5:6: word 34 ends 2430 ms in; untimed speech follows to 58030 ms
+alafasy 5:6: word 38 ends 880 ms in; untimed speech follows to 69860 ms
+alafasy 5:6: word 42 ends 1330 ms in; untimed speech follows to 82230 ms
+alafasy 5:6: word 59 ends 860 ms in; untimed speech follows to 110690 ms
+alafasy 5:12: word 29 ends 1340 ms in; untimed speech follows to 46970 ms
+alafasy 5:12: word 32 ends 1530 ms in; untimed speech follows to 60170 ms
+alafasy 5:15: word 13 ends 900 ms in; untimed speech follows to 27030 ms
+alafasy 5:40: word 11 ends 1560 ms in; untimed speech follows to 15680 ms
+alafasy 5:44: word 15 ends 2520 ms in; untimed speech follows to 26660 ms
+alafasy 5:57: word 14 ends 1730 ms in; untimed speech follows to 21660 ms
+alafasy 5:65: word 9 ends 1460 ms in; untimed speech follows to 14000 ms
+alafasy 5:68: word 9 ends 2130 ms in; untimed speech follows to 13570 ms
+alafasy 5:106: word 15 ends 1740 ms in; untimed speech follows to 21970 ms
+alafasy 5:106: word 32 ends 1280 ms in; untimed speech follows to 45000 ms
+alafasy 5:106: word 47 ends 1790 ms in; untimed speech follows to 61810 ms
+alafasy 5:107: word 9 ends 1480 ms in; untimed speech follows to 17530 ms
+alafasy 5:111: word 10 ends 1350 ms in; untimed speech follows to 15320 ms
+alafasy 5:113: word 7 ends 1410 ms in; untimed speech follows to 11900 ms
+alafasy 6:6: speech in the 2570 ms gap after word 25; the light goes out
+alafasy 6:22: word 7 ends 1890 ms in; untimed speech follows to 15240 ms
+alafasy 6:25: word 27 ends 1260 ms in; untimed speech follows to 39140 ms
+alafasy 6:31: word 13 ends 1380 ms in; untimed speech follows to 23680 ms
+alafasy 6:40: word 12 ends 900 ms in; untimed speech follows to 15840 ms
+alafasy 6:43: word 8 ends 1280 ms in; untimed speech follows to 16180 ms
+alafasy 6:44: word 13 ends 1070 ms in; untimed speech follows to 18330 ms
+alafasy 6:51: word 12 ends 930 ms in; untimed speech follows to 18470 ms
+alafasy 6:59: word 24 ends 790 ms in; untimed speech follows to 32750 ms
+alafasy 6:60: word 11 ends 630 ms in; untimed speech follows to 19500 ms
+alafasy 6:61: word 14 ends 1240 ms in; untimed speech follows to 27970 ms
+alafasy 6:70: word 24 ends 1660 ms in; untimed speech follows to 36570 ms
+alafasy 6:70: word 40 ends 1130 ms in; untimed speech follows to 61200 ms
+alafasy 6:71: word 13 ends 1950 ms in; untimed speech follows to 19750 ms
+alafasy 6:71: word 20 ends 1970 ms in; untimed speech follows to 32790 ms
+alafasy 6:92: word 8 ends 950 ms in; untimed speech follows to 15440 ms
+alafasy 6:93: word 32 ends 1400 ms in; untimed speech follows to 44450 ms
+alafasy 6:108: word 21 ends 1170 ms in; untimed speech follows to 29110 ms
+alafasy 6:112: speech in the 2320 ms gap after word 10; the light goes out
+alafasy 6:122: speech in the 2230 ms gap after word 13; the light goes out
+alafasy 6:124: word 26 ends 1420 ms in; untimed speech follows to 37950 ms
+alafasy 6:128: word 18 ends 1590 ms in; untimed speech follows to 27680 ms
+alafasy 6:130: word 24 ends 1530 ms in; untimed speech follows to 48080 ms
+alafasy 6:133: word 14 ends 2020 ms in; untimed speech follows to 25270 ms
+alafasy 6:146: word 17 ends 1690 ms in; untimed speech follows to 23680 ms
+alafasy 6:154: word 11 ends 1390 ms in; untimed speech follows to 17110 ms
+alafasy 7:38: word 26 ends 1220 ms in; untimed speech follows to 38130 ms
+alafasy 7:40: word 11 ends 2780 ms in; untimed speech follows to 18690 ms
+alafasy 7:42: word 9 ends 1420 ms in; untimed speech follows to 14880 ms
+alafasy 7:42: word 12 ends 1780 ms in; untimed speech follows to 26310 ms
+alafasy 7:43: hand-timed override
+alafasy 7:48: word 11 ends 950 ms in; untimed speech follows to 23660 ms
+alafasy 7:50: word 10 ends 1840 ms in; untimed speech follows to 19950 ms
+alafasy 7:54: word 14 ends 800 ms in; untimed speech follows to 18480 ms
+alafasy 7:59: word 14 ends 1120 ms in; untimed speech follows to 20190 ms
+alafasy 7:66: word 10 ends 1330 ms in; untimed speech follows to 16080 ms
+alafasy 7:72: word 10 ends 1960 ms in; untimed speech follows to 20780 ms
+alafasy 7:73: word 31 ends 1760 ms in; untimed speech follows to 40270 ms
+alafasy 7:77: word 11 ends 1170 ms in; untimed speech follows to 18920 ms
+alafasy 7:136: word 7 ends 880 ms in; untimed speech follows to 17320 ms
+alafasy 7:150: word 34 ends 2570 ms in; untimed speech follows to 48380 ms
+alafasy 7:158: word 29 ends 1310 ms in; untimed speech follows to 42110 ms
+alafasy 7:163: word 17 ends 1340 ms in; untimed speech follows to 22380 ms
+alafasy 7:169: word 13 ends 660 ms in; untimed speech follows to 20950 ms
+alafasy 8:2: word 14 ends 860 ms in; untimed speech follows to 23900 ms
+alafasy 8:16: word 13 ends 1430 ms in; untimed speech follows to 21780 ms
+alafasy 8:42: word 26 ends 1270 ms in; untimed speech follows to 34060 ms
+alafasy 8:72: word 13 ends 1610 ms in; untimed speech follows to 21180 ms
+alafasy 9:14: word 7 ends 1080 ms in; untimed speech follows to 14970 ms
+alafasy 9:25: word 20 ends 790 ms in; untimed speech follows to 27060 ms
+alafasy 9:31: word 13 ends 970 ms in; untimed speech follows to 23920 ms
+alafasy 9:40: word 9 ends 980 ms in; untimed speech follows to 13470 ms
+alafasy 9:48: word 13 ends 590 ms in; untimed speech follows to 21440 ms
+alafasy 9:54: word 11 ends 1470 ms in; untimed speech follows to 23030 ms
+alafasy 9:77: word 12 ends 1060 ms in; untimed speech follows to 21350 ms
+alafasy 9:79: word 12 ends 970 ms in; untimed speech follows to 19190 ms
+alafasy 9:94: word 22 ends 1390 ms in; untimed speech follows to 28380 ms
+alafasy 9:100: hand-timed override
+alafasy 9:107: word 8 ends 1270 ms in; untimed speech follows to 18650 ms
+alafasy 9:117: word 12 ends 1110 ms in; untimed speech follows to 19900 ms
+alafasy 9:122: word 15 ends 1040 ms in; untimed speech follows to 25580 ms
+alafasy 9:126: word 13 ends 1490 ms in; untimed speech follows to 18710 ms
+alafasy 10:1: hand-timed override
+alafasy 10:22: word 20 ends 1340 ms in; untimed speech follows to 33850 ms
+alafasy 10:22: word 34 ends 920 ms in; untimed speech follows to 62940 ms
+alafasy 10:24: word 24 ends 1250 ms in; untimed speech follows to 45490 ms
+alafasy 10:37: word 14 ends 940 ms in; untimed speech follows to 22280 ms
+alafasy 10:59: hand-timed override
+alafasy 10:61: word 34 ends 1020 ms in; untimed speech follows to 40110 ms
+alafasy 10:78: word 10 ends 1910 ms in; untimed speech follows to 22220 ms
+alafasy 10:98: word 13 ends 710 ms in; untimed speech follows to 24750 ms
+alafasy 10:104: word 13 ends 1070 ms in; untimed speech follows to 22990 ms
+alafasy 11:7: word 26 ends 1880 ms in; untimed speech follows to 39240 ms
+alafasy 11:15: word 10 ends 980 ms in; untimed speech follows to 16410 ms
+alafasy 11:21: hand-timed override
+alafasy 11:27: word 26 ends 1010 ms in; untimed speech follows to 28760 ms
+alafasy 11:32: word 9 ends 1180 ms in; untimed speech follows to 14140 ms
+alafasy 11:36: word 12 ends 860 ms in; untimed speech follows to 20790 ms
+alafasy 11:52: word 10 ends 1260 ms in; untimed speech follows to 21610 ms
+alafasy 11:53: word 13 ends 1410 ms in; untimed speech follows to 22790 ms
+alafasy 11:71: word 5 ends 2930 ms in; untimed speech follows to 14510 ms
+alafasy 11:113: hand-timed override
+alafasy 12:21: word 8 ends 1010 ms in; untimed speech follows to 14250 ms
+alafasy 12:70: word 8 ends 1400 ms in; untimed speech follows to 15400 ms
+alafasy 12:100: word 31 ends 560 ms in; untimed speech follows to 39050 ms
+alafasy 13:4: word 12 ends 1710 ms in; untimed speech follows to 24110 ms
+alafasy 13:10: word 12 ends 940 ms in; untimed speech follows to 20340 ms
+alafasy 13:30: word 9 ends 800 ms in; untimed speech follows to 18240 ms
+alafasy 13:30: word 14 ends 1820 ms in; untimed speech follows to 35630 ms
+alafasy 13:31: word 42 ends 1120 ms in; untimed speech follows to 51360 ms
+alafasy 14:11: word 14 ends 1880 ms in; untimed speech follows to 24600 ms
+alafasy 14:21: hand-timed override
+alafasy 14:23: word 14 ends 1500 ms in; untimed speech follows to 25890 ms
+alafasy 16:14: word 12 ends 1980 ms in; untimed speech follows to 22210 ms
+alafasy 16:26: word 15 ends 1130 ms in; untimed speech follows to 21170 ms
+alafasy 16:72: word 11 ends 730 ms in; untimed speech follows to 20530 ms
+alafasy 16:75: word 14 ends 1400 ms in; untimed speech follows to 21330 ms
+alafasy 16:106: word 12 ends 1360 ms in; untimed speech follows to 23940 ms
+alafasy 16:110: word 12 ends 1790 ms in; untimed speech follows to 17590 ms
+alafasy 16:111: word 12 ends 800 ms in; untimed speech follows to 17540 ms
+alafasy 17:4: word 10 ends 1120 ms in; untimed speech follows to 19220 ms
+alafasy 17:5: word 11 ends 1490 ms in; untimed speech follows to 24400 ms
+alafasy 17:7: word 17 ends 900 ms in; untimed speech follows to 29280 ms
+alafasy 17:23: word 18 ends 720 ms in; untimed speech follows to 29280 ms
+alafasy 17:61: word 8 ends 2000 ms in; untimed speech follows to 18220 ms
+alafasy 17:68: word 10 ends 1380 ms in; untimed speech follows to 13740 ms
+alafasy 17:70: word 11 ends 1370 ms in; untimed speech follows to 17870 ms
+alafasy 17:93: word 13 ends 1030 ms in; untimed speech follows to 16370 ms
+alafasy 17:111: word 19 ends 740 ms in; untimed speech follows to 21220 ms
+alafasy 18:10: word 11 ends 940 ms in; untimed speech follows to 18060 ms
+alafasy 18:31: word 8 ends 2580 ms in; untimed speech follows to 16320 ms
+alafasy 18:50: word 11 ends 1060 ms in; untimed speech follows to 20130 ms
+alafasy 18:63: word 9 ends 2180 ms in; untimed speech follows to 14970 ms
+alafasy 18:74: word 11 ends 700 ms in; untimed speech follows to 22630 ms
+alafasy 18:77: word 9 ends 810 ms in; untimed speech follows to 20730 ms
+alafasy 18:82: word 12 ends 1070 ms in; untimed speech follows to 17790 ms
+alafasy 18:82: word 14 ends 1360 ms in; untimed speech follows to 24540 ms
+alafasy 18:109: word 14 ends 700 ms in; untimed speech follows to 20180 ms
+alafasy 18:110: word 19 ends 1280 ms in; untimed speech follows to 32760 ms
+alafasy 19:17: word 7 ends 1170 ms in; untimed speech follows to 16050 ms
+alafasy 19:21: word 10 ends 1580 ms in; untimed speech follows to 21030 ms
+alafasy 19:23: word 7 ends 1720 ms in; untimed speech follows to 14060 ms
+alafasy 19:26: word 14 ends 760 ms in; untimed speech follows to 26400 ms
+alafasy 20:10: word 6 ends 1400 ms in; untimed speech follows to 10570 ms
+alafasy 20:63: word 7 ends 1350 ms in; untimed speech follows to 13870 ms
+alafasy 20:109: word 9 ends 1210 ms in; untimed speech follows to 14360 ms
+alafasy 20:113: word 8 ends 850 ms in; untimed speech follows to 15570 ms
+alafasy 21:39: word 13 ends 1260 ms in; untimed speech follows to 20430 ms
+alafasy 21:46: word 8 ends 1480 ms in; untimed speech follows to 13990 ms
+alafasy 21:78: word 11 ends 810 ms in; untimed speech follows to 13330 ms
+alafasy 22:2: word 12 ends 1460 ms in; untimed speech follows to 17510 ms
+alafasy 22:5: word 12 ends 1920 ms in; untimed speech follows to 23340 ms
+alafasy 22:5: word 38 ends 1590 ms in; untimed speech follows to 63570 ms
+alafasy 22:15: word 16 ends 920 ms in; untimed speech follows to 25130 ms
+alafasy 22:25: word 11 ends 1010 ms in; untimed speech follows to 20700 ms
+alafasy 22:28: word 6 ends 2460 ms in; untimed speech follows to 9820 ms
+alafasy 22:35: word 10 ends 1270 ms in; untimed speech follows to 16900 ms
+alafasy 22:45: word 10 ends 1470 ms in; untimed speech follows to 17320 ms
+alafasy 22:52: word 20 ends 2460 ms in; untimed speech follows to 32320 ms
+alafasy 22:55: word 10 ends 1160 ms in; untimed speech follows to 14040 ms
+alafasy 22:58: word 11 ends 1800 ms in; untimed speech follows to 17740 ms
+alafasy 22:65: word 14 ends 1280 ms in; untimed speech follows to 14800 ms
+alafasy 22:78: word 28 ends 1100 ms in; untimed speech follows to 34870 ms
+alafasy 23:14: word 10 ends 1340 ms in; untimed speech follows to 17810 ms
+alafasy 23:27: word 10 ends 1250 ms in; untimed speech follows to 16820 ms
+alafasy 23:33: word 21 ends 2000 ms in; untimed speech follows to 31230 ms
+alafasy 23:109: word 10 ends 660 ms in; untimed speech follows to 21310 ms
+alafasy 24:1: word 8 ends 1460 ms in; untimed speech follows to 26350 ms
+alafasy 24:15: word 10 ends 2980 ms in; untimed speech follows to 19980 ms
+alafasy 24:19: word 12 ends 1410 ms in; untimed speech follows to 16030 ms
+alafasy 24:21: word 26 ends 1010 ms in; untimed speech follows to 41280 ms
+alafasy 24:35: word 20 ends 4220 ms in; untimed speech follows to 35190 ms
+alafasy 24:37: word 11 ends 2240 ms in; untimed speech follows to 16600 ms
+alafasy 24:39: word 9 ends 810 ms in; untimed speech follows to 21690 ms
+alafasy 24:39: word 14 ends 1990 ms in; untimed speech follows to 35450 ms
+alafasy 24:43: word 29 ends 1970 ms in; untimed speech follows to 47560 ms
+alafasy 24:55: word 10 ends 760 ms in; untimed speech follows to 17080 ms
+alafasy 24:55: word 18 ends 900 ms in; untimed speech follows to 31500 ms
+alafasy 24:60: word 10 ends 950 ms in; untimed speech follows to 18360 ms
+alafasy 24:61: word 15 ends 1660 ms in; untimed speech follows to 19800 ms
+alafasy 24:61: word 66 ends 990 ms in; untimed speech follows to 97180 ms
+alafasy 25:2: word 14 ends 890 ms in; untimed speech follows to 22320 ms
+alafasy 25:3: word 11 ends 1150 ms in; untimed speech follows to 17510 ms
+alafasy 25:17: hand-timed override
+alafasy 25:60: word 8 ends 2610 ms in; untimed speech follows to 11490 ms
+alafasy 26:20: hand-timed override
+alafasy 27:19: word 7 ends 1580 ms in; untimed speech follows to 13780 ms
+alafasy 27:36: word 12 ends 1670 ms in; untimed speech follows to 31030 ms
+alafasy 27:40: word 23 ends 970 ms in; untimed speech follows to 28600 ms
+alafasy 27:63: word 10 ends 1120 ms in; untimed speech follows to 15940 ms
+alafasy 27:90: word 7 ends 1810 ms in; untimed speech follows to 15880 ms
+alafasy 28:4: word 11 ends 1320 ms in; untimed speech follows to 19760 ms
+alafasy 28:5: word 10 ends 1420 ms in; untimed speech follows to 14720 ms
+alafasy 28:9: word 15 ends 1010 ms in; untimed speech follows to 27160 ms
+alafasy 28:13: word 13 ends 900 ms in; untimed speech follows to 20380 ms
+alafasy 28:15: word 11 ends 1840 ms in; untimed speech follows to 17360 ms
+alafasy 28:29: word 14 ends 1310 ms in; untimed speech follows to 19390 ms
+alafasy 28:29: word 20 ends 760 ms in; untimed speech follows to 34790 ms
+alafasy 28:32: word 8 ends 560 ms in; untimed speech follows to 15880 ms
+alafasy 28:43: word 12 ends 1100 ms in; untimed speech follows to 20840 ms
+alafasy 28:61: word 11 ends 1130 ms in; untimed speech follows to 19190 ms
+alafasy 28:72: word 17 ends 1080 ms in; untimed speech follows to 25110 ms
+alafasy 28:73: word 11 ends 1010 ms in; untimed speech follows to 15230 ms
+alafasy 28:75: word 12 ends 1330 ms in; untimed speech follows to 22890 ms
+alafasy 29:10: word 14 ends 920 ms in; untimed speech follows to 21410 ms
+alafasy 29:14: word 12 ends 1130 ms in; untimed speech follows to 17110 ms
+alafasy 29:25: word 23 ends 2710 ms in; untimed speech follows to 34850 ms
+alafasy 30:9: word 23 ends 1240 ms in; untimed speech follows to 34630 ms
+alafasy 30:9: word 28 ends 1290 ms in; untimed speech follows to 44310 ms
+alafasy 30:33: word 8 ends 880 ms in; untimed speech follows to 15790 ms
+alafasy 31:14: word 11 ends 1680 ms in; untimed speech follows to 22800 ms
+alafasy 31:32: word 9 ends 980 ms in; untimed speech follows to 13650 ms
+alafasy 32:13: word 10 ends 1340 ms in; untimed speech follows to 12390 ms
+alafasy 33:10: word 13 ends 960 ms in; untimed speech follows to 19860 ms
+alafasy 33:21: word 11 ends 510 ms in; untimed speech follows to 12690 ms
+alafasy 33:31: word 10 ends 1410 ms in; untimed speech follows to 20210 ms
+alafasy 33:37: word 12 ends 1080 ms in; untimed speech follows to 16140 ms
+alafasy 33:37: word 37 ends 2260 ms in; untimed speech follows to 49730 ms
+alafasy 33:49: word 12 ends 2120 ms in; untimed speech follows to 24640 ms
+alafasy 33:50: word 33 ends 1300 ms in; untimed speech follows to 52100 ms
+alafasy 34:34: word 9 ends 1480 ms in; untimed speech follows to 14650 ms
+alafasy 34:37: word 19 ends 1130 ms in; untimed speech follows to 35240 ms
+alafasy 34:43: word 13 ends 1410 ms in; untimed speech follows to 22400 ms
+alafasy 35:25: word 10 ends 1830 ms in; untimed speech follows to 19650 ms
+alafasy 36:58: hand-timed override
+alafasy 37:152: hand-timed override
+alafasy 38:46: hand-timed override
+alafasy 39:3: word 20 ends 1260 ms in; untimed speech follows to 30840 ms
+alafasy 39:8: word 8 ends 840 ms in; untimed speech follows to 14670 ms
+alafasy 39:8: word 18 ends 620 ms in; untimed speech follows to 31680 ms
+alafasy 39:55: word 12 ends 1160 ms in; untimed speech follows to 25310 ms
+alafasy 39:61: word 8 ends 3310 ms in; untimed speech follows to 16020 ms
+alafasy 39:69: hand-timed override
+alafasy 39:71: word 14 ends 1240 ms in; untimed speech follows to 23920 ms
+alafasy 40:43: word 16 ends 400 ms in; untimed speech follows to 24350 ms
+alafasy 40:83: word 9 ends 880 ms in; untimed speech follows to 17730 ms
+alafasy 41:10: word 10 ends 1070 ms in; untimed speech follows to 16610 ms
+alafasy 41:11: word 13 ends 1210 ms in; untimed speech follows to 21490 ms
+alafasy 41:17: word 11 ends 950 ms in; untimed speech follows to 18780 ms
+alafasy 41:25: word 13 ends 1460 ms in; untimed speech follows to 18880 ms
+alafasy 41:30: word 16 ends 1550 ms in; untimed speech follows to 24570 ms
+alafasy 42:7: word 10 ends 1090 ms in; untimed speech follows to 19730 ms
+alafasy 43:85: word 11 ends 920 ms in; untimed speech follows to 15190 ms
+alafasy 45:16: word 10 ends 1330 ms in; untimed speech follows to 20790 ms
+alafasy 45:23: word 13 ends 1050 ms in; untimed speech follows to 15830 ms
+alafasy 45:32: word 15 ends 1280 ms in; untimed speech follows to 17660 ms
+alafasy 46:15: word 23 ends 1530 ms in; untimed speech follows to 38290 ms
+alafasy 46:17: word 13 ends 1160 ms in; untimed speech follows to 26150 ms
+alafasy 46:20: word 8 ends 1510 ms in; untimed speech follows to 13040 ms
+alafasy 46:20: word 17 ends 2510 ms in; untimed speech follows to 29560 ms
+alafasy 46:26: word 14 ends 790 ms in; untimed speech follows to 27600 ms
+alafasy 46:30: word 9 ends 910 ms in; untimed speech follows to 21040 ms
+alafasy 47:24: word 4 ends 2280 ms in; untimed speech follows to 11260 ms
+alafasy 48:18: word 16 ends 1120 ms in; untimed speech follows to 19210 ms
+alafasy 48:25: word 21 ends 1280 ms in; untimed speech follows to 30410 ms
+alafasy 48:26: word 19 ends 1180 ms in; untimed speech follows to 24440 ms
+alafasy 49:2: word 13 ends 790 ms in; untimed speech follows to 20200 ms
+alafasy 56:41: hand-timed override
+alafasy 57:14: word 9 ends 1740 ms in; untimed speech follows to 20370 ms
+alafasy 57:25: word 18 ends 1560 ms in; untimed speech follows to 35480 ms
+alafasy 57:28: word 11 ends 1350 ms in; untimed speech follows to 17760 ms
+alafasy 57:29: word 14 ends 590 ms in; untimed speech follows to 19750 ms
+alafasy 59:7: word 10 ends 1050 ms in; untimed speech follows to 16130 ms
+alafasy 59:9: word 10 ends 1190 ms in; untimed speech follows to 14860 ms
+alafasy 59:10: word 12 ends 3010 ms in; untimed speech follows to 27150 ms
+alafasy 59:11: hand-timed override
+alafasy 61:14: word 12 ends 1550 ms in; untimed speech follows to 21740 ms
+alafasy 65:8: word 11 ends 1120 ms in; untimed speech follows to 16080 ms
+alafasy 65:11: word 22 ends 1610 ms in; untimed speech follows to 34380 ms
+alafasy 66:8: word 5 ends 400 ms in; untimed speech follows to 13470 ms
+alafasy 67:28: word 12 ends 1090 ms in; untimed speech follows to 15750 ms
+alafasy 69:3: hand-timed override
+alafasy 71:7: word 9 ends 1130 ms in; untimed speech follows to 18840 ms
+alafasy 72:23: word 13 ends 1250 ms in; untimed speech follows to 18860 ms
+alafasy 80:16: hand-timed override
+alafasy 80:37: hand-timed override
+alafasy 101:3: hand-timed override
+abdulbasit 1:4: hand-timed override
+abdulbasit 2:35: word 15 ends 1380 ms in; untimed speech follows to 23500 ms
+abdulbasit 2:40: word 11 ends 1620 ms in; untimed speech follows to 26390 ms
+abdulbasit 2:61: word 19 ends 3360 ms in; untimed speech follows to 40420 ms
+abdulbasit 2:62: word 18 ends 1320 ms in; untimed speech follows to 33350 ms
+abdulbasit 2:67: word 13 ends 1230 ms in; untimed speech follows to 28860 ms
+abdulbasit 2:76: word 13 ends 3030 ms in; untimed speech follows to 31150 ms
+abdulbasit 2:83: word 15 ends 2300 ms in; untimed speech follows to 35440 ms
+abdulbasit 2:83: word 22 ends 1610 ms in; untimed speech follows to 53670 ms
+abdulbasit 2:84: word 11 ends 1820 ms in; untimed speech follows to 30290 ms
+abdulbasit 2:85: word 10 ends 1470 ms in; untimed speech follows to 33770 ms
+abdulbasit 2:85: word 14 ends 2190 ms in; untimed speech follows to 50390 ms
+abdulbasit 2:89: word 16 ends 1480 ms in; untimed speech follows to 35950 ms
+abdulbasit 2:91: speech in the 7850 ms gap after word 15; the light goes out
+abdulbasit 2:93: word 11 ends 2610 ms in; untimed speech follows to 34270 ms
+abdulbasit 2:101: word 19 ends 1320 ms in; untimed speech follows to 36370 ms
+abdulbasit 2:102: word 16 ends 810 ms in; untimed speech follows to 30300 ms
+abdulbasit 2:128: word 13 ends 1930 ms in; untimed speech follows to 30570 ms
+abdulbasit 2:133: word 14 ends 1340 ms in; untimed speech follows to 29680 ms
+abdulbasit 2:136: word 13 ends 1780 ms in; untimed speech follows to 34580 ms
+abdulbasit 2:136: word 28 ends 1690 ms in; untimed speech follows to 65060 ms
+abdulbasit 2:139: word 11 ends 2190 ms in; untimed speech follows to 31970 ms
+abdulbasit 2:150: word 23 ends 1060 ms in; untimed speech follows to 41770 ms
+abdulbasit 2:151: word 12 ends 1670 ms in; untimed speech follows to 32680 ms
+abdulbasit 2:159: word 18 ends 850 ms in; untimed speech follows to 35360 ms
+abdulbasit 2:164: word 16 ends 1820 ms in; untimed speech follows to 36430 ms
+abdulbasit 2:164: word 28 ends 2050 ms in; untimed speech follows to 62710 ms
+abdulbasit 2:164: word 40 ends 1240 ms in; untimed speech follows to 94690 ms
+abdulbasit 2:174: word 19 ends 2200 ms in; untimed speech follows to 38560 ms
+abdulbasit 2:177: word 15 ends 1300 ms in; untimed speech follows to 33340 ms
+abdulbasit 2:177: word 22 ends 1260 ms in; untimed speech follows to 53670 ms
+abdulbasit 2:177: word 35 ends 1580 ms in; untimed speech follows to 80980 ms
+abdulbasit 2:186: speech in the 7250 ms gap after word 11; the light goes out
+abdulbasit 2:198: word 17 ends 2010 ms in; untimed speech follows to 35830 ms
+abdulbasit 2:204: word 14 ends 2380 ms in; untimed speech follows to 26140 ms
+abdulbasit 2:213: word 13 ends 1190 ms in; untimed speech follows to 34060 ms
+abdulbasit 2:217: word 51 ends 2110 ms in; untimed speech follows to 95970 ms
+abdulbasit 2:235: word 21 ends 1120 ms in; untimed speech follows to 33370 ms
+abdulbasit 2:237: word 16 ends 1260 ms in; untimed speech follows to 25650 ms
+abdulbasit 2:249: word 14 ends 1600 ms in; untimed speech follows to 23150 ms
+abdulbasit 2:253: speech in the 2940 ms gap after word 36; the light goes out
+abdulbasit 2:262: word 18 ends 1130 ms in; untimed speech follows to 24870 ms
+abdulbasit 2:265: word 18 ends 1360 ms in; untimed speech follows to 28830 ms
+abdulbasit 2:266: word 18 ends 1270 ms in; untimed speech follows to 26870 ms
+abdulbasit 2:273: word 11 ends 950 ms in; untimed speech follows to 18060 ms
+abdulbasit 2:274: word 11 ends 1440 ms in; untimed speech follows to 23220 ms
+abdulbasit 3:26: word 18 ends 2130 ms in; untimed speech follows to 36600 ms
+abdulbasit 3:27: word 16 ends 1040 ms in; untimed speech follows to 24720 ms
+abdulbasit 3:36: speech in the 4920 ms gap after word 14; the light goes out
+abdulbasit 3:37: word 22 ends 1350 ms in; untimed speech follows to 39480 ms
+abdulbasit 3:39: word 13 ends 1150 ms in; untimed speech follows to 26120 ms
+abdulbasit 3:45: word 18 ends 1490 ms in; untimed speech follows to 28150 ms
+abdulbasit 3:49: word 15 ends 1120 ms in; untimed speech follows to 28610 ms
+abdulbasit 3:49: word 22 ends 2290 ms in; untimed speech follows to 46250 ms
+abdulbasit 3:61: speech in the 4380 ms gap after word 15; the light goes out
+abdulbasit 3:64: word 17 ends 1080 ms in; untimed speech follows to 27460 ms
+abdulbasit 3:78: word 18 ends 1410 ms in; untimed speech follows to 33780 ms
+abdulbasit 3:79: word 21 ends 2470 ms in; untimed speech follows to 36950 ms
+abdulbasit 3:81: word 16 ends 1020 ms in; untimed speech follows to 36720 ms
+abdulbasit 3:84: word 15 ends 10490 ms in; untimed speech follows to 48300 ms
+abdulbasit 3:84: word 21 ends 1740 ms in; untimed speech follows to 70960 ms
+abdulbasit 3:103: word 19 ends 2100 ms in; untimed speech follows to 46210 ms
+abdulbasit 3:112: word 17 ends 1450 ms in; untimed speech follows to 28780 ms
+abdulbasit 3:118: word 11 ends 1610 ms in; untimed speech follows to 21230 ms
+abdulbasit 3:119: word 8 ends 1060 ms in; untimed speech follows to 22020 ms
+abdulbasit 3:135: word 16 ends 1410 ms in; untimed speech follows to 30170 ms
+abdulbasit 3:147: word 15 ends 1680 ms in; untimed speech follows to 23420 ms
+abdulbasit 3:149: speech in the 2010 ms gap after word 8; the light goes out
+abdulbasit 3:152: word 13 ends 710 ms in; untimed speech follows to 27920 ms
+abdulbasit 3:153: word 13 ends 1370 ms in; untimed speech follows to 25790 ms
+abdulbasit 3:164: word 14 ends 1310 ms in; untimed speech follows to 20610 ms
+abdulbasit 3:186: word 11 ends 1020 ms in; untimed speech follows to 26850 ms
+abdulbasit 3:188: word 12 ends 1300 ms in; untimed speech follows to 22000 ms
+abdulbasit 3:191: word 12 ends 1090 ms in; untimed speech follows to 24490 ms
+abdulbasit 3:195: word 26 ends 1200 ms in; untimed speech follows to 39470 ms
+abdulbasit 3:195: word 31 ends 2050 ms in; untimed speech follows to 57350 ms
+abdulbasit 3:199: word 15 ends 1310 ms in; untimed speech follows to 24870 ms
+abdulbasit 4:6: word 13 ends 1670 ms in; untimed speech follows to 24050 ms
+abdulbasit 4:23: word 14 ends 1400 ms in; untimed speech follows to 31500 ms
+abdulbasit 4:23: word 23 ends 1450 ms in; untimed speech follows to 55380 ms
+abdulbasit 4:23: word 36 ends 1140 ms in; untimed speech follows to 81320 ms
+abdulbasit 4:36: speech in the 2950 ms gap after word 17; the light goes out
+abdulbasit 4:43: word 12 ends 1600 ms in; untimed speech follows to 25310 ms
+abdulbasit 4:43: speech in the 2720 ms gap after word 33; the light goes out
+abdulbasit 4:47: hand-timed override
+abdulbasit 4:51: word 14 ends 1460 ms in; untimed speech follows to 22510 ms
+abdulbasit 4:60: speech in the 2200 ms gap after word 15; the light goes out
+abdulbasit 4:60: word 24 ends 570 ms in; untimed speech follows to 40490 ms
+abdulbasit 4:62: word 11 ends 1280 ms in; untimed speech follows to 25550 ms
+abdulbasit 4:75: word 21 ends 1210 ms in; untimed speech follows to 40390 ms
+abdulbasit 4:77: word 19 ends 830 ms in; untimed speech follows to 31350 ms
+abdulbasit 4:81: word 12 ends 1540 ms in; untimed speech follows to 24090 ms
+abdulbasit 4:94: word 17 ends 1200 ms in; untimed speech follows to 30790 ms
+abdulbasit 4:102: word 24 ends 600 ms in; untimed speech follows to 44010 ms
+abdulbasit 4:109: word 13 ends 1250 ms in; untimed speech follows to 26580 ms
+abdulbasit 4:127: word 21 ends 1380 ms in; untimed speech follows to 36040 ms
+abdulbasit 4:153: word 19 ends 1330 ms in; untimed speech follows to 33070 ms
+abdulbasit 4:162: word 18 ends 1220 ms in; untimed speech follows to 29850 ms
+abdulbasit 4:163: word 11 ends 1830 ms in; untimed speech follows to 24040 ms
+abdulbasit 4:171: speech in the 1630 ms gap after word 31; the light goes out
+abdulbasit 5:3: word 15 ends 2180 ms in; untimed speech follows to 27640 ms
+abdulbasit 5:5: word 13 ends 1020 ms in; untimed speech follows to 18590 ms
+abdulbasit 5:5: word 23 ends 1110 ms in; untimed speech follows to 39290 ms
+abdulbasit 5:6: speech in the 3690 ms gap after word 35; the light goes out
+abdulbasit 5:6: word 56 ends 1820 ms in; untimed speech follows to 94620 ms
+abdulbasit 5:12: word 30 ends 1740 ms in; untimed speech follows to 51790 ms
+abdulbasit 5:13: word 7 ends 1480 ms in; untimed speech follows to 18090 ms
+abdulbasit 5:19: speech in the 3130 ms gap after word 13; the light goes out
+abdulbasit 5:32: word 21 ends 1540 ms in; untimed speech follows to 33990 ms
+abdulbasit 5:46: word 17 ends 1950 ms in; untimed speech follows to 31570 ms
+abdulbasit 5:54: word 20 ends 1920 ms in; untimed speech follows to 46560 ms
+abdulbasit 5:57: word 16 ends 1020 ms in; untimed speech follows to 35290 ms
+abdulbasit 5:66: word 13 ends 1070 ms in; untimed speech follows to 22600 ms
+abdulbasit 5:70: word 8 ends 1250 ms in; untimed speech follows to 19610 ms
+abdulbasit 5:83: word 15 ends 1290 ms in; untimed speech follows to 30390 ms
+abdulbasit 5:89: hand-timed override
+abdulbasit 5:90: speech in the 2090 ms gap after word 13; the light goes out
+abdulbasit 5:95: word 18 ends 1350 ms in; untimed speech follows to 35550 ms
+abdulbasit 5:95: word 31 ends 600 ms in; untimed speech follows to 56000 ms
+abdulbasit 5:103: word 18 ends 1160 ms in; untimed speech follows to 31110 ms
+abdulbasit 5:106: word 19 ends 980 ms in; untimed speech follows to 23840 ms
+abdulbasit 5:106: word 43 ends 860 ms in; untimed speech follows to 56580 ms
+abdulbasit 5:107: word 17 ends 1700 ms in; untimed speech follows to 28490 ms
+abdulbasit 5:110: word 20 ends 1450 ms in; untimed speech follows to 24460 ms
+abdulbasit 5:110: word 32 ends 1100 ms in; untimed speech follows to 44320 ms
+abdulbasit 5:110: word 42 ends 1050 ms in; untimed speech follows to 62190 ms
+abdulbasit 5:110: word 54 ends 1840 ms in; untimed speech follows to 90310 ms
+abdulbasit 5:110: word 58 ends 680 ms in; untimed speech follows to 99390 ms
+abdulbasit 5:115: word 11 ends 1290 ms in; untimed speech follows to 25440 ms
+abdulbasit 6:6: word 15 ends 900 ms in; untimed speech follows to 23100 ms
+abdulbasit 6:6: word 24 ends 1050 ms in; untimed speech follows to 42350 ms
+abdulbasit 6:31: word 13 ends 2180 ms in; untimed speech follows to 25240 ms
+abdulbasit 6:44: word 15 ends 1130 ms in; untimed speech follows to 29560 ms
+abdulbasit 6:50: word 15 ends 1140 ms in; untimed speech follows to 28920 ms
+abdulbasit 6:52: word 15 ends 1360 ms in; untimed speech follows to 28890 ms
+abdulbasit 6:54: word 13 ends 1770 ms in; untimed speech follows to 24850 ms
+abdulbasit 6:54: word 24 ends 1240 ms in; untimed speech follows to 49520 ms
+abdulbasit 6:60: word 15 ends 2770 ms in; untimed speech follows to 37020 ms
+abdulbasit 6:61: word 7 ends 1320 ms in; untimed speech follows to 15250 ms
+abdulbasit 6:63: word 10 ends 2090 ms in; untimed speech follows to 22350 ms
+abdulbasit 6:71: word 17 ends 1470 ms in; untimed speech follows to 32080 ms
+abdulbasit 6:71: word 23 ends 2050 ms in; untimed speech follows to 49890 ms
+abdulbasit 6:91: word 30 ends 1860 ms in; untimed speech follows to 49870 ms
+abdulbasit 6:93: word 15 ends 1590 ms in; untimed speech follows to 27270 ms
+abdulbasit 6:94: word 18 ends 1260 ms in; untimed speech follows to 42640 ms
+abdulbasit 6:99: word 14 ends 1310 ms in; untimed speech follows to 27770 ms
+abdulbasit 6:99: word 27 ends 1660 ms in; untimed speech follows to 56920 ms
+abdulbasit 6:101: word 14 ends 1040 ms in; untimed speech follows to 24710 ms
+abdulbasit 6:108: word 21 ends 1390 ms in; untimed speech follows to 34960 ms
+abdulbasit 6:130: speech in the 3310 ms gap after word 11; the light goes out
+abdulbasit 6:138: word 14 ends 1680 ms in; untimed speech follows to 29570 ms
+abdulbasit 6:141: word 11 ends 1320 ms in; untimed speech follows to 28220 ms
+abdulbasit 6:145: word 18 ends 2180 ms in; untimed speech follows to 32090 ms
+abdulbasit 6:154: speech in the 3790 ms gap after word 13; the light goes out
+abdulbasit 7:20: word 17 ends 1320 ms in; untimed speech follows to 32210 ms
+abdulbasit 7:33: word 14 ends 1150 ms in; untimed speech follows to 23400 ms
+abdulbasit 7:38: word 29 ends 1980 ms in; untimed speech follows to 59460 ms
+abdulbasit 7:40: word 14 ends 1820 ms in; untimed speech follows to 27180 ms
+abdulbasit 7:43: word 16 ends 1290 ms in; untimed speech follows to 30120 ms
+abdulbasit 7:53: word 23 ends 770 ms in; untimed speech follows to 41960 ms
+abdulbasit 7:54: word 19 ends 1800 ms in; untimed speech follows to 36170 ms
+abdulbasit 7:73: word 28 ends 1220 ms in; untimed speech follows to 50260 ms
+abdulbasit 7:95: word 15 ends 1160 ms in; untimed speech follows to 33850 ms
+abdulbasit 7:96: word 12 ends 1250 ms in; untimed speech follows to 33830 ms
+abdulbasit 7:134: word 12 ends 2380 ms in; untimed speech follows to 24600 ms
+abdulbasit 7:144: word 11 ends 1770 ms in; untimed speech follows to 25690 ms
+abdulbasit 7:145: word 13 ends 1610 ms in; untimed speech follows to 25820 ms
+abdulbasit 7:149: word 15 ends 1040 ms in; untimed speech follows to 30880 ms
+abdulbasit 7:153: word 8 ends 2100 ms in; untimed speech follows to 23190 ms
+abdulbasit 7:154: word 11 ends 2180 ms in; untimed speech follows to 22210 ms
+abdulbasit 7:155: word 17 ends 2620 ms in; untimed speech follows to 38670 ms
+abdulbasit 7:157: word 12 ends 2670 ms in; untimed speech follows to 36440 ms
+abdulbasit 7:157: speech in the 7980 ms gap after word 23; the light goes out
+abdulbasit 7:161: word 15 ends 1470 ms in; untimed speech follows to 23140 ms
+abdulbasit 7:162: word 14 ends 2710 ms in; untimed speech follows to 28700 ms
+abdulbasit 7:163: word 17 ends 1710 ms in; untimed speech follows to 31850 ms
+abdulbasit 7:165: word 13 ends 1370 ms in; untimed speech follows to 25820 ms
+abdulbasit 7:171: word 14 ends 1390 ms in; untimed speech follows to 31560 ms
+abdulbasit 7:179: word 12 ends 1000 ms in; untimed speech follows to 25310 ms
+abdulbasit 7:194: word 11 ends 700 ms in; untimed speech follows to 25070 ms
+abdulbasit 8:7: word 14 ends 760 ms in; untimed speech follows to 25310 ms
+abdulbasit 8:11: speech in the 3410 ms gap after word 19; the light goes out
+abdulbasit 8:26: word 14 ends 1010 ms in; untimed speech follows to 25940 ms
+abdulbasit 8:31: word 12 ends 1360 ms in; untimed speech follows to 23840 ms
+abdulbasit 8:41: word 15 ends 990 ms in; untimed speech follows to 25070 ms
+abdulbasit 8:42: word 26 ends 1210 ms in; untimed speech follows to 37160 ms
+abdulbasit 8:70: word 19 ends 1420 ms in; untimed speech follows to 40610 ms
+abdulbasit 9:7: word 14 ends 1370 ms in; untimed speech follows to 25210 ms
+abdulbasit 9:12: word 16 ends 560 ms in; untimed speech follows to 32410 ms
+abdulbasit 9:16: word 17 ends 1000 ms in; untimed speech follows to 23240 ms
+abdulbasit 9:18: word 17 ends 1520 ms in; untimed speech follows to 25950 ms
+abdulbasit 9:24: speech in the 2370 ms gap after word 14; the light goes out
+abdulbasit 9:29: speech in the 3160 ms gap after word 25; the light goes out
+abdulbasit 9:37: word 13 ends 1100 ms in; untimed speech follows to 26150 ms
+abdulbasit 9:59: word 15 ends 1560 ms in; untimed speech follows to 28810 ms
+abdulbasit 9:60: word 14 ends 780 ms in; untimed speech follows to 24080 ms
+abdulbasit 9:69: word 14 ends 1400 ms in; untimed speech follows to 27810 ms
+abdulbasit 9:94: word 26 ends 1530 ms in; untimed speech follows to 35130 ms
+abdulbasit 9:100: word 13 ends 660 ms in; untimed speech follows to 22270 ms
+abdulbasit 9:105: word 12 ends 1470 ms in; untimed speech follows to 20380 ms
+abdulbasit 9:120: word 40 ends 890 ms in; untimed speech follows to 48730 ms
+abdulbasit 10:22: word 20 ends 1110 ms in; untimed speech follows to 29920 ms
+abdulbasit 10:22: word 29 ends 450 ms in; untimed speech follows to 49190 ms
+abdulbasit 10:24: word 16 ends 1480 ms in; untimed speech follows to 28210 ms
+abdulbasit 10:24: word 27 ends 1270 ms in; untimed speech follows to 54050 ms
+abdulbasit 10:71: word 21 ends 880 ms in; untimed speech follows to 26120 ms
+abdulbasit 10:88: word 13 ends 11920 ms in; untimed speech follows to 31060 ms
+abdulbasit 10:88: word 23 ends 1190 ms in; untimed speech follows to 50390 ms
+abdulbasit 10:90: word 15 ends 1290 ms in; untimed speech follows to 31150 ms
+abdulbasit 10:98: word 13 ends 870 ms in; untimed speech follows to 27340 ms
+abdulbasit 11:3: word 12 ends 2080 ms in; untimed speech follows to 27960 ms
+abdulbasit 11:28: word 13 ends 1610 ms in; untimed speech follows to 21620 ms
+abdulbasit 11:31: word 22 ends 1390 ms in; untimed speech follows to 45340 ms
+abdulbasit 11:40: word 14 ends 820 ms in; untimed speech follows to 25210 ms
+abdulbasit 11:44: word 10 ends 660 ms in; untimed speech follows to 20440 ms
+abdulbasit 11:58: word 10 ends 2560 ms in; untimed speech follows to 23630 ms
+abdulbasit 11:62: word 14 ends 2800 ms in; untimed speech follows to 28100 ms
+abdulbasit 11:63: word 12 ends 1020 ms in; untimed speech follows to 17340 ms
+abdulbasit 11:94: word 14 ends 840 ms in; untimed speech follows to 21650 ms
+abdulbasit 11:113: word 14 ends 2070 ms in; untimed speech follows to 22910 ms
+abdulbasit 12:31: word 13 ends 1320 ms in; untimed speech follows to 26990 ms
+abdulbasit 12:33: word 14 ends 1550 ms in; untimed speech follows to 25530 ms
+abdulbasit 12:40: hand-timed override
+abdulbasit 12:42: word 13 ends 780 ms in; untimed speech follows to 20710 ms
+abdulbasit 12:46: word 16 ends 1250 ms in; untimed speech follows to 23480 ms
+abdulbasit 12:50: word 15 ends 1680 ms in; untimed speech follows to 19970 ms
+abdulbasit 12:100: word 29 ends 640 ms in; untimed speech follows to 32160 ms
+abdulbasit 12:110: speech in the 4080 ms gap after word 10; the light goes out
+abdulbasit 13:3: word 15 ends 1540 ms in; untimed speech follows to 23040 ms
+abdulbasit 13:4: word 15 ends 1330 ms in; untimed speech follows to 29330 ms
+abdulbasit 13:17: word 11 ends 1320 ms in; untimed speech follows to 20660 ms
+abdulbasit 13:22: word 15 ends 1070 ms in; untimed speech follows to 25210 ms
+abdulbasit 13:25: word 17 ends 610 ms in; untimed speech follows to 28900 ms
+abdulbasit 14:32: word 15 ends 920 ms in; untimed speech follows to 22470 ms
+abdulbasit 14:37: word 21 ends 880 ms in; untimed speech follows to 33990 ms
+abdulbasit 16:14: speech in the 3770 ms gap after word 16; the light goes out
+abdulbasit 16:26: word 15 ends 970 ms in; untimed speech follows to 19760 ms
+abdulbasit 16:35: speech in the 1920 ms gap after word 17; the light goes out
+abdulbasit 16:36: word 15 ends 840 ms in; untimed speech follows to 17890 ms
+abdulbasit 16:61: word 12 ends 1130 ms in; untimed speech follows to 20710 ms
+abdulbasit 16:72: word 12 ends 1280 ms in; untimed speech follows to 25050 ms
+abdulbasit 16:76: speech in the 4200 ms gap after word 14; the light goes out
+abdulbasit 16:80: word 17 ends 1560 ms in; untimed speech follows to 37480 ms
+abdulbasit 16:94: word 16 ends 1060 ms in; untimed speech follows to 30240 ms
+abdulbasit 16:97: word 12 ends 1590 ms in; untimed speech follows to 24790 ms
+abdulbasit 16:112: word 13 ends 1260 ms in; untimed speech follows to 28700 ms
+abdulbasit 16:119: word 13 ends 1880 ms in; untimed speech follows to 28120 ms
+abdulbasit 17:12: word 11 ends 1010 ms in; untimed speech follows to 25860 ms
+abdulbasit 17:23: word 21 ends 1960 ms in; untimed speech follows to 42120 ms
+abdulbasit 17:33: word 19 ends 930 ms in; untimed speech follows to 32230 ms
+abdulbasit 17:47: word 12 ends 640 ms in; untimed speech follows to 20060 ms
+abdulbasit 17:69: word 15 ends 1010 ms in; untimed speech follows to 30220 ms
+abdulbasit 17:98: word 10 ends 2480 ms in; untimed speech follows to 28480 ms
+abdulbasit 17:99: word 16 ends 1010 ms in; untimed speech follows to 22490 ms
+abdulbasit 17:101: word 11 ends 2300 ms in; untimed speech follows to 27380 ms
+abdulbasit 18:19: word 30 ends 1530 ms in; untimed speech follows to 54530 ms
+abdulbasit 18:21: word 17 ends 1150 ms in; untimed speech follows to 29060 ms
+abdulbasit 18:31: word 14 ends 1130 ms in; untimed speech follows to 26950 ms
+abdulbasit 18:42: word 15 ends 1730 ms in; untimed speech follows to 24340 ms
+abdulbasit 18:45: word 13 ends 960 ms in; untimed speech follows to 22450 ms
+abdulbasit 18:49: word 17 ends 1210 ms in; untimed speech follows to 37330 ms
+abdulbasit 18:55: word 10 ends 1070 ms in; untimed speech follows to 18590 ms
+abdulbasit 18:74: word 11 ends 1310 ms in; untimed speech follows to 26570 ms
+abdulbasit 18:77: speech in the 5000 ms gap after word 11; the light goes out
+abdulbasit 18:82: word 12 ends 1230 ms in; untimed speech follows to 21950 ms
+abdulbasit 18:82: word 21 ends 2240 ms in; untimed speech follows to 50590 ms
+abdulbasit 18:94: word 13 ends 1210 ms in; untimed speech follows to 20560 ms
+abdulbasit 19:58: word 17 ends 1220 ms in; untimed speech follows to 30620 ms
+abdulbasit 20:10: word 13 ends 1130 ms in; untimed speech follows to 26390 ms
+abdulbasit 20:58: word 9 ends 1210 ms in; untimed speech follows to 21090 ms
+abdulbasit 20:87: speech in the 2340 ms gap after word 12; the light goes out
+abdulbasit 20:90: word 14 ends 2160 ms in; untimed speech follows to 28330 ms
+abdulbasit 20:113: word 8 ends 1180 ms in; untimed speech follows to 18350 ms
+abdulbasit 20:134: speech in the 2460 ms gap after word 7; the light goes out
+abdulbasit 21:84: word 6 ends 1410 ms in; untimed speech follows to 15315 ms
+abdulbasit 21:87: word 19 ends 1510 ms in; untimed speech follows to 39740 ms
+abdulbasit 22:2: word 12 ends 1820 ms in; untimed speech follows to 22690 ms
+abdulbasit 22:15: word 17 ends 2140 ms in; untimed speech follows to 29800 ms
+abdulbasit 22:26: speech in the 3060 ms gap after word 12; the light goes out
+abdulbasit 22:52: word 20 ends 1630 ms in; untimed speech follows to 35890 ms
+abdulbasit 23:14: word 13 ends 1330 ms in; untimed speech follows to 25250 ms
+abdulbasit 23:24: hand-timed override
+abdulbasit 23:27: word 19 ends 1540 ms in; untimed speech follows to 35590 ms
+abdulbasit 23:33: word 18 ends 1500 ms in; untimed speech follows to 31830 ms
+abdulbasit 24:6: word 13 ends 2700 ms in; untimed speech follows to 27380 ms
+abdulbasit 24:39: word 14 ends 1210 ms in; untimed speech follows to 25550 ms
+abdulbasit 24:43: word 25 ends 800 ms in; untimed speech follows to 34540 ms
+abdulbasit 24:61: word 24 ends 2410 ms in; untimed speech follows to 27760 ms
+abdulbasit 25:18: speech in the 3450 ms gap after word 14; the light goes out
+abdulbasit 26:20: hand-timed override
+abdulbasit 27:1: hand-timed override
+abdulbasit 27:18: word 12 ends 1920 ms in; untimed speech follows to 32780 ms
+abdulbasit 27:18: word 16 ends 1800 ms in; untimed speech follows to 47910 ms
+abdulbasit 27:19: word 19 ends 1530 ms in; untimed speech follows to 35220 ms
+abdulbasit 27:24: word 11 ends 2390 ms in; untimed speech follows to 23590 ms
+abdulbasit 27:49: word 12 ends 1080 ms in; untimed speech follows to 32450 ms
+abdulbasit 27:60: word 14 ends 1510 ms in; untimed speech follows to 33010 ms
+abdulbasit 27:82: word 6 ends 3090 ms in; untimed speech follows to 19620 ms
+abdulbasit 27:84: word 10 ends 1440 ms in; untimed speech follows to 29540 ms
+abdulbasit 28:12: word 13 ends 1120 ms in; untimed speech follows to 30420 ms
+abdulbasit 28:15: word 11 ends 2270 ms in; untimed speech follows to 22190 ms
+abdulbasit 28:20: word 14 ends 1080 ms in; untimed speech follows to 34680 ms
+abdulbasit 28:29: word 21 ends 1000 ms in; untimed speech follows to 38100 ms
+abdulbasit 28:36: word 11 ends 1630 ms in; untimed speech follows to 27370 ms
+abdulbasit 28:38: word 15 ends 850 ms in; untimed speech follows to 23840 ms
+abdulbasit 28:43: word 12 ends 1840 ms in; untimed speech follows to 21920 ms
+abdulbasit 28:47: speech in the 2190 ms gap after word 8; the light goes out
+abdulbasit 28:53: hand-timed override
+abdulbasit 28:54: word 9 ends 1560 ms in; untimed speech follows to 22410 ms
+abdulbasit 28:61: word 11 ends 1420 ms in; untimed speech follows to 26150 ms
+abdulbasit 28:75: word 8 ends 1620 ms in; untimed speech follows to 19220 ms
+abdulbasit 29:7: word 7 ends 2000 ms in; untimed speech follows to 19590 ms
+abdulbasit 29:10: word 15 ends 2010 ms in; untimed speech follows to 31860 ms
+abdulbasit 29:46: word 22 ends 1500 ms in; untimed speech follows to 39210 ms
+abdulbasit 29:58: word 8 ends 1260 ms in; untimed speech follows to 21670 ms
+abdulbasit 30:9: word 21 ends 1630 ms in; untimed speech follows to 40010 ms
+abdulbasit 30:28: word 19 ends 2190 ms in; untimed speech follows to 32520 ms
+abdulbasit 30:46: word 12 ends 1160 ms in; untimed speech follows to 24350 ms
+abdulbasit 30:48: word 11 ends 1810 ms in; untimed speech follows to 20030 ms
+abdulbasit 31:14: speech in the 3390 ms gap after word 11; the light goes out
+abdulbasit 31:29: word 20 ends 1740 ms in; untimed speech follows to 32600 ms
+abdulbasit 33:26: word 12 ends 920 ms in; untimed speech follows to 17130 ms
+abdulbasit 33:35: word 13 ends 1480 ms in; untimed speech follows to 24800 ms
+abdulbasit 33:35: word 20 ends 1690 ms in; untimed speech follows to 44700 ms
+abdulbasit 33:37: word 12 ends 1560 ms in; untimed speech follows to 16580 ms
+abdulbasit 33:50: speech in the 2670 ms gap after word 12; the light goes out
+abdulbasit 33:50: speech in the 3300 ms gap after word 27; the light goes out
+abdulbasit 33:53: word 23 ends 2000 ms in; untimed speech follows to 31030 ms
+abdulbasit 33:54: hand-timed override
+abdulbasit 33:60: speech in the 2850 ms gap after word 13; the light goes out
+abdulbasit 34:31: word 23 ends 1080 ms in; untimed speech follows to 27380 ms
+abdulbasit 34:33: word 14 ends 1060 ms in; untimed speech follows to 21500 ms
+abdulbasit 34:37: word 13 ends 1320 ms in; untimed speech follows to 23010 ms
+abdulbasit 34:43: word 17 ends 2550 ms in; untimed speech follows to 31030 ms
+abdulbasit 35:9: word 10 ends 1300 ms in; untimed speech follows to 17610 ms
+abdulbasit 35:25: word 10 ends 1690 ms in; untimed speech follows to 20390 ms
+abdulbasit 35:27: speech in the 2070 ms gap after word 10; the light goes out
+abdulbasit 35:29: word 10 ends 1780 ms in; untimed speech follows to 18810 ms
+abdulbasit 35:35: word 10 ends 670 ms in; untimed speech follows to 15340 ms
+abdulbasit 35:40: word 13 ends 810 ms in; untimed speech follows to 18190 ms
+abdulbasit 36:47: word 12 ends 1460 ms in; untimed speech follows to 18240 ms
+abdulbasit 36:47: word 18 ends 1160 ms in; untimed speech follows to 30660 ms
+abdulbasit 37:23: hand-timed override
+abdulbasit 37:72: hand-timed override
+abdulbasit 37:172: hand-timed override
+abdulbasit 38:14: hand-timed override
+abdulbasit 38:22: word 19 ends 860 ms in; untimed speech follows to 23400 ms
+abdulbasit 38:26: speech in the 3000 ms gap after word 13; the light goes out
+abdulbasit 39:3: word 20 ends 1390 ms in; untimed speech follows to 35460 ms
+abdulbasit 39:8: word 20 ends 1160 ms in; untimed speech follows to 38220 ms
+abdulbasit 39:20: word 10 ends 2150 ms in; untimed speech follows to 24830 ms
+abdulbasit 39:21: word 16 ends 1100 ms in; untimed speech follows to 25690 ms
+abdulbasit 39:71: word 18 ends 1860 ms in; untimed speech follows to 38720 ms
+abdulbasit 40:21: word 23 ends 1550 ms in; untimed speech follows to 32510 ms
+abdulbasit 40:28: speech in the 2890 ms gap after word 10; the light goes out
+abdulbasit 40:40: speech in the 5890 ms gap after word 19; the light goes out
+abdulbasit 40:43: word 13 ends 1230 ms in; untimed speech follows to 23030 ms
+abdulbasit 40:47: word 12 ends 1260 ms in; untimed speech follows to 35130 ms
+abdulbasit 40:67: word 15 ends 1430 ms in; untimed speech follows to 25720 ms
+abdulbasit 41:22: word 13 ends 2050 ms in; untimed speech follows to 25510 ms
+abdulbasit 41:25: word 13 ends 1630 ms in; untimed speech follows to 21540 ms
+abdulbasit 41:30: speech in the 6720 ms gap after word 10; the light goes out
+abdulbasit 41:50: word 10 ends 1540 ms in; untimed speech follows to 21820 ms
+abdulbasit 42:7: word 10 ends 1310 ms in; untimed speech follows to 22540 ms
+abdulbasit 42:13: word 11 ends 2400 ms in; untimed speech follows to 21060 ms
+abdulbasit 42:16: word 13 ends 1420 ms in; untimed speech follows to 27130 ms
+abdulbasit 43:33: speech in the 2050 ms gap after word 7; the light goes out
+abdulbasit 43:63: word 8 ends 1550 ms in; untimed speech follows to 19900 ms
+abdulbasit 45:5: word 15 ends 1400 ms in; untimed speech follows to 26330 ms
+abdulbasit 45:16: word 10 ends 1830 ms in; untimed speech follows to 24950 ms
+abdulbasit 45:23: word 17 ends 1700 ms in; untimed speech follows to 28210 ms
+abdulbasit 45:32: word 15 ends 1480 ms in; untimed speech follows to 22510 ms
+abdulbasit 46:10: word 16 ends 960 ms in; untimed speech follows to 32480 ms
+abdulbasit 46:15: word 31 ends 1480 ms in; untimed speech follows to 65880 ms
+abdulbasit 46:17: word 13 ends 1220 ms in; untimed speech follows to 25080 ms
+abdulbasit 46:17: word 22 ends 1260 ms in; untimed speech follows to 42500 ms
+abdulbasit 46:20: word 17 ends 910 ms in; untimed speech follows to 29780 ms
+abdulbasit 46:21: word 19 ends 1910 ms in; untimed speech follows to 31000 ms
+abdulbasit 46:26: word 9 ends 1130 ms in; untimed speech follows to 21330 ms
+abdulbasit 46:26: word 17 ends 2110 ms in; untimed speech follows to 42030 ms
+abdulbasit 46:26: word 26 ends 1080 ms in; untimed speech follows to 65360 ms
+abdulbasit 46:30: word 16 ends 830 ms in; untimed speech follows to 27400 ms
+abdulbasit 47:4: word 11 ends 2010 ms in; untimed speech follows to 28380 ms
+abdulbasit 47:15: hand-timed override
+abdulbasit 47:20: word 20 ends 890 ms in; untimed speech follows to 40350 ms
+abdulbasit 47:32: word 19 ends 1360 ms in; untimed speech follows to 27970 ms
+abdulbasit 48:12: word 14 ends 1940 ms in; untimed speech follows to 24630 ms
+abdulbasit 48:20: word 15 ends 1960 ms in; untimed speech follows to 27480 ms
+abdulbasit 48:26: word 19 ends 1490 ms in; untimed speech follows to 31010 ms
+abdulbasit 49:2: word 13 ends 1190 ms in; untimed speech follows to 21810 ms
+abdulbasit 49:7: word 17 ends 1360 ms in; untimed speech follows to 29430 ms
+abdulbasit 49:11: word 13 ends 1690 ms in; untimed speech follows to 24700 ms
+abdulbasit 57:12: speech in the 2170 ms gap after word 10; the light goes out
+abdulbasit 57:13: word 15 ends 1250 ms in; untimed speech follows to 29660 ms
+abdulbasit 57:16: word 18 ends 1300 ms in; untimed speech follows to 25870 ms
+abdulbasit 58:8: word 17 ends 1260 ms in; untimed speech follows to 27040 ms
+abdulbasit 58:8: word 28 ends 2120 ms in; untimed speech follows to 46770 ms
+abdulbasit 58:22: word 15 ends 2610 ms in; untimed speech follows to 30510 ms
+abdulbasit 59:6: word 13 ends 1470 ms in; untimed speech follows to 27240 ms
+abdulbasit 59:7: word 16 ends 1210 ms in; untimed speech follows to 31940 ms
+abdulbasit 59:9: word 17 ends 1330 ms in; untimed speech follows to 32650 ms
+abdulbasit 59:10: word 19 ends 1340 ms in; untimed speech follows to 33420 ms
+abdulbasit 59:11: word 21 ends 1040 ms in; untimed speech follows to 33810 ms
+abdulbasit 59:16: word 12 ends 1140 ms in; untimed speech follows to 21810 ms
+abdulbasit 60:1: word 17 ends 1270 ms in; untimed speech follows to 34690 ms
+abdulbasit 60:1: word 28 ends 1290 ms in; untimed speech follows to 56460 ms
+abdulbasit 60:2: word 8 ends 1330 ms in; untimed speech follows to 20760 ms
+abdulbasit 60:4: word 20 ends 900 ms in; untimed speech follows to 42050 ms
+abdulbasit 60:4: word 26 ends 1310 ms in; untimed speech follows to 55340 ms
+abdulbasit 60:4: word 38 ends 440 ms in; untimed speech follows to 82130 ms
+abdulbasit 60:12: word 12 ends 1030 ms in; untimed speech follows to 27910 ms
+abdulbasit 60:12: word 20 ends 3420 ms in; untimed speech follows to 42870 ms
+abdulbasit 62:2: word 10 ends 1340 ms in; untimed speech follows to 18340 ms
+abdulbasit 62:10: word 13 ends 1550 ms in; untimed speech follows to 19040 ms
+abdulbasit 64:9: speech in the 5310 ms gap after word 17; the light goes out
+abdulbasit 65:11: speech in the 4790 ms gap after word 22; the light goes out
+abdulbasit 65:12: word 11 ends 1670 ms in; untimed speech follows to 20880 ms
+abdulbasit 66:6: word 10 ends 1880 ms in; untimed speech follows to 25600 ms
+abdulbasit 66:8: word 8 ends 1950 ms in; untimed speech follows to 22470 ms
+abdulbasit 66:8: speech in the 3020 ms gap after word 15; the light goes out
+abdulbasit 66:8: word 25 ends 1540 ms in; untimed speech follows to 54470 ms
+abdulbasit 66:10: word 22 ends 1110 ms in; untimed speech follows to 35340 ms
+abdulbasit 66:12: word 14 ends 1370 ms in; untimed speech follows to 27550 ms
+abdulbasit 69:3: hand-timed override
+abdulbasit 71:7: speech in the 3910 ms gap after word 11; the light goes out
+abdulbasit 74:27: hand-timed override
+abdulbasit 74:31: word 17 ends 1420 ms in; untimed speech follows to 31980 ms
+abdulbasit 74:31: word 21 ends 1550 ms in; untimed speech follows to 46570 ms
+abdulbasit 74:31: word 32 ends 1380 ms in; untimed speech follows to 70500 ms
+abdulbasit 74:34: hand-timed override
+abdulbasit 78:40: word 10 ends 1240 ms in; untimed speech follows to 23110 ms
+abdulbasit 80:8: hand-timed override
+abdulbasit 83:27: hand-timed override
+abdulbasit 101:3: hand-timed override
+abdulbasit 101:10: hand-timed override
+abdulbasit 104:5: hand-timed override
+sudais 2:76: word 17 ends 700 ms in; untimed speech follows to 21470 ms
+sudais 2:132: word 11 ends 820 ms in; untimed speech follows to 12990 ms
+sudais 2:161: word 9 ends 620 ms in; untimed speech follows to 12720 ms
+sudais 2:188: word 11 ends 1240 ms in; untimed speech follows to 16960 ms
+sudais 2:233: word 53 ends 1060 ms in; untimed speech follows to 50160 ms
+sudais 3:73: word 19 ends 2210 ms in; untimed speech follows to 19780 ms
+sudais 3:77: word 14 ends 1010 ms in; untimed speech follows to 16360 ms
+sudais 3:79: word 21 ends 1080 ms in; untimed speech follows to 25220 ms
+sudais 3:87: hand-timed override
+sudais 3:185: word 4 ends 1340 ms in; untimed speech follows to 11720 ms
+sudais 4:23: word 21 ends 650 ms in; untimed speech follows to 36970 ms
+sudais 4:64: word 19 ends 1100 ms in; untimed speech follows to 22240 ms
+sudais 4:102: word 10 ends 430 ms in; untimed speech follows to 15620 ms
+sudais 4:128: word 15 ends 1130 ms in; untimed speech follows to 18420 ms
+sudais 5:81: word 11 ends 2150 ms in; untimed speech follows to 14850 ms
+sudais 5:107: word 9 ends 1270 ms in; untimed speech follows to 11840 ms
+sudais 5:118: word 4 ends 1060 ms in; untimed speech follows to 15430 ms
+sudais 7:149: word 13 ends 890 ms in; untimed speech follows to 14860 ms
+sudais 9:117: word 12 ends 790 ms in; untimed speech follows to 14160 ms
+sudais 10:15: word 10 ends 1710 ms in; untimed speech follows to 13220 ms
+sudais 11:114: word 11 ends 1960 ms in; untimed speech follows to 18940 ms
+sudais 12:62: word 13 ends 760 ms in; untimed speech follows to 17890 ms
+sudais 12:100: word 34 ends 1360 ms in; untimed speech follows to 29030 ms
+sudais 13:41: word 13 ends 1050 ms in; untimed speech follows to 15360 ms
+sudais 13:43: hand-timed override
+sudais 14:16: hand-timed override
+sudais 15:62: hand-timed override
+sudais 17:9: word 9 ends 1510 ms in; untimed speech follows to 12340 ms
+sudais 17:12: word 7 ends 1030 ms in; untimed speech follows to 11670 ms
+sudais 24:22: word 23 ends 710 ms in; untimed speech follows to 26070 ms
+sudais 25:17: hand-timed override
+sudais 26:86: hand-timed override
+sudais 26:205: hand-timed override
+sudais 31:27: word 13 ends 940 ms in; untimed speech follows to 15140 ms
+sudais 33:21: word 14 ends 950 ms in; untimed speech follows to 17320 ms
+sudais 33:35: word 7 ends 1700 ms in; untimed speech follows to 14210 ms
+sudais 33:36: word 14 ends 840 ms in; untimed speech follows to 18520 ms
+sudais 33:37: word 37 ends 1270 ms in; untimed speech follows to 37170 ms
+sudais 34:7: word 12 ends 880 ms in; untimed speech follows to 12850 ms
+sudais 34:14: word 11 ends 510 ms in; untimed speech follows to 17400 ms
+sudais 34:21: word 11 ends 1140 ms in; untimed speech follows to 12820 ms
+sudais 34:39: word 17 ends 1090 ms in; untimed speech follows to 22090 ms
+sudais 34:43: word 13 ends 1190 ms in; untimed speech follows to 16530 ms
+sudais 36:28: word 10 ends 2600 ms in; untimed speech follows to 15870 ms
+sudais 36:47: word 12 ends 1320 ms in; untimed speech follows to 13990 ms
+sudais 39:53: word 11 ends 1440 ms in; untimed speech follows to 14880 ms
+sudais 39:55: word 13 ends 660 ms in; untimed speech follows to 13150 ms
+sudais 39:56: word 10 ends 970 ms in; untimed speech follows to 13520 ms
+sudais 39:71: word 6 ends 1480 ms in; untimed speech follows to 13310 ms
+sudais 39:72: word 1 ends 3540 ms in; untimed speech follows to 9030 ms
+sudais 40:47: word 11 ends 680 ms in; untimed speech follows to 19490 ms
+sudais 40:60: word 5 ends 830 ms in; untimed speech follows to 10540 ms
+sudais 41:20: word 7 ends 860 ms in; untimed speech follows to 10950 ms
+sudais 41:38: word 9 ends 1810 ms in; untimed speech follows to 12920 ms
+sudais 42:19: word 3 ends 1190 ms in; untimed speech follows to 9100 ms
+sudais 42:25: word 9 ends 2310 ms in; untimed speech follows to 18680 ms
+sudais 43:29: word 7 ends 590 ms in; untimed speech follows to 14690 ms
+sudais 46:20: word 11 ends 1130 ms in; untimed speech follows to 15840 ms
+sudais 46:21: word 15 ends 1970 ms in; untimed speech follows to 15440 ms
+sudais 47:14: word 11 ends 660 ms in; untimed speech follows to 12940 ms
+sudais 47:19: word 6 ends 1360 ms in; untimed speech follows to 11390 ms
+sudais 47:24: word 3 ends 1570 ms in; untimed speech follows to 7440 ms
+sudais 47:32: word 11 ends 390 ms in; untimed speech follows to 15210 ms
+sudais 48:10: word 21 ends 530 ms in; untimed speech follows to 20100 ms
+sudais 49:10: word 3 ends 1270 ms in; untimed speech follows to 7600 ms
+sudais 50:34: word 2 ends 2800 ms in; untimed speech follows to 10080 ms
+sudais 51:50: hand-timed override
+sudais 55:15: hand-timed override
+sudais 57:16: word 9 ends 850 ms in; untimed speech follows to 14390 ms
+sudais 57:21: word 10 ends 680 ms in; untimed speech follows to 19900 ms
+sudais 58:8: word 25 ends 660 ms in; untimed speech follows to 27840 ms
+sudais 59:23: word 12 ends 980 ms in; untimed speech follows to 12850 ms
+sudais 60:1: word 28 ends 980 ms in; untimed speech follows to 37170 ms
+sudais 60:4: word 38 ends 400 ms in; untimed speech follows to 43950 ms
+sudais 66:11: word 21 ends 960 ms in; untimed speech follows to 22280 ms
+sudais 68:1: hand-timed override
+sudais 69:25: word 5 ends 1110 ms in; untimed speech follows to 11610 ms
+sudais 70:4: word 8 ends 1120 ms in; untimed speech follows to 12940 ms
+sudais 74:31: word 32 ends 840 ms in; untimed speech follows to 39260 ms
+sudais 83:18: hand-timed override
+sudais 103:3: word 5 ends 1810 ms in; untimed speech follows to 11120 ms
+husary 2:23: hand-timed override
+husary 2:31: speech in the 6360 ms gap after word 10; the light goes out
+husary 2:35: word 15 ends 1500 ms in; untimed speech follows to 33740 ms
+husary 2:61: word 18 ends 3370 ms in; untimed speech follows to 40030 ms
+husary 2:62: word 14 ends 2270 ms in; untimed speech follows to 37010 ms
+husary 2:70: word 12 ends 2360 ms in; untimed speech follows to 23260 ms
+husary 2:76: word 13 ends 3340 ms in; untimed speech follows to 40530 ms
+husary 2:83: word 18 ends 1160 ms in; untimed speech follows to 35940 ms
+husary 2:85: word 12 ends 1680 ms in; untimed speech follows to 31360 ms
+husary 2:89: word 17 ends 2080 ms in; untimed speech follows to 28240 ms
+husary 2:97: word 12 ends 2550 ms in; untimed speech follows to 20340 ms
+husary 2:101: word 17 ends 2090 ms in; untimed speech follows to 38460 ms
+husary 2:102: word 13 ends 1190 ms in; untimed speech follows to 27570 ms
+husary 2:109: hand-timed override
+husary 2:132: word 11 ends 2420 ms in; untimed speech follows to 32810 ms
+husary 2:133: word 17 ends 1670 ms in; untimed speech follows to 32920 ms
+husary 2:136: speech in the 5410 ms gap after word 14; the light goes out
+husary 2:136: word 28 ends 1970 ms in; untimed speech follows to 67190 ms
+husary 2:150: word 22 ends 1280 ms in; untimed speech follows to 36840 ms
+husary 2:151: word 12 ends 1480 ms in; untimed speech follows to 31290 ms
+husary 2:159: speech in the 5280 ms gap after word 16; the light goes out
+husary 2:164: word 16 ends 2830 ms in; untimed speech follows to 31950 ms
+husary 2:164: word 30 ends 1540 ms in; untimed speech follows to 57160 ms
+husary 2:164: word 40 ends 1480 ms in; untimed speech follows to 89100 ms
+husary 2:174: word 19 ends 2960 ms in; untimed speech follows to 45980 ms
+husary 2:177: word 15 ends 1910 ms in; untimed speech follows to 35790 ms
+husary 2:177: word 24 ends 2460 ms in; untimed speech follows to 65140 ms
+husary 2:177: word 33 ends 2900 ms in; untimed speech follows to 90630 ms
+husary 2:198: word 20 ends 1870 ms in; untimed speech follows to 52260 ms
+husary 2:213: word 13 ends 1710 ms in; untimed speech follows to 32140 ms
+husary 2:214: speech in the 2810 ms gap after word 16; the light goes out
+husary 2:229: word 18 ends 2420 ms in; untimed speech follows to 51460 ms
+husary 2:232: speech in the 6200 ms gap after word 7; the light goes out
+husary 2:237: word 13 ends 1890 ms in; untimed speech follows to 32300 ms
+husary 2:249: word 9 ends 1960 ms in; untimed speech follows to 29160 ms
+husary 2:249: word 19 ends 2520 ms in; untimed speech follows to 62490 ms
+husary 2:253: speech in the 5950 ms gap after word 36; the light goes out
+husary 2:262: word 21 ends 1230 ms in; untimed speech follows to 34370 ms
+husary 2:264: word 13 ends 3110 ms in; untimed speech follows to 45260 ms
+husary 2:265: speech in the 6010 ms gap after word 12; the light goes out
+husary 2:266: word 20 ends 1360 ms in; untimed speech follows to 37450 ms
+husary 2:273: word 14 ends 3150 ms in; untimed speech follows to 34820 ms
+husary 3:15: word 18 ends 2110 ms in; untimed speech follows to 42360 ms
+husary 3:21: word 15 ends 2830 ms in; untimed speech follows to 41380 ms
+husary 3:39: word 13 ends 1430 ms in; untimed speech follows to 29720 ms
+husary 3:45: word 18 ends 2050 ms in; untimed speech follows to 36180 ms
+husary 3:55: word 18 ends 1610 ms in; untimed speech follows to 41640 ms
+husary 3:61: word 14 ends 3790 ms in; untimed speech follows to 38220 ms
+husary 3:61: word 20 ends 1620 ms in; untimed speech follows to 58740 ms
+husary 3:64: word 17 ends 1480 ms in; untimed speech follows to 34990 ms
+husary 3:78: word 17 ends 3770 ms in; untimed speech follows to 35790 ms
+husary 3:79: speech in the 4840 ms gap after word 19; the light goes out
+husary 3:84: word 18 ends 1740 ms in; untimed speech follows to 47170 ms
+husary 3:118: word 19 ends 2330 ms in; untimed speech follows to 42610 ms
+husary 3:135: word 16 ends 2350 ms in; untimed speech follows to 36590 ms
+husary 3:153: speech in the 3350 ms gap after word 11; the light goes out
+husary 3:156: hand-timed override
+husary 3:164: word 15 ends 3220 ms in; untimed speech follows to 36750 ms
+husary 3:187: word 14 ends 2620 ms in; untimed speech follows to 35020 ms
+husary 3:188: speech in the 7130 ms gap after word 14; the light goes out
+husary 3:191: word 12 ends 1550 ms in; untimed speech follows to 34970 ms
+husary 3:195: word 29 ends 2860 ms in; untimed speech follows to 64990 ms
+husary 4:1: word 12 ends 1730 ms in; untimed speech follows to 29260 ms
+husary 4:23: speech in the 5940 ms gap after word 12; the light goes out
+husary 4:23: speech in the 5490 ms gap after word 20; the light goes out
+husary 4:23: word 36 ends 1820 ms in; untimed speech follows to 106480 ms
+husary 4:23: word 41 ends 2560 ms in; untimed speech follows to 132520 ms
+husary 4:43: speech in the 3760 ms gap after word 38; the light goes out
+husary 4:47: word 20 ends 1790 ms in; untimed speech follows to 32090 ms
+husary 4:60: word 17 ends 2420 ms in; untimed speech follows to 31240 ms
+husary 4:75: hand-timed override
+husary 4:77: word 21 ends 2460 ms in; untimed speech follows to 45770 ms
+husary 4:94: word 17 ends 1860 ms in; untimed speech follows to 45220 ms
+husary 4:102: word 14 ends 1480 ms in; untimed speech follows to 26950 ms
+husary 4:109: word 13 ends 2110 ms in; untimed speech follows to 36160 ms
+husary 4:127: word 22 ends 3120 ms in; untimed speech follows to 45980 ms
+husary 4:141: word 18 ends 2530 ms in; untimed speech follows to 41700 ms
+husary 4:142: word 14 ends 3250 ms in; untimed speech follows to 46700 ms
+husary 4:150: word 14 ends 1520 ms in; untimed speech follows to 32570 ms
+husary 4:162: word 17 ends 3090 ms in; untimed speech follows to 37270 ms
+husary 4:163: word 11 ends 1870 ms in; untimed speech follows to 24860 ms
+husary 5:2: hand-timed override
+husary 5:3: speech in the 5410 ms gap after word 15; the light goes out
+husary 5:5: word 18 ends 1090 ms in; untimed speech follows to 37060 ms
+husary 5:5: word 29 ends 2900 ms in; untimed speech follows to 72810 ms
+husary 5:6: speech in the 8100 ms gap after word 36; the light goes out
+husary 5:12: word 27 ends 1590 ms in; untimed speech follows to 56640 ms
+husary 5:14: word 15 ends 2420 ms in; untimed speech follows to 36030 ms
+husary 5:16: speech in the 4290 ms gap after word 15; the light goes out
+husary 5:19: speech in the 3510 ms gap after word 7; the light goes out
+husary 5:20: word 15 ends 1950 ms in; untimed speech follows to 36640 ms
+husary 5:22: word 12 ends 1600 ms in; untimed speech follows to 35240 ms
+husary 5:24: word 13 ends 2160 ms in; untimed speech follows to 34190 ms
+husary 5:32: word 17 ends 1020 ms in; untimed speech follows to 39810 ms
+husary 5:32: word 24 ends 2550 ms in; untimed speech follows to 62860 ms
+husary 5:44: word 19 ends 3210 ms in; untimed speech follows to 43810 ms
+husary 5:49: speech in the 3350 ms gap after word 10; the light goes out
+husary 5:54: word 17 ends 2990 ms in; untimed speech follows to 37220 ms
+husary 5:69: word 17 ends 1780 ms in; untimed speech follows to 46650 ms
+husary 5:75: speech in the 2640 ms gap after word 16; the light goes out
+husary 5:77: word 19 ends 1950 ms in; untimed speech follows to 50680 ms
+husary 5:93: word 13 ends 1980 ms in; untimed speech follows to 26960 ms
+husary 5:94: word 11 ends 2420 ms in; untimed speech follows to 43760 ms
+husary 5:95: word 23 ends 2040 ms in; untimed speech follows to 42980 ms
+husary 5:103: word 18 ends 1470 ms in; untimed speech follows to 37190 ms
+husary 5:106: word 15 ends 2600 ms in; untimed speech follows to 30780 ms
+husary 5:107: word 16 ends 2730 ms in; untimed speech follows to 34650 ms
+husary 6:6: word 16 ends 2780 ms in; untimed speech follows to 25520 ms
+husary 6:6: word 26 ends 2590 ms in; untimed speech follows to 54790 ms
+husary 6:25: word 27 ends 2010 ms in; untimed speech follows to 57690 ms
+husary 6:44: word 17 ends 1900 ms in; untimed speech follows to 43920 ms
+husary 6:52: word 21 ends 2320 ms in; untimed speech follows to 49590 ms
+husary 6:71: word 20 ends 3420 ms in; untimed speech follows to 39540 ms
+husary 6:99: word 14 ends 1940 ms in; untimed speech follows to 32770 ms
+husary 6:99: word 24 ends 2210 ms in; untimed speech follows to 65050 ms
+husary 6:102: word 3 ends 1810 ms in; untimed speech follows to 8860 ms
+husary 6:111: hand-timed override
+husary 6:141: word 14 ends 3100 ms in; untimed speech follows to 43150 ms
+husary 6:145: word 15 ends 2020 ms in; untimed speech follows to 34760 ms
+husary 6:154: word 13 ends 2220 ms in; untimed speech follows to 28760 ms
+husary 6:165: word 10 ends 2990 ms in; untimed speech follows to 30270 ms
+husary 7:11: word 10 ends 2130 ms in; untimed speech follows to 27200 ms
+husary 7:20: word 13 ends 2770 ms in; untimed speech follows to 28150 ms
+husary 7:27: word 13 ends 2740 ms in; untimed speech follows to 37150 ms
+husary 7:48: speech in the 2680 ms gap after word 7; the light goes out
+husary 7:53: hand-timed override
+husary 7:54: word 19 ends 2130 ms in; untimed speech follows to 41410 ms
+husary 7:95: speech in the 2050 ms gap after word 8; the light goes out
+husary 7:96: word 14 ends 1770 ms in; untimed speech follows to 27900 ms
+husary 7:133: speech in the 4220 ms gap after word 10; the light goes out
+husary 7:145: word 13 ends 2030 ms in; untimed speech follows to 28880 ms
+husary 7:157: word 14 ends 2890 ms in; untimed speech follows to 38680 ms
+husary 7:157: word 26 ends 1770 ms in; untimed speech follows to 67810 ms
+husary 7:162: word 12 ends 1440 ms in; untimed speech follows to 26620 ms
+husary 7:171: word 14 ends 1200 ms in; untimed speech follows to 30130 ms
+husary 8:7: word 20 ends 1970 ms in; untimed speech follows to 41840 ms
+husary 8:11: word 12 ends 870 ms in; untimed speech follows to 28480 ms
+husary 8:26: word 14 ends 1820 ms in; untimed speech follows to 36740 ms
+husary 8:41: word 12 ends 2340 ms in; untimed speech follows to 38270 ms
+husary 8:41: word 19 ends 2230 ms in; untimed speech follows to 62330 ms
+husary 8:42: word 26 ends 1810 ms in; untimed speech follows to 48920 ms
+husary 8:44: speech in the 3520 ms gap after word 8; the light goes out
+husary 8:48: hand-timed override
+husary 9:7: word 17 ends 1250 ms in; untimed speech follows to 35320 ms
+husary 9:12: word 16 ends 910 ms in; untimed speech follows to 45690 ms
+husary 9:16: word 12 ends 2470 ms in; untimed speech follows to 25260 ms
+husary 9:18: word 16 ends 3350 ms in; untimed speech follows to 47930 ms
+husary 9:24: word 10 ends 3710 ms in; untimed speech follows to 35310 ms
+husary 9:24: word 17 ends 2090 ms in; untimed speech follows to 64720 ms
+husary 9:25: word 15 ends 1930 ms in; untimed speech follows to 33490 ms
+husary 9:29: word 18 ends 1730 ms in; untimed speech follows to 38330 ms
+husary 9:35: word 15 ends 3010 ms in; untimed speech follows to 27780 ms
+husary 9:37: word 11 ends 1730 ms in; untimed speech follows to 24490 ms
+husary 9:59: word 10 ends 2940 ms in; untimed speech follows to 25590 ms
+husary 9:60: word 14 ends 2200 ms in; untimed speech follows to 43710 ms
+husary 9:69: word 12 ends 2600 ms in; untimed speech follows to 33520 ms
+husary 9:79: word 17 ends 1570 ms in; untimed speech follows to 36010 ms
+husary 9:81: word 15 ends 2220 ms in; untimed speech follows to 33130 ms
+husary 9:92: word 19 ends 1530 ms in; untimed speech follows to 39720 ms
+husary 9:100: word 16 ends 2920 ms in; untimed speech follows to 35410 ms
+husary 9:107: speech in the 5470 ms gap after word 16; the light goes out
+husary 9:117: word 12 ends 1920 ms in; untimed speech follows to 30800 ms
+husary 9:118: hand-timed override
+husary 9:120: word 33 ends 2030 ms in; untimed speech follows to 56220 ms
+husary 10:12: word 18 ends 2050 ms in; untimed speech follows to 43940 ms
+husary 10:22: speech in the 4360 ms gap after word 17; the light goes out
+husary 10:22: word 26 ends 3230 ms in; untimed speech follows to 66540 ms
+husary 10:22: word 34 ends 2630 ms in; untimed speech follows to 87790 ms
+husary 10:23: speech in the 4210 ms gap after word 9; the light goes out
+husary 10:24: word 12 ends 1420 ms in; untimed speech follows to 29360 ms
+husary 10:24: word 21 ends 2530 ms in; untimed speech follows to 58280 ms
+husary 10:24: speech in the 7480 ms gap after word 29; the light goes out
+husary 10:31: word 15 ends 1720 ms in; untimed speech follows to 25900 ms
+husary 10:51: word 6 ends 1280 ms in; untimed speech follows to 14810 ms
+husary 10:98: word 18 ends 1640 ms in; untimed speech follows to 52640 ms
+husary 11:3: word 12 ends 2230 ms in; untimed speech follows to 37950 ms
+husary 11:44: word 6 ends 1800 ms in; untimed speech follows to 19800 ms
+husary 11:52: word 10 ends 2260 ms in; untimed speech follows to 25500 ms
+husary 11:94: word 14 ends 1440 ms in; untimed speech follows to 31140 ms
+husary 12:6: word 15 ends 2410 ms in; untimed speech follows to 44400 ms
+husary 12:17: word 15 ends 1290 ms in; untimed speech follows to 37040 ms
+husary 12:31: word 16 ends 3010 ms in; untimed speech follows to 42480 ms
+husary 12:46: word 4 ends 1470 ms in; untimed speech follows to 10310 ms
+husary 12:110: speech in the 6940 ms gap after word 10; the light goes out
+husary 12:111: word 21 ends 2790 ms in; untimed speech follows to 42520 ms
+husary 13:4: word 15 ends 2320 ms in; untimed speech follows to 52380 ms
+husary 13:13: word 12 ends 2860 ms in; untimed speech follows to 35730 ms
+husary 13:22: word 10 ends 2380 ms in; untimed speech follows to 27880 ms
+husary 13:25: word 20 ends 1160 ms in; untimed speech follows to 29430 ms
+husary 14:6: word 18 ends 2990 ms in; untimed speech follows to 43000 ms
+husary 14:17: word 12 ends 2040 ms in; untimed speech follows to 23850 ms
+husary 14:21: word 7 ends 2580 ms in; untimed speech follows to 25840 ms
+husary 14:37: word 15 ends 2010 ms in; untimed speech follows to 34520 ms
+husary 15:56: word 7 ends 1040 ms in; untimed speech follows to 14470 ms
+husary 16:14: word 16 ends 1560 ms in; untimed speech follows to 34020 ms
+husary 16:80: word 17 ends 2310 ms in; untimed speech follows to 48180 ms
+husary 16:80: word 22 ends 2060 ms in; untimed speech follows to 73860 ms
+husary 16:106: word 17 ends 1390 ms in; untimed speech follows to 36930 ms
+husary 16:112: word 15 ends 3680 ms in; untimed speech follows to 33960 ms
+husary 16:119: word 13 ends 2340 ms in; untimed speech follows to 32240 ms
+husary 17:7: word 19 ends 1530 ms in; untimed speech follows to 54720 ms
+husary 17:23: word 21 ends 2600 ms in; untimed speech follows to 52940 ms
+husary 17:47: word 11 ends 2060 ms in; untimed speech follows to 22150 ms
+husary 17:69: word 15 ends 2150 ms in; untimed speech follows to 32420 ms
+husary 17:70: word 12 ends 3640 ms in; untimed speech follows to 35590 ms
+husary 17:99: word 13 ends 1640 ms in; untimed speech follows to 31460 ms
+husary 18:14: word 15 ends 1860 ms in; untimed speech follows to 39110 ms
+husary 18:16: word 14 ends 1790 ms in; untimed speech follows to 32680 ms
+husary 18:19: word 30 ends 2080 ms in; untimed speech follows to 68540 ms
+husary 18:31: word 14 ends 1430 ms in; untimed speech follows to 33740 ms
+husary 18:31: word 22 ends 1800 ms in; untimed speech follows to 56990 ms
+husary 18:40: word 10 ends 2510 ms in; untimed speech follows to 26810 ms
+husary 18:42: word 15 ends 2510 ms in; untimed speech follows to 34430 ms
+husary 18:45: word 13 ends 1410 ms in; untimed speech follows to 30940 ms
+husary 18:49: word 9 ends 3170 ms in; untimed speech follows to 25070 ms
+husary 18:55: word 15 ends 3080 ms in; untimed speech follows to 42560 ms
+husary 18:74: word 10 ends 2860 ms in; untimed speech follows to 29640 ms
+husary 18:77: word 11 ends 2010 ms in; untimed speech follows to 21500 ms
+husary 18:82: speech in the 3370 ms gap after word 16; the light goes out
+husary 20:53: speech in the 2510 ms gap after word 14; the light goes out
+husary 20:87: speech in the 3690 ms gap after word 12; the light goes out
+husary 20:130: word 16 ends 1710 ms in; untimed speech follows to 33840 ms
+husary 20:134: word 8 ends 1440 ms in; untimed speech follows to 20840 ms
+husary 21:28: word 11 ends 2000 ms in; untimed speech follows to 25530 ms
+husary 21:87: speech in the 2290 ms gap after word 11; the light goes out
+husary 22:2: word 15 ends 2060 ms in; untimed speech follows to 31330 ms
+husary 22:15: word 12 ends 1330 ms in; untimed speech follows to 23360 ms
+husary 22:52: word 15 ends 2410 ms in; untimed speech follows to 37560 ms
+husary 23:24: word 20 ends 3320 ms in; untimed speech follows to 47670 ms
+husary 23:27: word 14 ends 1900 ms in; untimed speech follows to 31010 ms
+husary 23:33: word 18 ends 1840 ms in; untimed speech follows to 36370 ms
+husary 23:93: hand-timed override
+husary 24:6: word 14 ends 2220 ms in; untimed speech follows to 40430 ms
+husary 24:31: word 56 ends 950 ms in; untimed speech follows to 143430 ms
+husary 24:35: word 28 ends 2260 ms in; untimed speech follows to 51710 ms
+husary 24:37: word 15 ends 1630 ms in; untimed speech follows to 25130 ms
+husary 24:39: word 14 ends 2000 ms in; untimed speech follows to 35240 ms
+husary 24:55: word 18 ends 1480 ms in; untimed speech follows to 37220 ms
+husary 24:61: word 19 ends 2170 ms in; untimed speech follows to 41130 ms
+husary 25:18: word 14 ends 3310 ms in; untimed speech follows to 31350 ms
+husary 26:20: hand-timed override
+husary 27:18: word 12 ends 2710 ms in; untimed speech follows to 38680 ms
+husary 27:19: word 18 ends 2250 ms in; untimed speech follows to 39790 ms
+husary 27:24: word 11 ends 3160 ms in; untimed speech follows to 30660 ms
+husary 27:36: word 12 ends 4320 ms in; untimed speech follows to 47000 ms
+husary 27:58: hand-timed override
+husary 28:4: word 13 ends 3200 ms in; untimed speech follows to 32530 ms
+husary 28:29: hand-timed override
+husary 28:36: word 11 ends 2140 ms in; untimed speech follows to 39010 ms
+husary 28:38: word 18 ends 1250 ms in; untimed speech follows to 29320 ms
+husary 28:46: word 12 ends 1540 ms in; untimed speech follows to 30570 ms
+husary 28:47: word 8 ends 2350 ms in; untimed speech follows to 21020 ms
+husary 28:53: hand-timed override
+husary 28:57: word 21 ends 2810 ms in; untimed speech follows to 46650 ms
+husary 28:81: word 12 ends 3080 ms in; untimed speech follows to 36020 ms
+husary 29:10: hand-timed override
+husary 29:46: word 22 ends 1990 ms in; untimed speech follows to 50760 ms
+husary 30:4: speech in the 3020 ms gap after word 4; the light goes out
+husary 30:28: speech in the 7840 ms gap after word 19; the light goes out
+husary 30:33: word 16 ends 1800 ms in; untimed speech follows to 44610 ms
+husary 30:46: word 12 ends 1330 ms in; untimed speech follows to 23780 ms
+husary 30:48: word 13 ends 1820 ms in; untimed speech follows to 25710 ms
+husary 31:14: word 11 ends 3100 ms in; untimed speech follows to 30940 ms
+husary 31:16: word 11 ends 1810 ms in; untimed speech follows to 27120 ms
+husary 31:29: word 15 ends 2110 ms in; untimed speech follows to 29520 ms
+husary 31:33: speech in the 2490 ms gap after word 19; the light goes out
+husary 32:20: word 15 ends 1880 ms in; untimed speech follows to 40090 ms
+husary 33:32: word 16 ends 1390 ms in; untimed speech follows to 37980 ms
+husary 33:35: speech in the 3460 ms gap after word 12; the light goes out
+husary 33:35: word 21 ends 3250 ms in; untimed speech follows to 66460 ms
+husary 33:37: word 21 ends 2960 ms in; untimed speech follows to 42680 ms
+husary 33:50: word 32 ends 1580 ms in; untimed speech follows to 72600 ms
+husary 33:53: word 20 ends 1940 ms in; untimed speech follows to 39360 ms
+husary 33:55: hand-timed override
+husary 34:31: word 23 ends 2360 ms in; untimed speech follows to 43620 ms
+husary 34:37: word 13 ends 2160 ms in; untimed speech follows to 33670 ms
+husary 34:43: word 18 ends 1930 ms in; untimed speech follows to 35370 ms
+husary 36:47: word 18 ends 1810 ms in; untimed speech follows to 42910 ms
+husary 38:26: speech in the 6850 ms gap after word 13; the light goes out
+husary 38:30: speech in the 2510 ms gap after word 5; the light goes out
+husary 38:59: speech in the 2040 ms gap after word 7; the light goes out
+husary 39:3: word 20 ends 1630 ms in; untimed speech follows to 41240 ms
+husary 39:8: word 18 ends 1790 ms in; untimed speech follows to 39220 ms
+husary 39:21: word 16 ends 1630 ms in; untimed speech follows to 32160 ms
+husary 39:23: speech in the 2880 ms gap after word 7; the light goes out
+husary 39:38: word 23 ends 1860 ms in; untimed speech follows to 55130 ms
+husary 39:71: word 18 ends 2140 ms in; untimed speech follows to 45560 ms
+husary 40:3: word 9 ends 1950 ms in; untimed speech follows to 16390 ms
+husary 40:16: word 13 ends 1580 ms in; untimed speech follows to 27080 ms
+husary 40:21: word 23 ends 2280 ms in; untimed speech follows to 45030 ms
+husary 40:28: word 14 ends 2380 ms in; untimed speech follows to 33550 ms
+husary 40:40: word 19 ends 3170 ms in; untimed speech follows to 45330 ms
+husary 40:43: word 15 ends 2000 ms in; untimed speech follows to 28490 ms
+husary 40:47: word 8 ends 2290 ms in; untimed speech follows to 29990 ms
+husary 40:67: word 15 ends 3820 ms in; untimed speech follows to 30870 ms
+husary 41:25: word 13 ends 2140 ms in; untimed speech follows to 23510 ms
+husary 41:50: word 11 ends 1500 ms in; untimed speech follows to 26950 ms
+husary 42:16: word 13 ends 1850 ms in; untimed speech follows to 34460 ms
+husary 43:13: word 16 ends 1230 ms in; untimed speech follows to 37750 ms
+husary 43:33: word 14 ends 2110 ms in; untimed speech follows to 35400 ms
+husary 43:63: word 8 ends 2050 ms in; untimed speech follows to 24610 ms
+husary 44:2: hand-timed override
+husary 44:44: hand-timed override
+husary 45:5: word 15 ends 1860 ms in; untimed speech follows to 32590 ms
+husary 45:23: word 13 ends 1820 ms in; untimed speech follows to 30580 ms
+husary 45:25: word 11 ends 1310 ms in; untimed speech follows to 30790 ms
+husary 46:15: word 23 ends 1670 ms in; untimed speech follows to 45590 ms
+husary 46:17: word 22 ends 1220 ms in; untimed speech follows to 33750 ms
+husary 46:20: word 17 ends 1910 ms in; untimed speech follows to 32360 ms
+husary 46:26: word 11 ends 2700 ms in; untimed speech follows to 31760 ms
+husary 46:26: word 23 ends 1200 ms in; untimed speech follows to 53790 ms
+husary 46:30: word 13 ends 1880 ms in; untimed speech follows to 27180 ms
+husary 47:4: word 13 ends 2040 ms in; untimed speech follows to 29730 ms
+husary 47:15: word 20 ends 860 ms in; untimed speech follows to 43280 ms
+husary 48:12: word 14 ends 2510 ms in; untimed speech follows to 32380 ms
+husary 48:20: word 14 ends 1220 ms in; untimed speech follows to 22760 ms
+husary 48:26: word 14 ends 1710 ms in; untimed speech follows to 29780 ms
+husary 48:29: word 13 ends 1940 ms in; untimed speech follows to 35130 ms
+husary 48:29: word 39 ends 1370 ms in; untimed speech follows to 87710 ms
+husary 49:2: word 13 ends 2640 ms in; untimed speech follows to 32520 ms
+husary 49:7: word 20 ends 2310 ms in; untimed speech follows to 55510 ms
+husary 49:11: hand-timed override
+husary 49:14: speech in the 2910 ms gap after word 24; the light goes out
+husary 53:10: hand-timed override
+husary 57:12: speech in the 4140 ms gap after word 10; the light goes out
+husary 57:13: word 19 ends 2760 ms in; untimed speech follows to 32960 ms
+husary 57:16: word 15 ends 1360 ms in; untimed speech follows to 20900 ms
+husary 57:25: word 16 ends 1980 ms in; untimed speech follows to 40760 ms
+husary 58:7: word 33 ends 1420 ms in; untimed speech follows to 59920 ms
+husary 58:8: word 20 ends 2290 ms in; untimed speech follows to 38970 ms
+husary 59:7: word 20 ends 2350 ms in; untimed speech follows to 40910 ms
+husary 59:9: word 15 ends 1970 ms in; untimed speech follows to 35170 ms
+husary 59:10: word 19 ends 1690 ms in; untimed speech follows to 44100 ms
+husary 60:1: word 11 ends 1800 ms in; untimed speech follows to 23300 ms
+husary 60:1: word 28 ends 1490 ms in; untimed speech follows to 51320 ms
+husary 60:4: word 26 ends 1690 ms in; untimed speech follows to 38580 ms
+husary 60:4: word 38 ends 520 ms in; untimed speech follows to 63700 ms
+husary 60:12: word 31 ends 2650 ms in; untimed speech follows to 65010 ms
+husary 61:6: word 17 ends 2640 ms in; untimed speech follows to 33750 ms
+husary 62:2: word 14 ends 1880 ms in; untimed speech follows to 32130 ms
+husary 63:10: word 18 ends 2410 ms in; untimed speech follows to 51030 ms
+husary 64:9: word 21 ends 2910 ms in; untimed speech follows to 56660 ms
+husary 65:12: word 11 ends 2510 ms in; untimed speech follows to 27610 ms
+husary 66:5: hand-timed override
+husary 66:6: word 13 ends 2060 ms in; untimed speech follows to 38650 ms
+husary 66:8: word 14 ends 2840 ms in; untimed speech follows to 41180 ms
+husary 66:8: word 25 ends 1960 ms in; untimed speech follows to 71260 ms
+husary 66:10: speech in the 6990 ms gap after word 16; the light goes out
+husary 66:11: word 16 ends 2290 ms in; untimed speech follows to 36680 ms
+husary 68:2: hand-timed override
+husary 74:31: word 26 ends 1870 ms in; untimed speech follows to 38890 ms
+husary 79:37: hand-timed override
+husary 83:8: hand-timed override
+husary 84:7: hand-timed override
+shuraym 2:101: word 15 ends 1080 ms in; untimed speech follows to 16530 ms
+shuraym 2:109: word 15 ends 1330 ms in; untimed speech follows to 15360 ms
+shuraym 2:123: word 16 ends 2380 ms in; untimed speech follows to 18080 ms
+shuraym 2:132: word 11 ends 750 ms in; untimed speech follows to 12590 ms
+shuraym 2:136: word 12 ends 1380 ms in; untimed speech follows to 16060 ms
+shuraym 2:217: word 48 ends 820 ms in; untimed speech follows to 42460 ms
+shuraym 2:232: word 10 ends 1210 ms in; untimed speech follows to 15620 ms
+shuraym 2:250: word 11 ends 1230 ms in; untimed speech follows to 15210 ms
+shuraym 2:264: word 13 ends 770 ms in; untimed speech follows to 16100 ms
+shuraym 4:47: word 24 ends 770 ms in; untimed speech follows to 25840 ms
+shuraym 4:69: word 13 ends 1100 ms in; untimed speech follows to 18840 ms
+shuraym 4:89: word 11 ends 1340 ms in; untimed speech follows to 13980 ms
+shuraym 4:127: word 21 ends 700 ms in; untimed speech follows to 20680 ms
+shuraym 5:42: word 11 ends 740 ms in; untimed speech follows to 16090 ms
+shuraym 5:77: word 15 ends 490 ms in; untimed speech follows to 14500 ms
+shuraym 7:37: word 20 ends 1100 ms in; untimed speech follows to 22550 ms
+shuraym 7:146: word 29 ends 1090 ms in; untimed speech follows to 38470 ms
+shuraym 9:46: word 10 ends 1140 ms in; untimed speech follows to 11440 ms
+shuraym 9:48: word 11 ends 660 ms in; untimed speech follows to 12330 ms
+shuraym 12:6: word 19 ends 390 ms in; untimed speech follows to 20790 ms
+shuraym 12:50: hand-timed override
+shuraym 12:68: word 14 ends 490 ms in; untimed speech follows to 13250 ms
+shuraym 12:75: hand-timed override
+shuraym 12:80: word 17 ends 740 ms in; untimed speech follows to 17950 ms
+shuraym 12:86: word 7 ends 600 ms in; untimed speech follows to 15660 ms
+shuraym 12:101: word 17 ends 1160 ms in; untimed speech follows to 17880 ms
+shuraym 12:108: word 13 ends 1580 ms in; untimed speech follows to 21820 ms
+shuraym 13:25: word 14 ends 480 ms in; untimed speech follows to 14330 ms
+shuraym 13:30: word 14 ends 1180 ms in; untimed speech follows to 14750 ms
+shuraym 14:17: word 12 ends 950 ms in; untimed speech follows to 15720 ms
+shuraym 16:80: word 12 ends 900 ms in; untimed speech follows to 12600 ms
+shuraym 18:10: word 11 ends 740 ms in; untimed speech follows to 11080 ms
+shuraym 18:49: word 12 ends 1050 ms in; untimed speech follows to 14380 ms
+shuraym 18:55: word 15 ends 970 ms in; untimed speech follows to 15800 ms
+shuraym 20:87: word 11 ends 490 ms in; untimed speech follows to 13210 ms
+shuraym 20:121: word 10 ends 980 ms in; untimed speech follows to 14260 ms
+shuraym 20:121: word 14 ends 940 ms in; untimed speech follows to 33640 ms
+shuraym 21:97: word 16 ends 720 ms in; untimed speech follows to 15670 ms
+shuraym 22:40: word 22 ends 770 ms in; untimed speech follows to 20470 ms
+shuraym 26:61: word 5 ends 530 ms in; untimed speech follows to 11820 ms
+shuraym 26:188: hand-timed override
+shuraym 27:60: word 14 ends 690 ms in; untimed speech follows to 16780 ms
+shuraym 33:6: word 14 ends 490 ms in; untimed speech follows to 19710 ms
+shuraym 35:29: word 12 ends 1920 ms in; untimed speech follows to 15680 ms
+shuraym 40:28: word 14 ends 920 ms in; untimed speech follows to 14250 ms
+shuraym 40:47: word 12 ends 720 ms in; untimed speech follows to 18480 ms
+shuraym 40:64: hand-timed override
+shuraym 41:38: word 9 ends 1680 ms in; untimed speech follows to 12100 ms
+shuraym 43:51: word 15 ends 970 ms in; untimed speech follows to 14440 ms
+shuraym 48:6: word 7 ends 1000 ms in; untimed speech follows to 15270 ms
+shuraym 49:3: word 12 ends 670 ms in; untimed speech follows to 14310 ms
+shuraym 53:23: word 7 ends 1810 ms in; untimed speech follows to 13320 ms
+shuraym 56:86: hand-timed override
+shuraym 58:8: word 24 ends 940 ms in; untimed speech follows to 26320 ms
+shuraym 58:22: word 12 ends 880 ms in; untimed speech follows to 17610 ms
+shuraym 60:1: word 30 ends 800 ms in; untimed speech follows to 28250 ms
+shuraym 69:3: hand-timed override
+shuraym 69:19: word 2 ends 500 ms in; untimed speech follows to 24850 ms
+shuraym 78:40: hand-timed override
+shuraym 91:15: hand-timed override
+minshawi 2:14: word 6 ends 2230 ms in; untimed speech follows to 13680 ms
+minshawi 2:17: speech in the 10390 ms gap after word 12; the light goes out
+minshawi 2:22: word 11 ends 2570 ms in; untimed speech follows to 25680 ms
+minshawi 2:23: word 12 ends 970 ms in; untimed speech follows to 20610 ms
+minshawi 2:31: speech in the 3910 ms gap after word 10; the light goes out
+minshawi 2:33: word 11 ends 1080 ms in; untimed speech follows to 25110 ms
+minshawi 2:35: word 11 ends 1410 ms in; untimed speech follows to 20440 ms
+minshawi 2:38: word 8 ends 890 ms in; untimed speech follows to 19490 ms
+minshawi 2:49: word 8 ends 1840 ms in; untimed speech follows to 16760 ms
+minshawi 2:59: word 13 ends 860 ms in; untimed speech follows to 18740 ms
+minshawi 2:61: speech in the 2560 ms gap after word 11; the light goes out
+minshawi 2:62: word 12 ends 1370 ms in; untimed speech follows to 20640 ms
+minshawi 2:75: speech in the 3950 ms gap after word 13; the light goes out
+minshawi 2:76: word 12 ends 1710 ms in; untimed speech follows to 22630 ms
+minshawi 2:83: word 15 ends 1750 ms in; untimed speech follows to 25560 ms
+minshawi 2:83: word 22 ends 1660 ms in; untimed speech follows to 38960 ms
+minshawi 2:85: word 10 ends 1380 ms in; untimed speech follows to 25590 ms
+minshawi 2:85: word 18 ends 1410 ms in; untimed speech follows to 41800 ms
+minshawi 2:89: word 16 ends 1080 ms in; untimed speech follows to 25530 ms
+minshawi 2:91: word 12 ends 1010 ms in; untimed speech follows to 19780 ms
+minshawi 2:101: word 17 ends 920 ms in; untimed speech follows to 25160 ms
+minshawi 2:112: word 11 ends 1410 ms in; untimed speech follows to 17980 ms
+minshawi 2:129: word 12 ends 1530 ms in; untimed speech follows to 21510 ms
+minshawi 2:133: word 17 ends 1340 ms in; untimed speech follows to 20750 ms
+minshawi 2:150: speech in the 2770 ms gap after word 25; the light goes out
+minshawi 2:159: word 18 ends 640 ms in; untimed speech follows to 29660 ms
+minshawi 2:164: word 16 ends 1330 ms in; untimed speech follows to 25900 ms
+minshawi 2:174: word 12 ends 1270 ms in; untimed speech follows to 20640 ms
+minshawi 2:174: word 22 ends 940 ms in; untimed speech follows to 37710 ms
+minshawi 2:177: word 15 ends 960 ms in; untimed speech follows to 26330 ms
+minshawi 2:177: speech in the 1760 ms gap after word 20; the light goes out
+minshawi 2:177: word 31 ends 1470 ms in; untimed speech follows to 57980 ms
+minshawi 2:177: word 39 ends 1570 ms in; untimed speech follows to 74490 ms
+minshawi 2:188: word 9 ends 1590 ms in; untimed speech follows to 20280 ms
+minshawi 2:198: speech in the 2780 ms gap after word 20; the light goes out
+minshawi 2:213: word 12 ends 1070 ms in; untimed speech follows to 19130 ms
+minshawi 2:237: word 13 ends 1040 ms in; untimed speech follows to 21220 ms
+minshawi 2:248: word 13 ends 1180 ms in; untimed speech follows to 24250 ms
+minshawi 2:249: word 14 ends 1710 ms in; untimed speech follows to 24200 ms
+minshawi 2:253: speech in the 3610 ms gap after word 36; the light goes out
+minshawi 2:262: speech in the 2790 ms gap after word 16; the light goes out
+minshawi 2:264: word 8 ends 1220 ms in; untimed speech follows to 21700 ms
+minshawi 2:265: word 13 ends 1280 ms in; untimed speech follows to 27730 ms
+minshawi 2:266: word 13 ends 2190 ms in; untimed speech follows to 34100 ms
+minshawi 2:266: word 20 ends 1100 ms in; untimed speech follows to 46680 ms
+minshawi 2:273: word 11 ends 1230 ms in; untimed speech follows to 21190 ms
+minshawi 2:273: word 18 ends 2040 ms in; untimed speech follows to 39080 ms
+minshawi 2:274: word 9 ends 1160 ms in; untimed speech follows to 21400 ms
+minshawi 3:15: speech in the 2770 ms gap after word 16; the light goes out
+minshawi 3:21: word 15 ends 1370 ms in; untimed speech follows to 29010 ms
+minshawi 3:23: word 14 ends 1110 ms in; untimed speech follows to 21660 ms
+minshawi 3:26: word 12 ends 2490 ms in; untimed speech follows to 24770 ms
+minshawi 3:39: word 12 ends 1530 ms in; untimed speech follows to 22640 ms
+minshawi 3:51: hand-timed override
+minshawi 3:55: word 18 ends 960 ms in; untimed speech follows to 27490 ms
+minshawi 3:61: word 16 ends 2290 ms in; untimed speech follows to 28730 ms
+minshawi 3:64: word 17 ends 900 ms in; untimed speech follows to 22870 ms
+minshawi 3:75: word 17 ends 1070 ms in; untimed speech follows to 35030 ms
+minshawi 3:77: speech in the 3520 ms gap after word 9; the light goes out
+minshawi 3:78: word 13 ends 1520 ms in; untimed speech follows to 21970 ms
+minshawi 3:78: word 23 ends 1100 ms in; untimed speech follows to 37300 ms
+minshawi 3:79: word 14 ends 1370 ms in; untimed speech follows to 26740 ms
+minshawi 3:79: word 21 ends 2280 ms in; untimed speech follows to 43050 ms
+minshawi 3:81: speech in the 5270 ms gap after word 12; the light goes out
+minshawi 3:84: word 11 ends 2340 ms in; untimed speech follows to 23030 ms
+minshawi 3:84: word 21 ends 1670 ms in; untimed speech follows to 44420 ms
+minshawi 3:103: word 18 ends 4900 ms in; untimed speech follows to 40120 ms
+minshawi 3:112: word 14 ends 2810 ms in; untimed speech follows to 27460 ms
+minshawi 3:117: speech in the 2480 ms gap after word 12; the light goes out
+minshawi 3:118: word 14 ends 1310 ms in; untimed speech follows to 26560 ms
+minshawi 3:119: word 8 ends 1320 ms in; untimed speech follows to 23990 ms
+minshawi 3:125: word 8 ends 1100 ms in; untimed speech follows to 21640 ms
+minshawi 3:135: word 11 ends 1660 ms in; untimed speech follows to 21240 ms
+minshawi 3:146: speech in the 2510 ms gap after word 9; the light goes out
+minshawi 3:147: word 15 ends 1870 ms in; untimed speech follows to 24890 ms
+minshawi 3:153: word 13 ends 2320 ms in; untimed speech follows to 29670 ms
+minshawi 3:155: word 13 ends 1340 ms in; untimed speech follows to 29100 ms
+minshawi 3:164: speech in the 3160 ms gap after word 15; the light goes out
+minshawi 3:170: word 13 ends 1030 ms in; untimed speech follows to 26300 ms
+minshawi 3:187: speech in the 3300 ms gap after word 11; the light goes out
+minshawi 3:188: word 12 ends 1530 ms in; untimed speech follows to 22830 ms
+minshawi 3:191: word 12 ends 1050 ms in; untimed speech follows to 24230 ms
+minshawi 3:195: word 29 ends 1750 ms in; untimed speech follows to 44390 ms
+minshawi 3:199: word 15 ends 1490 ms in; untimed speech follows to 22940 ms
+minshawi 4:1: word 12 ends 1290 ms in; untimed speech follows to 19900 ms
+minshawi 4:6: word 13 ends 1830 ms in; untimed speech follows to 25610 ms
+minshawi 4:17: word 12 ends 1480 ms in; untimed speech follows to 21110 ms
+minshawi 4:18: word 14 ends 1190 ms in; untimed speech follows to 27760 ms
+minshawi 4:23: speech in the 2600 ms gap after word 10; the light goes out
+minshawi 4:23: word 17 ends 1430 ms in; untimed speech follows to 36440 ms
+minshawi 4:23: word 23 ends 1440 ms in; untimed speech follows to 53970 ms
+minshawi 4:23: word 33 ends 1070 ms in; untimed speech follows to 74960 ms
+minshawi 4:23: word 41 ends 1590 ms in; untimed speech follows to 94860 ms
+minshawi 4:25: speech in the 2530 ms gap after word 29; the light goes out
+minshawi 4:29: word 8 ends 1370 ms in; untimed speech follows to 23290 ms
+minshawi 4:36: word 8 ends 1690 ms in; untimed speech follows to 17420 ms
+minshawi 4:36: speech in the 2810 ms gap after word 17; the light goes out
+minshawi 4:43: word 34 ends 2610 ms in; untimed speech follows to 48280 ms
+minshawi 4:46: word 10 ends 1590 ms in; untimed speech follows to 18400 ms
+minshawi 4:46: word 34 ends 1340 ms in; untimed speech follows to 51550 ms
+minshawi 4:47: word 10 ends 1310 ms in; untimed speech follows to 21020 ms
+minshawi 4:47: speech in the 2830 ms gap after word 20; the light goes out
+minshawi 4:51: word 14 ends 940 ms in; untimed speech follows to 19730 ms
+minshawi 4:62: word 10 ends 1470 ms in; untimed speech follows to 21500 ms
+minshawi 4:64: word 15 ends 2400 ms in; untimed speech follows to 24130 ms
+minshawi 4:65: word 15 ends 1010 ms in; untimed speech follows to 24760 ms
+minshawi 4:73: word 15 ends 780 ms in; untimed speech follows to 32150 ms
+minshawi 4:75: word 14 ends 1260 ms in; untimed speech follows to 20840 ms
+minshawi 4:77: word 16 ends 1170 ms in; untimed speech follows to 22640 ms
+minshawi 4:90: word 15 ends 3490 ms in; untimed speech follows to 28930 ms
+minshawi 4:93: word 11 ends 710 ms in; untimed speech follows to 20800 ms
+minshawi 4:94: speech in the 2260 ms gap after word 9; the light goes out
+minshawi 4:94: word 21 ends 1130 ms in; untimed speech follows to 33410 ms
+minshawi 4:102: speech in the 3110 ms gap after word 24; the light goes out
+minshawi 4:109: word 7 ends 1460 ms in; untimed speech follows to 19290 ms
+minshawi 4:115: word 18 ends 1820 ms in; untimed speech follows to 27540 ms
+minshawi 4:127: word 21 ends 1250 ms in; untimed speech follows to 35780 ms
+minshawi 4:127: word 27 ends 1490 ms in; untimed speech follows to 51050 ms
+minshawi 4:141: word 18 ends 1580 ms in; untimed speech follows to 28180 ms
+minshawi 4:142: word 12 ends 1040 ms in; untimed speech follows to 21800 ms
+minshawi 4:175: word 10 ends 620 ms in; untimed speech follows to 20310 ms
+minshawi 5:3: speech in the 3010 ms gap after word 12; the light goes out
+minshawi 5:3: word 22 ends 5470 ms in; untimed speech follows to 43260 ms
+minshawi 5:4: word 13 ends 1800 ms in; untimed speech follows to 26180 ms
+minshawi 5:5: word 13 ends 1250 ms in; untimed speech follows to 22080 ms
+minshawi 5:5: word 23 ends 1260 ms in; untimed speech follows to 45720 ms
+minshawi 5:5: word 27 ends 1610 ms in; untimed speech follows to 59100 ms
+minshawi 5:6: word 12 ends 1560 ms in; untimed speech follows to 25840 ms
+minshawi 5:6: speech in the 3810 ms gap after word 35; the light goes out
+minshawi 5:6: word 42 ends 1680 ms in; untimed speech follows to 87220 ms
+minshawi 5:6: word 59 ends 1310 ms in; untimed speech follows to 122250 ms
+minshawi 5:11: word 14 ends 1670 ms in; untimed speech follows to 31870 ms
+minshawi 5:12: word 27 ends 1480 ms in; untimed speech follows to 52090 ms
+minshawi 5:12: speech in the 4850 ms gap after word 31; the light goes out
+minshawi 5:13: word 7 ends 1710 ms in; untimed speech follows to 20480 ms
+minshawi 5:14: word 12 ends 680 ms in; untimed speech follows to 24200 ms
+minshawi 5:15: word 13 ends 1880 ms in; untimed speech follows to 34550 ms
+minshawi 5:16: hand-timed override
+minshawi 5:19: speech in the 3730 ms gap after word 13; the light goes out
+minshawi 5:20: word 15 ends 2020 ms in; untimed speech follows to 20220 ms
+minshawi 5:22: word 12 ends 930 ms in; untimed speech follows to 23180 ms
+minshawi 5:32: word 17 ends 660 ms in; untimed speech follows to 28710 ms
+minshawi 5:32: word 21 ends 1400 ms in; untimed speech follows to 39730 ms
+minshawi 5:44: word 20 ends 930 ms in; untimed speech follows to 35040 ms
+minshawi 5:45: speech in the 3270 ms gap after word 12; the light goes out
+minshawi 5:49: speech in the 2290 ms gap after word 10; the light goes out
+minshawi 5:54: word 14 ends 2360 ms in; untimed speech follows to 26350 ms
+minshawi 5:54: word 20 ends 1620 ms in; untimed speech follows to 37380 ms
+minshawi 5:57: word 10 ends 2150 ms in; untimed speech follows to 21120 ms
+minshawi 5:69: word 12 ends 1110 ms in; untimed speech follows to 20980 ms
+minshawi 5:77: word 17 ends 820 ms in; untimed speech follows to 30390 ms
+minshawi 5:95: word 23 ends 2070 ms in; untimed speech follows to 36430 ms
+minshawi 5:103: word 18 ends 1180 ms in; untimed speech follows to 29960 ms
+minshawi 5:106: word 19 ends 930 ms in; untimed speech follows to 28020 ms
+minshawi 5:106: word 35 ends 910 ms in; untimed speech follows to 53600 ms
+minshawi 5:107: word 16 ends 960 ms in; untimed speech follows to 23920 ms
+minshawi 5:110: speech in the 3070 ms gap after word 57; the light goes out
+minshawi 5:114: word 14 ends 1150 ms in; untimed speech follows to 21060 ms
+minshawi 6:6: word 18 ends 940 ms in; untimed speech follows to 24290 ms
+minshawi 6:6: speech in the 2820 ms gap after word 25; the light goes out
+minshawi 6:31: word 17 ends 1140 ms in; untimed speech follows to 28250 ms
+minshawi 6:44: word 16 ends 2020 ms in; untimed speech follows to 31250 ms
+minshawi 6:52: word 15 ends 990 ms in; untimed speech follows to 24510 ms
+minshawi 6:65: word 17 ends 1470 ms in; untimed speech follows to 21550 ms
+minshawi 6:71: word 20 ends 1810 ms in; untimed speech follows to 26340 ms
+minshawi 6:91: word 26 ends 1650 ms in; untimed speech follows to 33200 ms
+minshawi 6:93: word 15 ends 1100 ms in; untimed speech follows to 20660 ms
+minshawi 6:99: word 14 ends 1000 ms in; untimed speech follows to 22590 ms
+minshawi 6:138: word 11 ends 1410 ms in; untimed speech follows to 24690 ms
+minshawi 6:138: word 14 ends 1690 ms in; untimed speech follows to 34470 ms
+minshawi 6:141: word 13 ends 2450 ms in; untimed speech follows to 26110 ms
+minshawi 6:145: word 15 ends 1230 ms in; untimed speech follows to 22210 ms
+minshawi 6:145: speech in the 3800 ms gap after word 21; the light goes out
+minshawi 6:148: word 33 ends 1340 ms in; untimed speech follows to 44760 ms
+minshawi 6:154: word 11 ends 1430 ms in; untimed speech follows to 17340 ms
+minshawi 7:11: word 9 ends 1100 ms in; untimed speech follows to 20480 ms
+minshawi 7:20: word 14 ends 1330 ms in; untimed speech follows to 19410 ms
+minshawi 7:33: word 16 ends 850 ms in; untimed speech follows to 19050 ms
+minshawi 7:35: word 9 ends 1150 ms in; untimed speech follows to 19250 ms
+minshawi 7:48: word 11 ends 940 ms in; untimed speech follows to 24120 ms
+minshawi 7:53: speech in the 1680 ms gap after word 19; the light goes out
+minshawi 7:54: word 17 ends 1720 ms in; untimed speech follows to 22620 ms
+minshawi 7:72: word 10 ends 1920 ms in; untimed speech follows to 21940 ms
+minshawi 7:94: hand-timed override
+minshawi 7:96: word 14 ends 1360 ms in; untimed speech follows to 22010 ms
+minshawi 7:145: word 13 ends 1450 ms in; untimed speech follows to 18370 ms
+minshawi 7:146: word 18 ends 420 ms in; untimed speech follows to 21380 ms
+minshawi 7:157: word 14 ends 1250 ms in; untimed speech follows to 22760 ms
+minshawi 7:157: word 23 ends 2120 ms in; untimed speech follows to 39530 ms
+minshawi 7:163: word 17 ends 1620 ms in; untimed speech follows to 21990 ms
+minshawi 7:165: word 13 ends 830 ms in; untimed speech follows to 18540 ms
+minshawi 7:171: word 14 ends 1560 ms in; untimed speech follows to 27900 ms
+minshawi 7:179: word 12 ends 870 ms in; untimed speech follows to 18550 ms
+minshawi 8:2: word 15 ends 970 ms in; untimed speech follows to 23950 ms
+minshawi 8:7: word 14 ends 670 ms in; untimed speech follows to 22300 ms
+minshawi 8:11: word 14 ends 1320 ms in; untimed speech follows to 21230 ms
+minshawi 8:16: word 16 ends 1220 ms in; untimed speech follows to 26220 ms
+minshawi 8:26: speech in the 2020 ms gap after word 12; the light goes out
+minshawi 8:41: word 13 ends 1770 ms in; untimed speech follows to 26020 ms
+minshawi 8:41: word 23 ends 1290 ms in; untimed speech follows to 53690 ms
+minshawi 8:42: word 21 ends 1590 ms in; untimed speech follows to 36090 ms
+minshawi 8:48: speech in the 2260 ms gap after word 25; the light goes out
+minshawi 8:53: word 14 ends 2360 ms in; untimed speech follows to 32940 ms
+minshawi 8:60: word 14 ends 1570 ms in; untimed speech follows to 24550 ms
+minshawi 8:70: word 14 ends 1350 ms in; untimed speech follows to 26620 ms
+minshawi 8:72: word 13 ends 1690 ms in; untimed speech follows to 24040 ms
+minshawi 9:24: speech in the 2750 ms gap after word 14; the light goes out
+minshawi 9:25: word 15 ends 1320 ms in; untimed speech follows to 20210 ms
+minshawi 9:29: word 16 ends 1550 ms in; untimed speech follows to 18560 ms
+minshawi 9:37: word 13 ends 1360 ms in; untimed speech follows to 19340 ms
+minshawi 9:54: word 14 ends 1140 ms in; untimed speech follows to 22210 ms
+minshawi 9:59: speech in the 1600 ms gap after word 8; the light goes out
+minshawi 9:69: word 12 ends 1560 ms in; untimed speech follows to 22710 ms
+minshawi 9:81: word 13 ends 1840 ms in; untimed speech follows to 29210 ms
+minshawi 9:100: word 13 ends 840 ms in; untimed speech follows to 23300 ms
+minshawi 9:109: speech in the 2580 ms gap after word 19; the light goes out
+minshawi 9:112: word 8 ends 1470 ms in; untimed speech follows to 19880 ms
+minshawi 9:129: word 9 ends 890 ms in; untimed speech follows to 14960 ms
+minshawi 10:2: word 14 ends 1500 ms in; untimed speech follows to 20810 ms
+minshawi 10:12: word 10 ends 2560 ms in; untimed speech follows to 21060 ms
+minshawi 10:22: speech in the 3270 ms gap after word 17; the light goes out
+minshawi 10:22: word 25 ends 1360 ms in; untimed speech follows to 45560 ms
+minshawi 10:22: speech in the 2790 ms gap after word 31; the light goes out
+minshawi 10:23: word 18 ends 1600 ms in; untimed speech follows to 31690 ms
+minshawi 10:24: word 16 ends 1600 ms in; untimed speech follows to 33030 ms
+minshawi 10:24: word 22 ends 1460 ms in; untimed speech follows to 45300 ms
+minshawi 10:24: word 29 ends 2560 ms in; untimed speech follows to 63840 ms
+minshawi 10:31: word 15 ends 1010 ms in; untimed speech follows to 24850 ms
+minshawi 10:37: word 16 ends 1410 ms in; untimed speech follows to 28640 ms
+minshawi 10:59: word 12 ends 2440 ms in; untimed speech follows to 24540 ms
+minshawi 10:61: word 17 ends 1510 ms in; untimed speech follows to 29000 ms
+minshawi 10:71: word 14 ends 1760 ms in; untimed speech follows to 24860 ms
+minshawi 10:71: word 21 ends 1010 ms in; untimed speech follows to 39410 ms
+minshawi 10:88: word 12 ends 1390 ms in; untimed speech follows to 29310 ms
+minshawi 10:90: speech in the 3600 ms gap after word 15; the light goes out
+minshawi 10:98: word 9 ends 860 ms in; untimed speech follows to 16940 ms
+minshawi 10:104: word 16 ends 1110 ms in; untimed speech follows to 29850 ms
+minshawi 11:3: word 12 ends 2010 ms in; untimed speech follows to 28760 ms
+minshawi 11:12: speech in the 3320 ms gap after word 11; the light goes out
+minshawi 11:14: word 7 ends 2020 ms in; untimed speech follows to 21280 ms
+minshawi 11:23: word 11 ends 1720 ms in; untimed speech follows to 24380 ms
+minshawi 11:27: word 18 ends 1670 ms in; untimed speech follows to 28490 ms
+minshawi 11:28: word 15 ends 1260 ms in; untimed speech follows to 25540 ms
+minshawi 11:40: word 9 ends 1120 ms in; untimed speech follows to 17690 ms
+minshawi 11:42: word 15 ends 1850 ms in; untimed speech follows to 27010 ms
+minshawi 11:44: speech in the 2760 ms gap after word 10; the light goes out
+minshawi 11:47: hand-timed override
+minshawi 11:52: word 10 ends 2020 ms in; untimed speech follows to 29710 ms
+minshawi 11:63: word 12 ends 1540 ms in; untimed speech follows to 20480 ms
+minshawi 11:64: word 11 ends 890 ms in; untimed speech follows to 22390 ms
+minshawi 11:78: word 22 ends 1600 ms in; untimed speech follows to 41180 ms
+minshawi 11:91: word 11 ends 1630 ms in; untimed speech follows to 20990 ms
+minshawi 11:94: word 14 ends 1140 ms in; untimed speech follows to 26870 ms
+minshawi 12:6: word 10 ends 900 ms in; untimed speech follows to 20070 ms
+minshawi 12:30: word 13 ends 1240 ms in; untimed speech follows to 18830 ms
+minshawi 12:31: word 8 ends 1560 ms in; untimed speech follows to 17930 ms
+minshawi 12:31: word 27 ends 970 ms in; untimed speech follows to 53890 ms
+minshawi 12:40: hand-timed override
+minshawi 12:42: word 13 ends 1020 ms in; untimed speech follows to 24310 ms
+minshawi 12:43: speech in the 3920 ms gap after word 16; the light goes out
+minshawi 12:46: speech in the 4050 ms gap after word 13; the light goes out
+minshawi 12:62: word 9 ends 480 ms in; untimed speech follows to 18070 ms
+minshawi 12:63: word 12 ends 2760 ms in; untimed speech follows to 24800 ms
+minshawi 12:68: word 14 ends 1010 ms in; untimed speech follows to 25670 ms
+minshawi 12:70: word 8 ends 1730 ms in; untimed speech follows to 17700 ms
+minshawi 12:80: word 17 ends 1320 ms in; untimed speech follows to 39670 ms
+minshawi 12:81: word 14 ends 5820 ms in; untimed speech follows to 31130 ms
+minshawi 12:88: word 12 ends 1720 ms in; untimed speech follows to 25680 ms
+minshawi 12:100: word 27 ends 1310 ms in; untimed speech follows to 40250 ms
+minshawi 12:111: word 19 ends 910 ms in; untimed speech follows to 27100 ms
+minshawi 13:4: speech in the 4300 ms gap after word 9; the light goes out
+minshawi 13:13: word 12 ends 1920 ms in; untimed speech follows to 24700 ms
+minshawi 13:22: word 10 ends 1550 ms in; untimed speech follows to 20130 ms
+minshawi 13:25: word 14 ends 750 ms in; untimed speech follows to 28070 ms
+minshawi 13:25: word 20 ends 1120 ms in; untimed speech follows to 40550 ms
+minshawi 13:30: word 14 ends 2260 ms in; untimed speech follows to 29050 ms
+minshawi 14:6: word 13 ends 1250 ms in; untimed speech follows to 19940 ms
+minshawi 14:16: hand-timed override
+minshawi 14:21: word 13 ends 1360 ms in; untimed speech follows to 23440 ms
+minshawi 14:31: hand-timed override
+minshawi 14:37: word 15 ends 1190 ms in; untimed speech follows to 24640 ms
+minshawi 15:1: hand-timed override
+minshawi 16:14: word 12 ends 1800 ms in; untimed speech follows to 21900 ms
+minshawi 16:26: word 10 ends 1180 ms in; untimed speech follows to 15700 ms
+minshawi 16:35: speech in the 2200 ms gap after word 17; the light goes out
+minshawi 16:76: speech in the 3410 ms gap after word 14; the light goes out
+minshawi 16:80: word 12 ends 1370 ms in; untimed speech follows to 20660 ms
+minshawi 16:80: word 22 ends 2470 ms in; untimed speech follows to 43340 ms
+minshawi 16:92: word 13 ends 890 ms in; untimed speech follows to 21570 ms
+minshawi 16:106: word 17 ends 950 ms in; untimed speech follows to 26890 ms
+minshawi 16:110: word 12 ends 1480 ms in; untimed speech follows to 16260 ms
+minshawi 16:119: speech in the 1810 ms gap after word 9; the light goes out
+minshawi 17:7: word 19 ends 940 ms in; untimed speech follows to 33030 ms
+minshawi 17:23: word 21 ends 1710 ms in; untimed speech follows to 36770 ms
+minshawi 17:62: word 11 ends 1120 ms in; untimed speech follows to 15550 ms
+minshawi 17:69: word 15 ends 910 ms in; untimed speech follows to 20770 ms
+minshawi 17:70: word 11 ends 1400 ms in; untimed speech follows to 17810 ms
+minshawi 17:88: word 14 ends 1170 ms in; untimed speech follows to 18300 ms
+minshawi 17:99: word 19 ends 800 ms in; untimed speech follows to 24690 ms
+minshawi 17:107: hand-timed override
+minshawi 17:111: word 16 ends 3090 ms in; untimed speech follows to 19610 ms
+minshawi 18:14: word 10 ends 1050 ms in; untimed speech follows to 17190 ms
+minshawi 18:16: word 14 ends 1410 ms in; untimed speech follows to 25710 ms
+minshawi 18:19: speech in the 2410 ms gap after word 27; the light goes out
+minshawi 18:31: word 12 ends 950 ms in; untimed speech follows to 19650 ms
+minshawi 18:31: word 20 ends 2210 ms in; untimed speech follows to 41860 ms
+minshawi 18:37: word 8 ends 920 ms in; untimed speech follows to 14330 ms
+minshawi 18:42: word 11 ends 1110 ms in; untimed speech follows to 17430 ms
+minshawi 18:42: word 15 ends 1550 ms in; untimed speech follows to 33280 ms
+minshawi 18:45: word 15 ends 1180 ms in; untimed speech follows to 22690 ms
+minshawi 18:49: word 9 ends 1800 ms in; untimed speech follows to 16430 ms
+minshawi 18:55: word 15 ends 1470 ms in; untimed speech follows to 28150 ms
+minshawi 18:63: word 9 ends 930 ms in; untimed speech follows to 14380 ms
+minshawi 18:74: word 11 ends 1190 ms in; untimed speech follows to 23420 ms
+minshawi 18:77: speech in the 4540 ms gap after word 11; the light goes out
+minshawi 18:79: speech in the 3250 ms gap after word 10; the light goes out
+minshawi 18:82: word 19 ends 1610 ms in; untimed speech follows to 37020 ms
+minshawi 19:58: word 14 ends 1150 ms in; untimed speech follows to 23120 ms
+minshawi 19:73: word 14 ends 1960 ms in; untimed speech follows to 30780 ms
+minshawi 20:10: word 9 ends 890 ms in; untimed speech follows to 21440 ms
+minshawi 20:53: word 13 ends 2030 ms in; untimed speech follows to 22020 ms
+minshawi 20:71: word 21 ends 1050 ms in; untimed speech follows to 33530 ms
+minshawi 20:80: word 10 ends 850 ms in; untimed speech follows to 20450 ms
+minshawi 20:87: word 8 ends 2690 ms in; untimed speech follows to 19890 ms
+minshawi 20:134: word 8 ends 1170 ms in; untimed speech follows to 16960 ms
+minshawi 21:5: word 11 ends 1540 ms in; untimed speech follows to 19460 ms
+minshawi 21:73: word 8 ends 1540 ms in; untimed speech follows to 23630 ms
+minshawi 21:97: word 9 ends 1130 ms in; untimed speech follows to 17990 ms
+minshawi 22:2: word 15 ends 1400 ms in; untimed speech follows to 21390 ms
+minshawi 22:5: word 10 ends 1700 ms in; untimed speech follows to 19150 ms
+minshawi 22:15: word 17 ends 1810 ms in; untimed speech follows to 25140 ms
+minshawi 22:18: word 17 ends 1000 ms in; untimed speech follows to 23910 ms
+minshawi 22:23: speech in the 2840 ms gap after word 14; the light goes out
+minshawi 22:45: word 10 ends 1520 ms in; untimed speech follows to 19530 ms
+minshawi 22:52: word 11 ends 1980 ms in; untimed speech follows to 19460 ms
+minshawi 22:65: word 14 ends 1430 ms in; untimed speech follows to 18330 ms
+minshawi 23:14: word 13 ends 1150 ms in; untimed speech follows to 22390 ms
+minshawi 23:19: speech in the 5850 ms gap after word 11; the light goes out
+minshawi 23:24: word 15 ends 1360 ms in; untimed speech follows to 23100 ms
+minshawi 23:27: word 12 ends 2140 ms in; untimed speech follows to 24510 ms
+minshawi 23:33: speech in the 2610 ms gap after word 10; the light goes out
+minshawi 23:33: word 21 ends 1780 ms in; untimed speech follows to 35440 ms
+minshawi 24:4: word 11 ends 1500 ms in; untimed speech follows to 19210 ms
+minshawi 24:6: word 9 ends 3190 ms in; untimed speech follows to 21250 ms
+minshawi 24:15: word 12 ends 1150 ms in; untimed speech follows to 20490 ms
+minshawi 24:31: speech in the 2190 ms gap after word 49; the light goes out
+minshawi 24:35: word 25 ends 1540 ms in; untimed speech follows to 40900 ms
+minshawi 24:37: speech in the 3220 ms gap after word 15; the light goes out
+minshawi 24:39: word 14 ends 1550 ms in; untimed speech follows to 28440 ms
+minshawi 24:43: word 17 ends 1070 ms in; untimed speech follows to 22030 ms
+minshawi 24:43: speech in the 2370 ms gap after word 27; the light goes out
+minshawi 24:55: word 15 ends 1140 ms in; untimed speech follows to 25560 ms
+minshawi 24:55: word 21 ends 590 ms in; untimed speech follows to 38920 ms
+minshawi 24:61: word 19 ends 1240 ms in; untimed speech follows to 27660 ms
+minshawi 25:18: speech in the 3560 ms gap after word 14; the light goes out
+minshawi 26:20: hand-timed override
+minshawi 27:7: word 7 ends 930 ms in; untimed speech follows to 15300 ms
+minshawi 27:18: word 12 ends 1540 ms in; untimed speech follows to 26120 ms
+minshawi 27:19: word 18 ends 1320 ms in; untimed speech follows to 25920 ms
+minshawi 27:24: speech in the 4610 ms gap after word 11; the light goes out
+minshawi 27:37: word 11 ends 2100 ms in; untimed speech follows to 22650 ms
+minshawi 27:49: word 8 ends 1090 ms in; untimed speech follows to 17340 ms
+minshawi 27:60: word 9 ends 2450 ms in; untimed speech follows to 21540 ms
+minshawi 28:12: word 13 ends 800 ms in; untimed speech follows to 23540 ms
+minshawi 28:20: word 12 ends 390 ms in; untimed speech follows to 21940 ms
+minshawi 28:25: word 9 ends 980 ms in; untimed speech follows to 18630 ms
+minshawi 28:36: word 11 ends 1270 ms in; untimed speech follows to 23230 ms
+minshawi 28:43: word 12 ends 1630 ms in; untimed speech follows to 19000 ms
+minshawi 28:46: word 8 ends 2440 ms in; untimed speech follows to 14570 ms
+minshawi 28:47: speech in the 2400 ms gap after word 9; the light goes out
+minshawi 28:75: word 8 ends 1280 ms in; untimed speech follows to 14460 ms
+minshawi 29:10: word 15 ends 1580 ms in; untimed speech follows to 25120 ms
+minshawi 30:9: word 21 ends 1340 ms in; untimed speech follows to 30700 ms
+minshawi 30:28: word 19 ends 2470 ms in; untimed speech follows to 29420 ms
+minshawi 30:46: word 12 ends 970 ms in; untimed speech follows to 21470 ms
+minshawi 30:48: word 11 ends 2000 ms in; untimed speech follows to 21120 ms
+minshawi 31:14: speech in the 3770 ms gap after word 11; the light goes out
+minshawi 31:29: word 15 ends 1270 ms in; untimed speech follows to 17420 ms
+minshawi 31:33: word 11 ends 890 ms in; untimed speech follows to 18890 ms
+minshawi 33:6: word 21 ends 1510 ms in; untimed speech follows to 33820 ms
+minshawi 33:28: word 11 ends 1640 ms in; untimed speech follows to 25630 ms
+minshawi 33:35: speech in the 2430 ms gap after word 12; the light goes out
+minshawi 33:35: word 19 ends 1020 ms in; untimed speech follows to 41230 ms
+minshawi 33:37: word 37 ends 1460 ms in; untimed speech follows to 46730 ms
+minshawi 33:49: word 12 ends 2340 ms in; untimed speech follows to 26350 ms
+minshawi 33:50: speech in the 3020 ms gap after word 12; the light goes out
+minshawi 33:50: word 29 ends 1150 ms in; untimed speech follows to 44780 ms
+minshawi 33:53: word 20 ends 1220 ms in; untimed speech follows to 26670 ms
+minshawi 34:16: word 8 ends 1430 ms in; untimed speech follows to 19710 ms
+minshawi 34:31: word 23 ends 1240 ms in; untimed speech follows to 28930 ms
+minshawi 34:37: speech in the 2450 ms gap after word 11; the light goes out
+minshawi 34:43: word 13 ends 1550 ms in; untimed speech follows to 25570 ms
+minshawi 35:29: word 12 ends 2440 ms in; untimed speech follows to 26130 ms
+minshawi 35:40: word 13 ends 980 ms in; untimed speech follows to 20230 ms
+minshawi 36:47: word 12 ends 1850 ms in; untimed speech follows to 20000 ms
+minshawi 37:162: hand-timed override
+minshawi 38:23: word 10 ends 1570 ms in; untimed speech follows to 19350 ms
+minshawi 39:8: word 20 ends 950 ms in; untimed speech follows to 28330 ms
+minshawi 39:21: word 16 ends 980 ms in; untimed speech follows to 22610 ms
+minshawi 39:23: word 13 ends 1260 ms in; untimed speech follows to 23060 ms
+minshawi 39:38: word 23 ends 1270 ms in; untimed speech follows to 35970 ms
+minshawi 39:69: word 11 ends 1250 ms in; untimed speech follows to 25780 ms
+minshawi 39:71: word 14 ends 1280 ms in; untimed speech follows to 22950 ms
+minshawi 40:28: word 14 ends 1170 ms in; untimed speech follows to 20940 ms
+minshawi 40:40: word 19 ends 1850 ms in; untimed speech follows to 27320 ms
+minshawi 40:47: word 12 ends 960 ms in; untimed speech follows to 30040 ms
+minshawi 40:64: speech in the 1700 ms gap after word 9; the light goes out
+minshawi 40:83: word 9 ends 800 ms in; untimed speech follows to 18350 ms
+minshawi 41:6: word 13 ends 960 ms in; untimed speech follows to 23690 ms
+minshawi 41:10: word 13 ends 1490 ms in; untimed speech follows to 24380 ms
+minshawi 41:22: word 13 ends 1690 ms in; untimed speech follows to 19480 ms
+minshawi 41:25: speech in the 2870 ms gap after word 13; the light goes out
+minshawi 41:30: word 12 ends 1160 ms in; untimed speech follows to 21570 ms
+minshawi 41:50: speech in the 3630 ms gap after word 11; the light goes out
+minshawi 42:13: word 17 ends 1270 ms in; untimed speech follows to 31140 ms
+minshawi 42:16: speech in the 2920 ms gap after word 15; the light goes out
+minshawi 42:51: speech in the 2140 ms gap after word 15; the light goes out
+minshawi 43:13: speech in the 1840 ms gap after word 11; the light goes out
+minshawi 43:33: word 14 ends 1180 ms in; untimed speech follows to 27230 ms
+minshawi 45:5: word 15 ends 990 ms in; untimed speech follows to 20030 ms
+minshawi 45:23: speech in the 3120 ms gap after word 12; the light goes out
+minshawi 45:26: word 13 ends 790 ms in; untimed speech follows to 19540 ms
+minshawi 45:32: word 15 ends 1040 ms in; untimed speech follows to 16590 ms
+minshawi 46:15: word 26 ends 840 ms in; untimed speech follows to 38880 ms
+minshawi 46:15: word 35 ends 1070 ms in; untimed speech follows to 53360 ms
+minshawi 46:17: hand-timed override
+minshawi 47:2: word 16 ends 1580 ms in; untimed speech follows to 19280 ms
+minshawi 47:4: speech in the 2030 ms gap after word 11; the light goes out
+minshawi 47:20: word 17 ends 2070 ms in; untimed speech follows to 22690 ms
+minshawi 47:32: word 9 ends 790 ms in; untimed speech follows to 15450 ms
+minshawi 48:12: word 14 ends 1700 ms in; untimed speech follows to 21690 ms
+minshawi 48:20: speech in the 3170 ms gap after word 14; the light goes out
+minshawi 48:29: word 39 ends 920 ms in; untimed speech follows to 55140 ms
+minshawi 49:2: word 13 ends 1140 ms in; untimed speech follows to 19760 ms
+minshawi 49:7: word 20 ends 1440 ms in; untimed speech follows to 28010 ms
+minshawi 49:11: word 17 ends 2440 ms in; untimed speech follows to 31080 ms
+minshawi 50:1: hand-timed override
+minshawi 57:12: speech in the 2200 ms gap after word 10; the light goes out
+minshawi 57:13: word 15 ends 1300 ms in; untimed speech follows to 32060 ms
+minshawi 57:13: word 20 ends 1550 ms in; untimed speech follows to 45270 ms
+minshawi 57:14: speech in the 2930 ms gap after word 10; the light goes out
+minshawi 57:16: word 18 ends 1300 ms in; untimed speech follows to 26880 ms
+minshawi 57:20: word 10 ends 2340 ms in; untimed speech follows to 25480 ms
+minshawi 57:20: word 18 ends 1270 ms in; untimed speech follows to 41760 ms
+minshawi 57:25: word 16 ends 1120 ms in; untimed speech follows to 31890 ms
+minshawi 57:27: speech in the 5230 ms gap after word 11; the light goes out
+minshawi 57:27: speech in the 4840 ms gap after word 20; the light goes out
+minshawi 57:28: speech in the 2980 ms gap after word 7; the light goes out
+minshawi 57:29: word 15 ends 630 ms in; untimed speech follows to 17700 ms
+minshawi 58:1: word 9 ends 1770 ms in; untimed speech follows to 13060 ms
+minshawi 58:3: word 8 ends 1170 ms in; untimed speech follows to 14410 ms
+minshawi 58:8: word 15 ends 1350 ms in; untimed speech follows to 18430 ms
+minshawi 58:9: word 11 ends 960 ms in; untimed speech follows to 22250 ms
+minshawi 59:6: speech in the 3460 ms gap after word 8; the light goes out
+minshawi 59:7: speech in the 1910 ms gap after word 12; the light goes out
+minshawi 59:8: word 12 ends 1420 ms in; untimed speech follows to 22210 ms
+minshawi 59:9: word 17 ends 2640 ms in; untimed speech follows to 28350 ms
+minshawi 59:10: word 17 ends 800 ms in; untimed speech follows to 24260 ms
+minshawi 59:11: word 21 ends 900 ms in; untimed speech follows to 25000 ms
+minshawi 59:16: word 13 ends 2890 ms in; untimed speech follows to 22890 ms
+minshawi 60:4: word 20 ends 590 ms in; untimed speech follows to 31190 ms
+minshawi 60:4: word 32 ends 1040 ms in; untimed speech follows to 49630 ms
+minshawi 60:4: speech in the 3020 ms gap after word 38; the light goes out
+minshawi 60:9: word 11 ends 1110 ms in; untimed speech follows to 17030 ms
+minshawi 60:12: word 13 ends 2790 ms in; untimed speech follows to 23260 ms
+minshawi 60:12: word 30 ends 1260 ms in; untimed speech follows to 52570 ms
+minshawi 61:9: speech in the 2220 ms gap after word 7; the light goes out
+minshawi 61:14: speech in the 3260 ms gap after word 11; the light goes out
+minshawi 62:2: speech in the 2050 ms gap after word 11; the light goes out
+minshawi 62:6: word 12 ends 1260 ms in; untimed speech follows to 26620 ms
+minshawi 63:1: word 13 ends 1730 ms in; untimed speech follows to 20300 ms
+minshawi 63:10: hand-timed override
+minshawi 64:9: speech in the 3670 ms gap after word 17; the light goes out
+minshawi 65:8: word 11 ends 1360 ms in; untimed speech follows to 19740 ms
+minshawi 66:5: word 11 ends 1790 ms in; untimed speech follows to 24490 ms
+minshawi 66:6: word 10 ends 1600 ms in; untimed speech follows to 22050 ms
+minshawi 66:6: word 19 ends 1960 ms in; untimed speech follows to 40210 ms
+minshawi 66:8: speech in the 4610 ms gap after word 16; the light goes out
+minshawi 66:10: speech in the 1880 ms gap after word 16; the light goes out
+minshawi 66:12: word 14 ends 1030 ms in; untimed speech follows to 22080 ms
+minshawi 71:7: word 9 ends 1540 ms in; untimed speech follows to 21090 ms
+minshawi 74:31: word 21 ends 1450 ms in; untimed speech follows to 37730 ms
+minshawi 74:31: word 32 ends 1220 ms in; untimed speech follows to 60310 ms
+minshawi 74:34: hand-timed override
+minshawi 76:21: word 9 ends 1400 ms in; untimed speech follows to 23280 ms
+minshawi 78:38: speech in the 3090 ms gap after word 7; the light goes out
+minshawi 78:40: word 10 ends 1480 ms in; untimed speech follows to 24670 ms
+minshawi 81:15: hand-timed override
+minshawi 84:16: hand-timed override
+minshawi 85:10: word 11 ends 2030 ms in; untimed speech follows to 22330 ms
+minshawi 90:16: hand-timed override
+minshawi 93:7: hand-timed override
+minshawi 98:5: word 8 ends 1010 ms in; untimed speech follows to 16150 ms
+minshawi 98:8: word 4 ends 2720 ms in; untimed speech follows to 12450 ms
+minshawi 105:4: hand-timed override
+minshawi 109:4: hand-timed override
+minshawi 109:5: hand-timed override
+shatri 2:22: word 15 ends 970 ms in; untimed speech follows to 31810 ms
+shatri 2:24: word 10 ends 1860 ms in; untimed speech follows to 16900 ms
+shatri 2:34: speech in the 2140 ms gap after word 8; the light goes out
+shatri 2:38: word 14 ends 700 ms in; untimed speech follows to 19030 ms
+shatri 2:55: word 13 ends 1080 ms in; untimed speech follows to 15310 ms
+shatri 2:94: speech in the 1600 ms gap after word 13; the light goes out
+shatri 2:96: word 19 ends 1190 ms in; untimed speech follows to 22800 ms
+shatri 2:113: word 8 ends 1460 ms in; untimed speech follows to 11930 ms
+shatri 2:128: speech in the 2250 ms gap after word 11; the light goes out
+shatri 2:132: word 11 ends 980 ms in; untimed speech follows to 14920 ms
+shatri 2:136: word 11 ends 1240 ms in; untimed speech follows to 21690 ms
+shatri 2:136: speech in the 2910 ms gap after word 17; the light goes out
+shatri 2:164: word 19 ends 1040 ms in; untimed speech follows to 23220 ms
+shatri 2:204: word 14 ends 1260 ms in; untimed speech follows to 16700 ms
+shatri 2:213: word 7 ends 1280 ms in; untimed speech follows to 12810 ms
+shatri 2:213: word 16 ends 1300 ms in; untimed speech follows to 26820 ms
+shatri 2:234: word 20 ends 1810 ms in; untimed speech follows to 34150 ms
+shatri 2:249: word 14 ends 1450 ms in; untimed speech follows to 20060 ms
+shatri 2:251: word 3 ends 1740 ms in; untimed speech follows to 10020 ms
+shatri 2:253: word 33 ends 1870 ms in; untimed speech follows to 37720 ms
+shatri 2:267: word 21 ends 840 ms in; untimed speech follows to 32540 ms
+shatri 2:282: word 68 ends 1460 ms in; untimed speech follows to 72670 ms
+shatri 3:7: word 11 ends 1220 ms in; untimed speech follows to 15340 ms
+shatri 3:14: word 9 ends 1650 ms in; untimed speech follows to 14730 ms
+shatri 3:16: word 8 ends 1340 ms in; untimed speech follows to 14380 ms
+shatri 3:84: word 10 ends 1300 ms in; untimed speech follows to 16180 ms
+shatri 3:91: word 10 ends 1320 ms in; untimed speech follows to 13690 ms
+shatri 3:93: word 12 ends 940 ms in; untimed speech follows to 16520 ms
+shatri 3:112: word 13 ends 1540 ms in; untimed speech follows to 15370 ms
+shatri 3:135: speech in the 1620 ms gap after word 9; the light goes out
+shatri 3:135: word 21 ends 630 ms in; untimed speech follows to 27560 ms
+shatri 3:151: word 9 ends 1420 ms in; untimed speech follows to 12400 ms
+shatri 3:152: word 18 ends 1370 ms in; untimed speech follows to 33580 ms
+shatri 3:156: word 23 ends 750 ms in; untimed speech follows to 27010 ms
+shatri 3:173: word 10 ends 1190 ms in; untimed speech follows to 17290 ms
+shatri 3:183: word 23 ends 760 ms in; untimed speech follows to 37720 ms
+shatri 3:195: hand-timed override
+shatri 3:198: word 3 ends 740 ms in; untimed speech follows to 7570 ms
+shatri 4:23: word 26 ends 680 ms in; untimed speech follows to 45460 ms
+shatri 4:23: word 38 ends 1620 ms in; untimed speech follows to 64010 ms
+shatri 4:42: speech in the 1730 ms gap after word 8; the light goes out
+shatri 4:43: word 18 ends 910 ms in; untimed speech follows to 23420 ms
+shatri 4:56: word 15 ends 2040 ms in; untimed speech follows to 31610 ms
+shatri 4:57: word 10 ends 2300 ms in; untimed speech follows to 19600 ms
+shatri 4:65: word 15 ends 910 ms in; untimed speech follows to 20240 ms
+shatri 4:84: word 3 ends 2100 ms in; untimed speech follows to 6640 ms
+shatri 4:102: word 20 ends 900 ms in; untimed speech follows to 33820 ms
+shatri 4:109: word 7 ends 1160 ms in; untimed speech follows to 13470 ms
+shatri 4:113: word 8 ends 500 ms in; untimed speech follows to 15930 ms
+shatri 5:3: word 50 ends 1000 ms in; untimed speech follows to 67480 ms
+shatri 5:6: word 31 ends 1250 ms in; untimed speech follows to 39050 ms
+shatri 5:12: word 29 ends 1160 ms in; untimed speech follows to 40450 ms
+shatri 5:40: word 11 ends 1390 ms in; untimed speech follows to 14180 ms
+shatri 5:55: word 9 ends 1200 ms in; untimed speech follows to 13360 ms
+shatri 5:56: word 9 ends 1370 ms in; untimed speech follows to 13630 ms
+shatri 5:57: word 14 ends 1480 ms in; untimed speech follows to 16910 ms
+shatri 5:68: word 13 ends 1090 ms in; untimed speech follows to 16280 ms
+shatri 5:95: word 16 ends 500 ms in; untimed speech follows to 22920 ms
+shatri 5:112: word 12 ends 1070 ms in; untimed speech follows to 14920 ms
+shatri 5:114: word 8 ends 1200 ms in; untimed speech follows to 13930 ms
+shatri 5:115: word 12 ends 1390 ms in; untimed speech follows to 21020 ms
+shatri 5:116: hand-timed override
+shatri 5:117: word 25 ends 2660 ms in; untimed speech follows to 36600 ms
+shatri 6:6: word 19 ends 1640 ms in; untimed speech follows to 27490 ms
+shatri 6:6: word 24 ends 760 ms in; untimed speech follows to 38140 ms
+shatri 6:19: word 36 ends 1000 ms in; untimed speech follows to 47140 ms
+shatri 6:27: word 14 ends 800 ms in; untimed speech follows to 18990 ms
+shatri 6:35: word 10 ends 950 ms in; untimed speech follows to 13040 ms
+shatri 6:43: word 8 ends 1070 ms in; untimed speech follows to 13240 ms
+shatri 6:59: word 28 ends 720 ms in; untimed speech follows to 28270 ms
+shatri 6:68: word 10 ends 790 ms in; untimed speech follows to 13280 ms
+shatri 6:71: word 13 ends 1460 ms in; untimed speech follows to 14060 ms
+shatri 6:80: word 5 ends 1330 ms in; untimed speech follows to 23540 ms
+shatri 6:119: word 16 ends 820 ms in; untimed speech follows to 17270 ms
+shatri 6:122: word 11 ends 1340 ms in; untimed speech follows to 15850 ms
+shatri 6:130: word 26 ends 630 ms in; untimed speech follows to 41080 ms
+shatri 6:146: word 17 ends 1370 ms in; untimed speech follows to 17910 ms
+shatri 6:147: word 7 ends 1240 ms in; untimed speech follows to 11310 ms
+shatri 6:159: word 16 ends 1330 ms in; untimed speech follows to 19530 ms
+shatri 7:9: word 4 ends 1970 ms in; untimed speech follows to 8870 ms
+shatri 7:13: word 9 ends 840 ms in; untimed speech follows to 11440 ms
+shatri 7:43: word 33 ends 2300 ms in; untimed speech follows to 45630 ms
+shatri 7:45: speech in the 2410 ms gap after word 7; the light goes out
+shatri 7:47: word 10 ends 2500 ms in; untimed speech follows to 23020 ms
+shatri 7:50: hand-timed override
+shatri 7:51: word 6 ends 4820 ms in; untimed speech follows to 15230 ms
+shatri 7:71: word 17 ends 860 ms in; untimed speech follows to 32710 ms
+shatri 7:116: speech in the 2010 ms gap after word 9; the light goes out
+shatri 7:156: word 29 ends 1890 ms in; untimed speech follows to 41440 ms
+shatri 7:157: word 20 ends 1480 ms in; untimed speech follows to 29100 ms
+shatri 7:157: word 26 ends 870 ms in; untimed speech follows to 40290 ms
+shatri 7:189: word 27 ends 1480 ms in; untimed speech follows to 35000 ms
+shatri 8:34: word 13 ends 2260 ms in; untimed speech follows to 17560 ms
+shatri 8:41: word 9 ends 1280 ms in; untimed speech follows to 17310 ms
+shatri 8:48: word 27 ends 740 ms in; untimed speech follows to 39170 ms
+shatri 8:70: word 21 ends 910 ms in; untimed speech follows to 34700 ms
+shatri 9:24: word 13 ends 1400 ms in; untimed speech follows to 25200 ms
+shatri 9:33: word 11 ends 820 ms in; untimed speech follows to 13970 ms
+shatri 9:36: word 11 ends 1220 ms in; untimed speech follows to 14910 ms
+shatri 9:69: word 18 ends 930 ms in; untimed speech follows to 28910 ms
+shatri 9:80: word 9 ends 660 ms in; untimed speech follows to 11520 ms
+shatri 9:82: word 7 ends 900 ms in; untimed speech follows to 13310 ms
+shatri 9:92: word 12 ends 1610 ms in; untimed speech follows to 14440 ms
+shatri 9:112: word 11 ends 1320 ms in; untimed speech follows to 22110 ms
+shatri 9:120: word 10 ends 1620 ms in; untimed speech follows to 15580 ms
+shatri 9:120: word 15 ends 1560 ms in; untimed speech follows to 23730 ms
+shatri 9:121: word 17 ends 1080 ms in; untimed speech follows to 27120 ms
+shatri 10:4: word 27 ends 770 ms in; untimed speech follows to 31790 ms
+shatri 10:15: word 10 ends 1980 ms in; untimed speech follows to 16180 ms
+shatri 10:22: word 32 ends 940 ms in; untimed speech follows to 49830 ms
+shatri 10:22: word 37 ends 1230 ms in; untimed speech follows to 59750 ms
+shatri 10:25: word 5 ends 2420 ms in; untimed speech follows to 16360 ms
+shatri 10:26: hand-timed override
+shatri 10:71: word 30 ends 1180 ms in; untimed speech follows to 40440 ms
+shatri 10:75: word 10 ends 1440 ms in; untimed speech follows to 15980 ms
+shatri 10:98: word 10 ends 1230 ms in; untimed speech follows to 15290 ms
+shatri 11:23: speech in the 2750 ms gap after word 9; the light goes out
+shatri 11:36: word 12 ends 740 ms in; untimed speech follows to 14740 ms
+shatri 11:42: word 15 ends 1650 ms in; untimed speech follows to 21400 ms
+shatri 11:71: word 4 ends 2080 ms in; untimed speech follows to 9630 ms
+shatri 11:92: word 9 ends 1730 ms in; untimed speech follows to 15600 ms
+shatri 11:103: word 15 ends 820 ms in; untimed speech follows to 25140 ms
+shatri 11:106: word 7 ends 1680 ms in; untimed speech follows to 12180 ms
+shatri 11:108: word 7 ends 1530 ms in; untimed speech follows to 13080 ms
+shatri 12:1: hand-timed override
+shatri 12:6: word 16 ends 400 ms in; untimed speech follows to 25720 ms
+shatri 12:10: word 13 ends 1390 ms in; untimed speech follows to 21830 ms
+shatri 12:78: speech in the 1870 ms gap after word 10; the light goes out
+shatri 12:84: hand-timed override
+shatri 12:85: word 8 ends 1590 ms in; untimed speech follows to 12060 ms
+shatri 12:87: word 8 ends 2380 ms in; untimed speech follows to 14610 ms
+shatri 12:93: word 9 ends 2450 ms in; untimed speech follows to 13840 ms
+shatri 12:94: word 6 ends 1440 ms in; untimed speech follows to 12950 ms
+shatri 12:100: word 34 ends 1890 ms in; untimed speech follows to 46280 ms
+shatri 12:110: word 9 ends 2020 ms in; untimed speech follows to 17490 ms
+shatri 13:25: speech in the 2880 ms gap after word 18; the light goes out
+shatri 14:8: word 9 ends 1350 ms in; untimed speech follows to 13850 ms
+shatri 15:21: word 6 ends 1840 ms in; untimed speech follows to 12230 ms
+shatri 15:39: speech in the 3640 ms gap after word 9; the light goes out
+shatri 15:44: word 5 ends 2180 ms in; untimed speech follows to 11100 ms
+shatri 15:74: word 4 ends 2490 ms in; untimed speech follows to 9740 ms
+shatri 15:87: hand-timed override
+shatri 15:88: word 12 ends 1130 ms in; untimed speech follows to 15810 ms
+shatri 16:14: word 12 ends 1780 ms in; untimed speech follows to 19840 ms
+shatri 16:75: word 14 ends 1080 ms in; untimed speech follows to 17290 ms
+shatri 16:94: word 13 ends 710 ms in; untimed speech follows to 17780 ms
+shatri 18:37: word 10 ends 1450 ms in; untimed speech follows to 15440 ms
+shatri 18:49: word 2 ends 2890 ms in; untimed speech follows to 6400 ms
+shatri 18:50: word 8 ends 820 ms in; untimed speech follows to 12750 ms
+shatri 18:51: word 8 ends 1360 ms in; untimed speech follows to 12040 ms
+shatri 18:79: word 10 ends 1460 ms in; untimed speech follows to 13910 ms
+shatri 18:110: word 8 ends 880 ms in; untimed speech follows to 14790 ms
+shatri 19:68: word 5 ends 1750 ms in; untimed speech follows to 13650 ms
+shatri 19:73: speech in the 2330 ms gap after word 8; the light goes out
+shatri 20:39: word 10 ends 1100 ms in; untimed speech follows to 13560 ms
+shatri 20:53: word 12 ends 1610 ms in; untimed speech follows to 15280 ms
+shatri 20:61: speech in the 1940 ms gap after word 10; the light goes out
+shatri 20:73: word 6 ends 1300 ms in; untimed speech follows to 12630 ms
+shatri 20:74: word 8 ends 1640 ms in; untimed speech follows to 14880 ms
+shatri 20:82: word 7 ends 1840 ms in; untimed speech follows to 12330 ms
+shatri 20:120: word 7 ends 830 ms in; untimed speech follows to 12300 ms
+shatri 21:6: hand-timed override
+shatri 21:78: word 12 ends 1310 ms in; untimed speech follows to 14160 ms
+shatri 21:91: word 5 ends 1780 ms in; untimed speech follows to 10760 ms
+shatri 22:2: word 12 ends 1530 ms in; untimed speech follows to 16830 ms
+shatri 22:2: word 15 ends 1550 ms in; untimed speech follows to 25480 ms
+shatri 22:15: word 17 ends 1460 ms in; untimed speech follows to 22370 ms
+shatri 22:26: word 10 ends 1100 ms in; untimed speech follows to 13130 ms
+shatri 22:37: word 6 ends 2200 ms in; untimed speech follows to 15020 ms
+shatri 22:42: speech in the 2480 ms gap after word 5; the light goes out
+shatri 22:52: hand-timed override
+shatri 23:33: word 18 ends 920 ms in; untimed speech follows to 23990 ms
+shatri 23:66: speech in the 1700 ms gap after word 6; the light goes out
+shatri 23:101: word 7 ends 1080 ms in; untimed speech follows to 12770 ms
+shatri 23:103: word 7 ends 2340 ms in; untimed speech follows to 23780 ms
+shatri 24:3: word 10 ends 1680 ms in; untimed speech follows to 13930 ms
+shatri 24:8: word 8 ends 1090 ms in; untimed speech follows to 13350 ms
+shatri 24:16: word 10 ends 1450 ms in; untimed speech follows to 17660 ms
+shatri 24:39: word 8 ends 1370 ms in; untimed speech follows to 13890 ms
+shatri 24:39: word 17 ends 1220 ms in; untimed speech follows to 27940 ms
+shatri 24:43: word 12 ends 1150 ms in; untimed speech follows to 15400 ms
+shatri 24:43: word 20 ends 1640 ms in; untimed speech follows to 26210 ms
+shatri 24:43: word 29 ends 1470 ms in; untimed speech follows to 41130 ms
+shatri 24:55: word 7 ends 1940 ms in; untimed speech follows to 11970 ms
+shatri 25:2: word 14 ends 680 ms in; untimed speech follows to 15290 ms
+shatri 25:10: speech in the 3190 ms gap after word 10; the light goes out
+shatri 25:15: word 6 ends 950 ms in; untimed speech follows to 13620 ms
+shatri 25:53: word 7 ends 1310 ms in; untimed speech follows to 12200 ms
+shatri 25:71: word 6 ends 1830 ms in; untimed speech follows to 15120 ms
+shatri 26:20: hand-timed override
+shatri 26:51: word 9 ends 1900 ms in; untimed speech follows to 13280 ms
+shatri 27:49: word 7 ends 1800 ms in; untimed speech follows to 13630 ms
+shatri 27:60: word 9 ends 1940 ms in; untimed speech follows to 17370 ms
+shatri 27:63: word 9 ends 1310 ms in; untimed speech follows to 14280 ms
+shatri 27:87: word 8 ends 1640 ms in; untimed speech follows to 10470 ms
+shatri 28:4: word 11 ends 1260 ms in; untimed speech follows to 15280 ms
+shatri 28:7: word 19 ends 1320 ms in; untimed speech follows to 34130 ms
+shatri 28:23: word 10 ends 1120 ms in; untimed speech follows to 17100 ms
+shatri 28:29: word 11 ends 1370 ms in; untimed speech follows to 15680 ms
+shatri 28:29: word 17 ends 900 ms in; untimed speech follows to 26340 ms
+shatri 28:54: word 7 ends 1250 ms in; untimed speech follows to 12430 ms
+shatri 28:57: word 18 ends 780 ms in; untimed speech follows to 25380 ms
+shatri 28:57: word 21 ends 2010 ms in; untimed speech follows to 34170 ms
+shatri 28:64: speech in the 2970 ms gap after word 7; the light goes out
+shatri 28:64: word 9 ends 2150 ms in; untimed speech follows to 25140 ms
+shatri 28:65: word 5 ends 2330 ms in; untimed speech follows to 24540 ms
+shatri 28:70: word 10 ends 2540 ms in; untimed speech follows to 25370 ms
+shatri 28:80: word 14 ends 1010 ms in; untimed speech follows to 16020 ms
+shatri 28:81: word 9 ends 1100 ms in; untimed speech follows to 11350 ms
+shatri 29:2: word 7 ends 1920 ms in; untimed speech follows to 15160 ms
+shatri 29:14: word 14 ends 1450 ms in; untimed speech follows to 20960 ms
+shatri 29:33: speech in the 2020 ms gap after word 7; the light goes out
+shatri 29:58: word 11 ends 1260 ms in; untimed speech follows to 19380 ms
+shatri 30:50: word 4 ends 600 ms in; untimed speech follows to 9840 ms
+shatri 30:54: word 15 ends 430 ms in; untimed speech follows to 19520 ms
+shatri 30:54: word 16 ends 1320 ms in; untimed speech follows to 25280 ms
+shatri 31:14: word 8 ends 530 ms in; untimed speech follows to 13230 ms
+shatri 31:32: word 15 ends 1080 ms in; untimed speech follows to 20750 ms
+shatri 32:23: hand-timed override
+shatri 33:21: word 14 ends 740 ms in; untimed speech follows to 14960 ms
+shatri 33:29: word 11 ends 1800 ms in; untimed speech follows to 19480 ms
+shatri 33:35: word 7 ends 1640 ms in; untimed speech follows to 13520 ms
+shatri 33:35: word 20 ends 1590 ms in; untimed speech follows to 45180 ms
+shatri 33:52: word 10 ends 980 ms in; untimed speech follows to 14170 ms
+shatri 33:53: word 20 ends 1050 ms in; untimed speech follows to 25720 ms
+shatri 33:53: word 60 ends 990 ms in; untimed speech follows to 80210 ms
+shatri 33:55: word 16 ends 610 ms in; untimed speech follows to 38460 ms
+shatri 33:57: word 10 ends 990 ms in; untimed speech follows to 13950 ms
+shatri 34:14: word 10 ends 1840 ms in; untimed speech follows to 15200 ms
+shatri 34:14: word 24 ends 530 ms in; untimed speech follows to 32000 ms
+shatri 34:31: word 26 ends 1550 ms in; untimed speech follows to 33430 ms
+shatri 35:33: speech in the 1890 ms gap after word 5; the light goes out
+shatri 35:36: word 9 ends 1380 ms in; untimed speech follows to 13470 ms
+shatri 36:1: hand-timed override
+shatri 37:1: hand-timed override
+shatri 37:55: word 2 ends 1860 ms in; untimed speech follows to 6810 ms
+shatri 37:59: word 3 ends 1040 ms in; untimed speech follows to 7180 ms
+shatri 37:65: hand-timed override
+shatri 37:66: hand-timed override
+shatri 37:67: hand-timed override
+shatri 37:97: word 1 ends 4610 ms in; untimed speech follows to 13710 ms
+shatri 37:100: hand-timed override
+shatri 37:102: word 1 ends 4620 ms in; untimed speech follows to 9500 ms
+shatri 37:102: word 20 ends 1190 ms in; untimed speech follows to 44680 ms
+shatri 37:130: hand-timed override
+shatri 38:15: word 8 ends 410 ms in; untimed speech follows to 15680 ms
+shatri 38:26: word 27 ends 660 ms in; untimed speech follows to 34820 ms
+shatri 39:7: word 26 ends 1260 ms in; untimed speech follows to 29270 ms
+shatri 39:8: word 20 ends 710 ms in; untimed speech follows to 24530 ms
+shatri 39:23: word 13 ends 990 ms in; untimed speech follows to 20820 ms
+shatri 39:56: word 10 ends 1140 ms in; untimed speech follows to 15700 ms
+shatri 39:65: word 11 ends 690 ms in; untimed speech follows to 14070 ms
+shatri 39:69: hand-timed override
+shatri 40:5: word 12 ends 1750 ms in; untimed speech follows to 24440 ms
+shatri 40:15: word 11 ends 1420 ms in; untimed speech follows to 13010 ms
+shatri 40:29: word 24 ends 830 ms in; untimed speech follows to 32100 ms
+shatri 40:39: word 6 ends 1400 ms in; untimed speech follows to 13570 ms
+shatri 40:67: word 18 ends 980 ms in; untimed speech follows to 28900 ms
+shatri 40:82: word 22 ends 850 ms in; untimed speech follows to 24240 ms
+shatri 41:30: word 16 ends 1540 ms in; untimed speech follows to 25880 ms
+shatri 41:34: word 14 ends 1290 ms in; untimed speech follows to 17630 ms
+shatri 41:50: word 19 ends 1340 ms in; untimed speech follows to 27300 ms
+shatri 42:25: word 9 ends 1640 ms in; untimed speech follows to 10970 ms
+shatri 42:48: word 26 ends 1720 ms in; untimed speech follows to 33010 ms
+shatri 43:9: word 7 ends 1790 ms in; untimed speech follows to 11450 ms
+shatri 43:23: word 16 ends 400 ms in; untimed speech follows to 28760 ms
+shatri 43:33: word 10 ends 970 ms in; untimed speech follows to 16430 ms
+shatri 43:38: word 9 ends 980 ms in; untimed speech follows to 14010 ms
+shatri 43:84: hand-timed override
+shatri 44:2: hand-timed override
+shatri 44:3: hand-timed override
+shatri 44:5: hand-timed override
+shatri 44:6: hand-timed override
+shatri 44:7: hand-timed override
+shatri 44:17: speech in the 2740 ms gap after word 6; the light goes out
+shatri 45:8: word 8 ends 1670 ms in; untimed speech follows to 11590 ms
+shatri 45:23: word 17 ends 1140 ms in; untimed speech follows to 21960 ms
+shatri 45:32: word 19 ends 1450 ms in; untimed speech follows to 20800 ms
+shatri 46:21: word 13 ends 620 ms in; untimed speech follows to 16940 ms
+shatri 46:21: word 19 ends 1390 ms in; untimed speech follows to 28380 ms
+shatri 46:31: hand-timed override
+shatri 47:7: word 7 ends 1310 ms in; untimed speech follows to 13210 ms
+shatri 47:15: word 42 ends 1400 ms in; untimed speech follows to 58440 ms
+shatri 47:24: word 4 ends 1260 ms in; untimed speech follows to 9060 ms
+shatri 47:32: word 9 ends 780 ms in; untimed speech follows to 15280 ms
+shatri 48:11: word 7 ends 1280 ms in; untimed speech follows to 11250 ms
+shatri 48:12: speech in the 2970 ms gap after word 14; the light goes out
+shatri 48:18: speech in the 2480 ms gap after word 13; the light goes out
+shatri 49:7: word 16 ends 890 ms in; untimed speech follows to 21280 ms
+shatri 49:14: word 20 ends 1020 ms in; untimed speech follows to 25200 ms
+shatri 49:16: word 9 ends 1420 ms in; untimed speech follows to 11350 ms
+shatri 50:27: speech in the 3120 ms gap after word 6; the light goes out
+shatri 50:30: word 7 ends 1360 ms in; untimed speech follows to 18970 ms
+shatri 50:38: word 9 ends 1920 ms in; untimed speech follows to 13410 ms
+shatri 53:31: word 10 ends 1440 ms in; untimed speech follows to 12370 ms
+shatri 57:29: word 11 ends 890 ms in; untimed speech follows to 15140 ms
+shatri 58:1: word 9 ends 3370 ms in; untimed speech follows to 13000 ms
+shatri 58:3: word 8 ends 1140 ms in; untimed speech follows to 13070 ms
+shatri 58:9: word 9 ends 1490 ms in; untimed speech follows to 15300 ms
+shatri 58:18: word 8 ends 900 ms in; untimed speech follows to 12360 ms
+shatri 59:6: word 17 ends 640 ms in; untimed speech follows to 26220 ms
+shatri 59:9: word 10 ends 910 ms in; untimed speech follows to 13270 ms
+shatri 60:4: word 36 ends 1170 ms in; untimed speech follows to 45510 ms
+shatri 60:13: word 16 ends 2120 ms in; untimed speech follows to 21630 ms
+shatri 61:6: word 22 ends 410 ms in; untimed speech follows to 29000 ms
+shatri 63:7: word 18 ends 1110 ms in; untimed speech follows to 20930 ms
+shatri 64:10: word 7 ends 1340 ms in; untimed speech follows to 12390 ms
+shatri 65:1: word 7 ends 1880 ms in; untimed speech follows to 16260 ms
+shatri 65:6: word 17 ends 990 ms in; untimed speech follows to 30670 ms
+shatri 67:4: word 8 ends 1210 ms in; untimed speech follows to 12630 ms
+shatri 67:8: word 10 ends 1320 ms in; untimed speech follows to 15140 ms
+shatri 74:31: word 9 ends 850 ms in; untimed speech follows to 12770 ms
+shatri 74:31: word 17 ends 1050 ms in; untimed speech follows to 23850 ms
+shatri 74:31: word 33 ends 1200 ms in; untimed speech follows to 48030 ms
+shatri 77:50: speech in the 1950 ms gap after word 2; the light goes out
+shatri 78:40: word 9 ends 1050 ms in; untimed speech follows to 18660 ms
+shatri 89:19: hand-timed override
+rifai 2:16: word 8 ends 1800 ms in; untimed speech follows to 14400 ms
+rifai 2:83: word 11 ends 1200 ms in; untimed speech follows to 16040 ms
+rifai 2:110: word 12 ends 1410 ms in; untimed speech follows to 22520 ms
+rifai 2:145: word 28 ends 670 ms in; untimed speech follows to 36310 ms
+rifai 2:178: word 22 ends 1710 ms in; untimed speech follows to 28390 ms
+rifai 2:183: word 12 ends 810 ms in; untimed speech follows to 17450 ms
+rifai 2:264: word 8 ends 1010 ms in; untimed speech follows to 17230 ms
+rifai 2:281: word 6 ends 1850 ms in; untimed speech follows to 13620 ms
+rifai 3:65: word 10 ends 1250 ms in; untimed speech follows to 17520 ms
+rifai 3:152: word 14 ends 1600 ms in; untimed speech follows to 19590 ms
+rifai 3:179: word 20 ends 700 ms in; untimed speech follows to 23300 ms
+rifai 4:6: word 6 ends 1920 ms in; untimed speech follows to 11930 ms
+rifai 4:77: word 23 ends 790 ms in; untimed speech follows to 26310 ms
+rifai 4:82: word 3 ends 1910 ms in; untimed speech follows to 10120 ms
+rifai 4:88: word 15 ends 2150 ms in; untimed speech follows to 26690 ms
+rifai 4:98: word 9 ends 860 ms in; untimed speech follows to 15060 ms
+rifai 4:124: word 13 ends 1210 ms in; untimed speech follows to 19450 ms
+rifai 4:127: word 16 ends 860 ms in; untimed speech follows to 22670 ms
+rifai 4:135: word 11 ends 1530 ms in; untimed speech follows to 19720 ms
+rifai 4:140: word 14 ends 680 ms in; untimed speech follows to 18860 ms
+rifai 4:172: word 10 ends 2010 ms in; untimed speech follows to 16380 ms
+rifai 4:172: word 14 ends 1310 ms in; untimed speech follows to 25710 ms
+rifai 5:12: speech in the 2960 ms gap after word 23; the light goes out
+rifai 5:17: word 24 ends 1540 ms in; untimed speech follows to 26820 ms
+rifai 5:20: word 9 ends 890 ms in; untimed speech follows to 13470 ms
+rifai 5:32: word 13 ends 650 ms in; untimed speech follows to 18340 ms
+rifai 5:44: word 17 ends 1140 ms in; untimed speech follows to 30110 ms
+rifai 5:54: word 13 ends 910 ms in; untimed speech follows to 18210 ms
+rifai 5:57: word 16 ends 770 ms in; untimed speech follows to 22110 ms
+rifai 5:65: word 9 ends 1950 ms in; untimed speech follows to 15860 ms
+rifai 5:73: word 14 ends 1230 ms in; untimed speech follows to 18940 ms
+rifai 5:107: word 9 ends 1410 ms in; untimed speech follows to 14440 ms
+rifai 6:27: word 13 ends 1060 ms in; untimed speech follows to 21220 ms
+rifai 6:70: word 22 ends 1400 ms in; untimed speech follows to 26190 ms
+rifai 6:74: word 1 ends 400 ms in; untimed speech follows to 5210 ms
+rifai 6:158: word 28 ends 750 ms in; untimed speech follows to 30050 ms
+rifai 7:19: word 5 ends 1470 ms in; untimed speech follows to 12400 ms
+rifai 7:156: word 24 ends 1740 ms in; untimed speech follows to 38530 ms
+rifai 7:158: word 19 ends 1410 ms in; untimed speech follows to 26220 ms
+rifai 7:169: word 6 ends 1510 ms in; untimed speech follows to 14030 ms
+rifai 8:11: word 19 ends 1610 ms in; untimed speech follows to 33050 ms
+rifai 8:16: word 7 ends 1600 ms in; untimed speech follows to 13420 ms
+rifai 8:36: word 8 ends 710 ms in; untimed speech follows to 37680 ms
+rifai 8:57: word 8 ends 1050 ms in; untimed speech follows to 12120 ms
+rifai 8:70: word 8 ends 2460 ms in; untimed speech follows to 12880 ms
+rifai 9:37: word 13 ends 540 ms in; untimed speech follows to 25640 ms
+rifai 9:69: word 7 ends 810 ms in; untimed speech follows to 13770 ms
+rifai 9:69: word 20 ends 1240 ms in; untimed speech follows to 38350 ms
+rifai 9:74: word 35 ends 1190 ms in; untimed speech follows to 47550 ms
+rifai 9:109: word 13 ends 1140 ms in; untimed speech follows to 15650 ms
+rifai 9:122: word 20 ends 730 ms in; untimed speech follows to 28810 ms
+rifai 10:21: word 4 ends 1160 ms in; untimed speech follows to 13990 ms
+rifai 10:27: word 24 ends 1480 ms in; untimed speech follows to 33840 ms
+rifai 10:61: word 17 ends 1100 ms in; untimed speech follows to 19540 ms
+rifai 10:68: word 19 ends 1480 ms in; untimed speech follows to 24840 ms
+rifai 10:83: word 7 ends 700 ms in; untimed speech follows to 15590 ms
+rifai 10:106: word 10 ends 1370 ms in; untimed speech follows to 17450 ms
+rifai 11:52: word 6 ends 590 ms in; untimed speech follows to 13720 ms
+rifai 11:108: word 5 ends 2230 ms in; untimed speech follows to 11910 ms
+rifai 11:123: word 8 ends 830 ms in; untimed speech follows to 16760 ms
+rifai 12:59: word 9 ends 1340 ms in; untimed speech follows to 15140 ms
+rifai 12:83: word 14 ends 1390 ms in; untimed speech follows to 18710 ms
+rifai 13:14: word 11 ends 980 ms in; untimed speech follows to 18240 ms
+rifai 13:16: word 11 ends 1730 ms in; untimed speech follows to 16300 ms
+rifai 14:9: word 17 ends 1540 ms in; untimed speech follows to 20960 ms
+rifai 14:34: word 11 ends 2140 ms in; untimed speech follows to 19790 ms
+rifai 15:90: hand-timed override
+rifai 16:29: word 3 ends 1110 ms in; untimed speech follows to 8800 ms
+rifai 16:32: word 7 ends 1100 ms in; untimed speech follows to 16180 ms
+rifai 16:48: hand-timed override
+rifai 16:63: word 14 ends 2080 ms in; untimed speech follows to 22120 ms
+rifai 16:66: word 15 ends 1530 ms in; untimed speech follows to 22710 ms
+rifai 17:64: word 8 ends 860 ms in; untimed speech follows to 12940 ms
+rifai 17:68: word 9 ends 860 ms in; untimed speech follows to 17400 ms
+rifai 17:78: word 7 ends 1290 ms in; untimed speech follows to 12830 ms
+rifai 17:110: word 18 ends 830 ms in; untimed speech follows to 22720 ms
+rifai 18:13: word 9 ends 970 ms in; untimed speech follows to 15840 ms
+rifai 18:31: word 20 ends 1910 ms in; untimed speech follows to 31950 ms
+rifai 18:56: hand-timed override
+rifai 20:2: hand-timed override
+rifai 20:47: word 5 ends 700 ms in; untimed speech follows to 13770 ms
+rifai 20:58: word 7 ends 1180 ms in; untimed speech follows to 13890 ms
+rifai 20:61: word 9 ends 940 ms in; untimed speech follows to 12950 ms
+rifai 20:108: word 9 ends 2250 ms in; untimed speech follows to 16920 ms
+rifai 21:9: speech in the 2540 ms gap after word 4; the light goes out
+rifai 21:19: word 11 ends 1170 ms in; untimed speech follows to 14510 ms
+rifai 22:5: word 10 ends 1550 ms in; untimed speech follows to 16550 ms
+rifai 22:56: word 3 ends 1670 ms in; untimed speech follows to 7910 ms
+rifai 23:101: word 7 ends 1010 ms in; untimed speech follows to 10980 ms
+rifai 24:40: word 29 ends 1120 ms in; untimed speech follows to 36540 ms
+rifai 24:47: word 4 ends 1110 ms in; untimed speech follows to 13210 ms
+rifai 24:58: hand-timed override
+rifai 25:14: word 5 ends 1820 ms in; untimed speech follows to 9590 ms
+rifai 25:75: word 5 ends 1200 ms in; untimed speech follows to 15100 ms
+rifai 26:20: hand-timed override
+rifai 26:77: hand-timed override
+rifai 26:185: hand-timed override
+rifai 27:4: word 8 ends 1090 ms in; untimed speech follows to 13400 ms
+rifai 27:9: hand-timed override
+rifai 27:24: word 7 ends 1160 ms in; untimed speech follows to 16520 ms
+rifai 27:25: word 3 ends 1180 ms in; untimed speech follows to 7210 ms
+rifai 28:24: word 12 ends 620 ms in; untimed speech follows to 17880 ms
+rifai 28:49: word 6 ends 1120 ms in; untimed speech follows to 12860 ms
+rifai 28:78: word 21 ends 880 ms in; untimed speech follows to 24290 ms
+rifai 29:64: word 4 ends 1150 ms in; untimed speech follows to 7740 ms
+rifai 32:3: word 16 ends 660 ms in; untimed speech follows to 21330 ms
+rifai 32:13: word 12 ends 1320 ms in; untimed speech follows to 18540 ms
+rifai 33:21: word 14 ends 970 ms in; untimed speech follows to 19080 ms
+rifai 33:27: word 4 ends 1440 ms in; untimed speech follows to 12800 ms
+rifai 34:34: word 9 ends 1600 ms in; untimed speech follows to 13500 ms
+rifai 34:42: word 14 ends 2150 ms in; untimed speech follows to 19680 ms
+rifai 35:23: hand-timed override
+rifai 35:37: word 6 ends 600 ms in; untimed speech follows to 15220 ms
+rifai 39:67: word 13 ends 1390 ms in; untimed speech follows to 20020 ms
+rifai 40:56: word 6 ends 610 ms in; untimed speech follows to 14190 ms
+rifai 40:83: word 9 ends 850 ms in; untimed speech follows to 27520 ms
+rifai 41:17: word 11 ends 660 ms in; untimed speech follows to 17830 ms
+rifai 42:25: word 6 ends 1080 ms in; untimed speech follows to 10430 ms
+rifai 45:5: word 10 ends 1060 ms in; untimed speech follows to 18740 ms
+rifai 45:31: word 10 ends 1420 ms in; untimed speech follows to 17730 ms
+rifai 46:26: word 24 ends 870 ms in; untimed speech follows to 41030 ms
+rifai 48:17: word 12 ends 1060 ms in; untimed speech follows to 19790 ms
+rifai 49:13: word 4 ends 1540 ms in; untimed speech follows to 9830 ms
+rifai 50:19: word 4 ends 1320 ms in; untimed speech follows to 9970 ms
+rifai 50:29: word 4 ends 710 ms in; untimed speech follows to 7970 ms
+rifai 50:35: hand-timed override
+rifai 51:8: hand-timed override
+rifai 53:51: hand-timed override
+rifai 57:9: word 7 ends 1410 ms in; untimed speech follows to 10110 ms
+rifai 57:27: word 20 ends 1700 ms in; untimed speech follows to 37340 ms
+rifai 61:14: word 17 ends 2330 ms in; untimed speech follows to 27970 ms
+rifai 65:10: word 9 ends 1760 ms in; untimed speech follows to 13190 ms
+rifai 69:28: hand-timed override
+rifai 82:1: hand-timed override
+rifai 96:10: hand-timed override

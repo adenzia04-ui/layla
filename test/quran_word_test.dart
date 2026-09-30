@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -12,6 +13,11 @@ import 'package:noor/features/quran/domain/word_timing.dart';
 void main() {
   late Quran quran;
   late MushafGlyphs glyphs;
+
+  VoiceTiming load(String v) => VoiceTiming.parse(
+    v,
+    File('assets/quran/timing/$v.json').readAsStringSync(),
+  );
 
   setUpAll(() {
     quran = parseQuran(File('assets/quran/quran.json').readAsStringSync());
@@ -160,21 +166,141 @@ void main() {
       expect(s.length, 4);
       expect(s[3].start, 3430);
       expect(s[3].end, 6290);
+      for (final String v in timedVoices) {
+        expect(load(v).of('37:130').length, 4, reason: v);
+        expect(load(v).of('2:181').length, 14, reason: v);
+        expect(load(v).of('13:37').length, 20, reason: v);
+      }
     });
 
-    test('an untimed repeat lets the light go out', () {
+    test('the light holds through breaths and goes out only for repeats', () {
+      int marked = 0;
+      for (final String v in timedVoices) {
+        final VoiceTiming t = load(v);
+        for (final Surah s in quran.surahs) {
+          for (final Ayah a in quran.ayahsOf(s.number)) {
+            final List<WordSpan> spans = t.of(a.key);
+            for (int i = 0; i + 1 < spans.length; i++) {
+              final WordSpan w = spans[i];
+              final int next = spans[i + 1].start;
+              if (w.thenRepeat) {
+                marked++;
+                expect(t.wordAt(a.key, w.end + 250), w.position);
+                if (next > w.end + 251) {
+                  expect(
+                    t.wordAt(a.key, w.end + 251),
+                    0,
+                    reason: '$v ${a.key}',
+                  );
+                }
+              } else {
+                // However long the silence, the word stays lit until the
+                // next one begins.
+                expect(
+                  t.wordAt(a.key, next - 1),
+                  w.position,
+                  reason: '$v ${a.key} word ${w.position}',
+                );
+              }
+            }
+            if (spans.isNotEmpty) {
+              final WordSpan last = spans.last;
+              expect(t.wordAt(a.key, last.end + 2000), last.position);
+              expect(t.wordAt(a.key, last.end + 2001), 0);
+            }
+          }
+        }
+      }
+      expect(marked, greaterThan(100), reason: 'repeats heard in recordings');
       // Rifai 8:36: the data holds word 8 from 8.2 s to 29 s while he
-      // repeats an earlier phrase. The light goes out rather than sit on
-      // the wrong word, and returns with word 9.
-      final VoiceTiming t = VoiceTiming.parse(
-        'rifai',
-        File('assets/quran/timing/rifai.json').readAsStringSync(),
-      );
-      final List<WordSpan> s = t.of('8:36');
-      expect(s[7].end - s[7].start, lessThan(4000));
-      expect(t.wordAt('8:36', s[7].start + 100), 8);
-      expect(t.wordAt('8:36', s[7].end + 3000), 0);
-      expect(t.wordAt('8:36', s[8].start + 10), 9);
+      // repeats an earlier phrase; the recording shows it.
+      final List<WordSpan> r = load('rifai').of('8:36');
+      expect(r[7].thenRepeat, isTrue);
+      expect(load('rifai').wordAt('8:36', r[8].start + 10), 9);
+    });
+
+    test('every word is on screen long enough to be seen', () {
+      final Map<String, Object?> hand =
+          jsonDecode(File('tool/timing_overrides.json').readAsStringSync())
+              as Map<String, Object?>;
+      for (final String v in timedVoices) {
+        final VoiceTiming t = load(v);
+        final Map<String, Object?> mine =
+            (hand[v] as Map<String, Object?>?) ?? const <String, Object?>{};
+        for (final Surah s in quran.surahs) {
+          for (final Ayah a in quran.ayahsOf(s.number)) {
+            if (mine.containsKey(a.key)) continue;
+            final List<WordSpan> spans = t.of(a.key);
+            for (int i = 0; i + 1 < spans.length; i++) {
+              expect(
+                spans[i + 1].start - spans[i].start,
+                greaterThanOrEqualTo(100),
+                reason: '$v ${a.key} word ${i + 1}',
+              );
+              expect(spans[i].end, lessThanOrEqualTo(spans[i + 1].start));
+            }
+          }
+        }
+      }
+    });
+
+    test('no timing runs past its recording', () {
+      final Map<String, Object?> lengths =
+          jsonDecode(File('tool/recording_ms.json').readAsStringSync())
+              as Map<String, Object?>;
+      for (final String v in timedVoices) {
+        final VoiceTiming t = load(v);
+        final Map<String, Object?> ms = lengths[v]! as Map<String, Object?>;
+        for (final Surah s in quran.surahs) {
+          for (final Ayah a in quran.ayahsOf(s.number)) {
+            final List<WordSpan> spans = t.of(a.key);
+            if (spans.isEmpty) continue;
+            expect(
+              spans.last.start,
+              lessThan(ms[a.key]! as int),
+              reason: '$v ${a.key}',
+            );
+          }
+        }
+      }
+    });
+
+    test('hand-timed ayahs reach the app as measured', () {
+      final Map<String, Object?> hand =
+          jsonDecode(File('tool/timing_overrides.json').readAsStringSync())
+              as Map<String, Object?>;
+      expect(hand.keys.every(timedVoices.contains), isTrue);
+      hand.forEach((String v, Object? entries) {
+        final VoiceTiming t = load(v);
+        (entries! as Map<String, Object?>).forEach((String k, Object? e) {
+          final List<Object?> words =
+              (e! as Map<String, Object?>)['words']! as List<Object?>;
+          final List<WordSpan> got = t.of(k);
+          expect(got.length, words.length, reason: '$v $k');
+          for (int i = 0; i < words.length; i++) {
+            final List<Object?> w = words[i]! as List<Object?>;
+            expect(
+              <int>[got[i].position, got[i].start, got[i].end],
+              <int>[w[0]! as int, w[1]! as int, w[2]! as int],
+              reason: '$v $k',
+            );
+          }
+        });
+      });
+    });
+
+    test('a one-word ayah is lit for the whole recording', () {
+      // quran.com times only the last letter of عٓسٓقٓ in most voices.
+      final Map<String, Object?> lengths =
+          jsonDecode(File('tool/recording_ms.json').readAsStringSync())
+              as Map<String, Object?>;
+      for (final String v in timedVoices) {
+        final WordSpan w = load(v).of('42:2').single;
+        final int length =
+            (lengths[v]! as Map<String, Object?>)['42:2']! as int;
+        expect(w.start, lessThan(1500), reason: v);
+        expect(w.end, greaterThan(length - 1500), reason: v);
+      }
     });
 
     test('the word at a moment is the one whose span holds it', () {

@@ -40,11 +40,24 @@ an untimed word falls.
   * A word lit far longer than any other voice takes over it is an
     untimed repeat of an earlier phrase; it is ended at a natural length,
     and the app lets the light go out rather than sit on the wrong word.
-  * Every word is on screen for at least MIN_WORD ms, taken from the end
-    of the word before. Times never run backwards; a word ends no later
-    than the next begins.
-  * Last, tool/timing_overrides.json replaces the few ayahs whose timings
-    were measured by hand from the recording.
+  * A one-word ayah (the opening letters, "عٓسٓقٓ") is lit for the whole
+    recording: quran.com often times only its last letter.
+  * Every word is on screen for at least MIN_WORD ms — longer than the
+    player's slowest position update — borrowed from its neighbours. Times
+    never run backwards; a word ends no later than the next begins.
+  * tool/timing_overrides.json replaces the ayahs whose timings were
+    measured by hand from the recording (validated; a bad one stops the
+    build).
+  * Finally the recording itself is listened to wherever the light would
+    otherwise sit still for long: every silence between words over 1.5 s
+    and every word held over 5 s and 3x what the other voices take. A
+    silence is a breath — the light holds. Speech there is a repeat the
+    data does not time — the word is ended where its sound ends and marked
+    so the app lets the light go out until the voice comes back to the
+    text. Marked words carry a fourth number, 1: [word, start, end, 1].
+
+Every recording's length is in tool/recording_ms.json (read from the MP3
+headers); no timing may run past its recording.
 
     python3 tool/fetch_segments.py              # fetch everything and build
     python3 tool/fetch_segments.py --raw DIR    # rebuild from DIR/<voice>.raw.json
@@ -82,11 +95,18 @@ NOT_LETTER = re.compile(
     r'[\sؐ-ًؚ-ٰٟۖ-ۭ࣓-ࣿـ]')
 CACHE = os.path.expanduser('~/.cache/layla-segcache')
 OVERRIDES = os.path.join('tool', 'timing_overrides.json')
-MIN_WORD = 80
-# A word this much longer than the others take over it, and this long, is
-# an untimed repeat.
-REPEAT_FACTOR = 4.0
-REPEAT_MIN_MS = 8000
+LENGTHS = os.path.join('tool', 'recording_ms.json')
+# The player reports its position every 40–90 ms; a word shorter than the
+# slowest report can be skipped.
+MIN_WORD = 100
+# Where the recording is listened to.
+LONG_WORD_MS = 5000
+LONG_WORD_FACTOR = 3.0
+LONG_GAP_MS = 1500
+# Speech inside a gap, or after a pause inside a long word, that makes it a
+# repeat rather than a breath.
+REPEAT_SPEECH_MS = 700
+PAUSE_MS = 250
 
 
 def words_of(arabic):
@@ -292,24 +312,89 @@ def misfit(placed, est):
 
 # ── The recording ─────────────────────────────────────────────────────────
 
-def duration_ms(folder, key):
-    """Length of the app's own recording of [key]. Fails loudly: without it
-    a trailing run cannot be placed honestly."""
+_lengths = None
+
+
+def duration_ms(voice, key):
+    """Length of the app's own recording of [key], from the MP3 headers."""
+    global _lengths
+    if _lengths is None:
+        _lengths = json.load(open(LENGTHS))
+    return _lengths[voice][key]
+
+
+def _download(url, path):
+    err = None
+    for i in range(5):
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            data = urllib.request.urlopen(req, timeout=60).read()
+            with open(path + '.part', 'wb') as fh:
+                fh.write(data)
+            os.replace(path + '.part', path)
+            return
+        except Exception as e:  # noqa: BLE001
+            err = e
+            time.sleep(2 * (i + 1))
+    raise RuntimeError(f'could not download {url}: {err}')
+
+
+def envelope(voice, key):
+    """Loudness of the recording in 20 ms frames, dB — cached."""
     s, a = (int(x) for x in key.split(':'))
-    os.makedirs(CACHE, exist_ok=True)
-    path = os.path.join(CACHE, f'{folder}_{s:03d}{a:03d}.mp3')
-    if not os.path.exists(path):
-        url = f'https://everyayah.com/data/{folder}/{s:03d}{a:03d}.mp3'
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        data = urllib.request.urlopen(req, timeout=60).read()
-        with open(path, 'wb') as fh:
-            fh.write(data)
-    out = subprocess.run(['afinfo', path], capture_output=True, text=True,
-                         check=True).stdout
-    m = re.search(r'estimated duration: ([\d.]+)', out)
-    if not m:
-        raise RuntimeError(f'no duration for {path}')
-    return round(float(m.group(1)) * 1000)
+    folder = VOICES[voice][1]
+    os.makedirs(os.path.join(CACHE, 'env'), exist_ok=True)
+    env_path = os.path.join(CACHE, 'env', f'{folder}_{s:03d}{a:03d}.json')
+    if os.path.exists(env_path):
+        return json.load(open(env_path))
+    mp3 = os.path.join(CACHE, f'{folder}_{s:03d}{a:03d}.mp3')
+    if not os.path.exists(mp3):
+        _download(f'https://everyayah.com/data/{folder}/{s:03d}{a:03d}.mp3', mp3)
+    wav = env_path + '.wav'
+    subprocess.run(['afconvert', '-f', 'WAVE', '-d', 'LEI16@8000', '-c', '1',
+                    mp3, wav], check=True, capture_output=True)
+    import array
+    import wave
+    with wave.open(wav) as w:
+        frames = array.array('h', w.readframes(w.getnframes()))
+    os.remove(wav)
+    step = 160  # 20 ms at 8 kHz
+    out = []
+    for i in range(0, len(frames), step):
+        chunk = frames[i:i + step]
+        rms = math.sqrt(sum(x * x for x in chunk) / max(1, len(chunk)))
+        out.append(round(20 * math.log10(max(rms, 1.0)), 1))
+    with open(env_path, 'w') as fh:
+        json.dump(out, fh)
+    return out
+
+
+class Loudness:
+    """Where there is speech in one recording."""
+
+    def __init__(self, env):
+        self.env = env
+        q = sorted(env)
+        noise = q[len(q) // 10]
+        peak = q[min(len(q) - 1, len(q) * 99 // 100)]
+        self.threshold = max(noise + 12, peak - 30)
+
+    def speech_ms(self, lo, hi):
+        a, b = max(0, lo // 20), min(len(self.env), hi // 20)
+        return 20 * sum(1 for x in self.env[a:b] if x >= self.threshold)
+
+    def first_pause(self, lo, hi):
+        """Start of the first run of PAUSE_MS below the threshold in [lo, hi)."""
+        a, b = max(0, lo // 20), min(len(self.env), hi // 20)
+        run = 0
+        for f in range(a, b):
+            if self.env[f] < self.threshold:
+                run += 1
+                if run * 20 >= PAUSE_MS:
+                    return (f - run + 1) * 20
+            else:
+                run = 0
+        return None
 
 
 # ── Building one ayah ─────────────────────────────────────────────────────
@@ -355,7 +440,7 @@ def build(v, k, fp, rhythm, lead, log):
         prev = i - 1 if i > 0 else None
         nxt = j if j < n else None
         if nxt is None:
-            dur = dur or duration_ms(VOICES[v][1], k)
+            dur = dur or duration_ms(v, k)
             end_of_speech = dur - TAIL[v]
         cands = []
         lo_gap = span[prev][1] if prev is not None else min(
@@ -392,33 +477,107 @@ def build(v, k, fp, rhythm, lead, log):
                        f'{best[1][best[2][-1]][1]} ms (recording {dur} ms)')
         i = j
 
-    # Untimed repeats: a word far longer than the others take over it.
-    for q in range(n):
-        s, e = span[q]
-        limit = est[q] * REPEAT_FACTOR
-        if e - s > max(REPEAT_MIN_MS, limit):
-            new_end = s + round(max(est[q] * 1.5, 600))
-            log.append(f'{v} {k}: word {q + 1} held {e - s} ms against '
-                       f'~{round(est[q])}; ended at {new_end - s} ms')
-            span[q] = (s, new_end)
+    # A one-word ayah is heard for the whole recording.
+    if n == 1:
+        length = duration_ms(v, k)
+        span[0] = (min(span[0][0], lead), max(span[0][1], length - TAIL[v]))
 
-    # Order, minimum on-screen time, no overlap.
-    starts = [span[q][0] for q in range(n)]
+    # Word 1 with a sliver of a segment: its sound is inside word 2's.
+    if n > 1 and span[1][0] - span[0][0] < MIN_WORD:
+        lo = span[0][0]
+        hi = span[2][0] if n > 2 else span[1][1]
+        hi = max(hi, min(span[1][1], hi))
+        for g, sp in spread([0, 1], lo, max(hi, lo + 2 * MIN_WORD),
+                            [est[0], est[1]]).items():
+            span[g] = sp
+    return [[q + 1, span[q][0], span[q][1]] for q in range(n)]
+
+
+def finish(v, k, words, rhythm, listen, log, hand=False):
+    """Order, minimum on-screen time, no overlap — then listen for repeats.
+
+    A hand-timed ayah keeps its measured boundaries; only the repeat marks
+    are added to it.
+    """
+    n = len(words)
+    if n == 0:
+        return []
+    if hand:
+        out = [list(w[:3]) for w in words]
+        for q in range(n - 1):
+            nxt = out[q + 1][1]
+            if nxt - out[q][2] > LONG_GAP_MS:
+                loud = listen(v, k)
+                if loud.speech_ms(out[q][2] + 150, nxt - 150) >= REPEAT_SPEECH_MS:
+                    out[q].append(1)
+        return out
+    starts = [w[1] for w in words]
+    ends = [w[2] for w in words]
     for q in range(1, n):
         if starts[q] <= starts[q - 1]:
             starts[q] = starts[q - 1] + 1
-    for q in range(1, n):
-        window = (starts[q + 1] if q + 1 < n else span[q][1]) - starts[q]
-        room = starts[q] - starts[q - 1] - MIN_WORD
-        if window < MIN_WORD and room > 0:
-            starts[q] -= min(MIN_WORD - window, room)
+    # At least MIN_WORD on screen: borrow from the word before, else from
+    # the word after.
+    for _ in range(3):
+        for q in range(n):
+            nxt = starts[q + 1] if q + 1 < n else max(ends[q], starts[q] + MIN_WORD)
+            short = MIN_WORD - (nxt - starts[q])
+            if short <= 0:
+                continue
+            if q > 0:
+                room = starts[q] - starts[q - 1] - MIN_WORD
+                take = min(short, max(0, room))
+                starts[q] -= take
+                short -= take
+            if short > 0 and q + 1 < n:
+                after = starts[q + 2] if q + 2 < n else max(ends[q + 1], starts[q + 1] + MIN_WORD)
+                room = after - starts[q + 1] - MIN_WORD
+                starts[q + 1] += min(short, max(0, room))
     out = []
     for q in range(n):
-        e = span[q][1]
+        e = ends[q]
         if q + 1 < n:
             e = min(e, starts[q + 1])
         out.append([q + 1, starts[q], max(e, starts[q] + 1)])
+
+    # Listen where the light would sit still.
+    pace = rhythm.ayah_pace(v, k)
+    for q in range(n - 1):
+        start, end = out[q][1], out[q][2]
+        nxt = out[q + 1][1]
+        est = rhythm.expected(v, k, q, pace)
+        window = nxt - start
+        if window > LONG_WORD_MS and window > LONG_WORD_FACTOR * est:
+            loud = listen(v, k)
+            pause = loud.first_pause(start + max(int(0.8 * est), 400), nxt - REPEAT_SPEECH_MS)
+            if pause is not None and loud.speech_ms(pause, nxt - 100) >= REPEAT_SPEECH_MS:
+                out[q][2] = max(start + 1, min(end, pause))
+                out[q].append(1)
+                log.append(f'{v} {k}: word {q + 1} ends {pause - start} ms in; '
+                           f'untimed speech follows to {nxt} ms')
+                continue
+        if nxt - out[q][2] > LONG_GAP_MS:
+            loud = listen(v, k)
+            if loud.speech_ms(out[q][2] + 150, nxt - 150) >= REPEAT_SPEECH_MS:
+                out[q].append(1)
+                log.append(f'{v} {k}: speech in the {nxt - out[q][2]} ms gap '
+                           f'after word {q + 1}; the light goes out')
     return out
+
+
+def validate_override(v, k, words, n):
+    if v not in VOICES:
+        raise SystemExit(f'override for unknown voice {v!r}')
+    if not words:
+        return
+    ok = (len(words) == n
+          and [w[0] for w in words] == list(range(1, n + 1))
+          and all(len(w) == 3 and w[2] > w[1] >= 0 for w in words)
+          and all(words[i + 1][1] > words[i][1] and words[i][2] <= words[i + 1][1]
+                  for i in range(n - 1))
+          and words[-1][2] <= duration_ms(v, k) + 50)
+    if not ok:
+        raise SystemExit(f'override {v} {k} is not a valid timing for {n} words')
 
 
 # ── Fetching ──────────────────────────────────────────────────────────────
@@ -468,10 +627,12 @@ def fetch_words():
 
 
 def main():
+    if len(sys.argv) > 1 and (sys.argv[1] != '--raw' or len(sys.argv) < 3):
+        raise SystemExit('usage: fetch_segments.py [--raw DIR]')
     quran = json.load(open('assets/quran/quran.json'))
     text = {f'{s}:{a["a"]}': words_of(a['ar'])
             for s, ayahs in quran['verses'].items() for a in ayahs}
-    raw_dir = sys.argv[2] if len(sys.argv) > 2 and sys.argv[1] == '--raw' else None
+    raw_dir = sys.argv[2] if len(sys.argv) > 2 else None
     if raw_dir:
         raws = {v: json.load(open(f'{raw_dir}/{v}.raw.json')) for v in VOICES}
         qc_words = json.load(open(f'{raw_dir}/qc_words.json'))
@@ -480,6 +641,10 @@ def main():
             raws = dict(zip(VOICES, ex.map(lambda v: fetch_raw(VOICES[v][0]),
                                            VOICES)))
         qc_words = fetch_words()
+    overrides = json.load(open(OVERRIDES))  # missing = error: never drop them
+    for v, entries in overrides.items():
+        for k, entry in entries.items():
+            validate_override(v, k, entry['words'], len(text[k]))
 
     log = []
     first = {v: {k: first_pass(raws[v].get(k, {}).get('segments', []),
@@ -487,23 +652,78 @@ def main():
                  for k in text}
              for v in VOICES}
     rhythm = Rhythm(first, text)
-    overrides = json.load(open(OVERRIDES)) if os.path.exists(OVERRIDES) else {}
 
+    drafts = {}
     for v in VOICES:
         starts = sorted(fp['span'][0][0] for fp in first[v].values()
                         if fp['exact'] and fp['exact'][0])
         lead = starts[len(starts) // 2]
-        built = {k: build(v, k, first[v][k], rhythm, lead, log) for k in text}
-        for k, entry in overrides.get(v, {}).items():
-            built[k] = entry['words']
-            log.append(f'{v} {k}: hand-timed override ({entry["why"]})')
-        with open(f'assets/quran/timing/{v}.json', 'w') as fh:
-            json.dump(built, fh, separators=(',', ':'))
-        print(v, 'pace', round(rhythm.pace[v], 2), 'ms/letter',
-              round(rhythm.ms_per_letter[v]), flush=True)
+        mine = overrides.get(v, {})
+        drafts[v] = {k: ([list(w) for w in mine[k]['words']] if k in mine
+                         else build(v, k, first[v][k], rhythm, lead, log))
+                     for k in text}
+
+    # Which recordings the finishing pass will listen to: a dry run with a
+    # stand-in that hears nothing, then fetch those in parallel.
+    need = set()
+
+    class _Deaf:
+        def first_pause(self, lo, hi):
+            return None
+
+        def speech_ms(self, lo, hi):
+            return 0
+
+    def note(v, k):
+        need.add((v, k))
+        return _Deaf()
+
+    for v in VOICES:
+        for k, words in drafts[v].items():
+            finish(v, k, [list(w) for w in words], rhythm, note, [],
+                   hand=k in overrides.get(v, {}))
+    print(len(need), 'recordings to listen to', flush=True)
+    with cf.ThreadPoolExecutor(12) as ex:
+        list(ex.map(lambda vk: envelope(*vk), sorted(need)))
+
+    loud = {}
+
+    def listen(v, k):
+        if (v, k) not in loud:
+            loud[(v, k)] = Loudness(envelope(v, k))
+        return loud[(v, k)]
+
+    built, broken = {}, []
+    for v in VOICES:
+        built[v] = {}
+        for k, words in drafts[v].items():
+            out = finish(v, k, words, rhythm, listen, log,
+                         hand=k in overrides.get(v, {}))
+            if k in overrides.get(v, {}):
+                log.append(f'{v} {k}: hand-timed override')
+            if out and out[-1][1] >= duration_ms(v, k):
+                broken.append(f'{v} {k}: last word starts at {out[-1][1]} ms, '
+                              f'recording is {duration_ms(v, k)} ms')
+            built[v][k] = out
+    if broken:
+        raise SystemExit('timings past the end of the recording — hand-time '
+                         'these in tool/timing_overrides.json:\n  ' +
+                         '\n  '.join(broken))
+
+    # Everything built: now write, all together.
+    for v in VOICES:
+        path = f'assets/quran/timing/{v}.json'
+        with open(path + '.tmp', 'w') as fh:
+            json.dump(built[v], fh, separators=(',', ':'))
+    for v in VOICES:
+        path = f'assets/quran/timing/{v}.json'
+        os.replace(path + '.tmp', path)
     with open(os.path.join('tool', 'timing_build.log'), 'w') as fh:
         fh.write('\n'.join(log) + '\n')
-    print(len(log), 'notes in tool/timing_build.log')
+    for v in VOICES:
+        marked = sum(1 for a in built[v].values() for w in a if len(w) > 3)
+        print(v, 'pace', round(rhythm.pace[v], 2), 'repeats marked', marked)
+    print(len(log), 'notes in tool/timing_build.log;', len(loud), 'recordings listened to')
 
 
 if __name__ == '__main__':

@@ -127,7 +127,16 @@ class DownloadQueue extends Notifier<Map<String, DownloadProgress>> {
     final RecitationCache? cache = RecitationCache.instance;
     if (cache == null || state.containsKey(d.key)) return false;
     final Reciter r = reciterById(d.reciterId);
-    final List<Uri> files = r.filesFor(d.surah, quran.surah(d.surah).ayahCount);
+    // The surah's own files, and its Bismillah — shared by every surah in
+    // this voice, so it is fetched with each but never counted towards one
+    // (removing a surah must not take another's Bismillah with it).
+    final Uri? bismillah = quran.surah(d.surah).hasBismillah
+        ? r.bismillahFor(d.surah)
+        : null;
+    final List<Uri> files = <Uri>[
+      ...r.filesFor(d.surah, quran.surah(d.surah).ayahCount),
+      ?bismillah,
+    ];
     _cancelled.remove(d.key);
     _set(d.key, DownloadProgress(done: 0, total: files.length));
     final bool ok = await cache.download(

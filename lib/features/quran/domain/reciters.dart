@@ -66,6 +66,14 @@ class Reciter {
   /// The recording of a whole surah. Only for whole-surah voices.
   Uri surahUrl(int surah) => Uri.parse('$surahBase/${_pad3(surah)}.mp3');
 
+  /// The Bismillah read before [surah], in this voice — the voice's own
+  /// Al-Fatihah 1:1, since the files for ayah 1 of the other surahs start
+  /// with the ayah itself. Null where the mushaf prints none (Al-Fatihah,
+  /// whose first ayah it is, and At-Tawbah) and for a whole-surah voice,
+  /// whose surah files open with it.
+  Uri? bismillahFor(int surah) =>
+      perAyah && surah != 1 && surah != 9 ? url(1, 1) : null;
+
   /// Every file a surah needs in this voice — what "download" means.
   List<Uri> filesFor(int surah, int ayahCount) => perAyah
       ? <Uri>[for (int a = 1; a <= ayahCount; a++) url(surah, a)]
