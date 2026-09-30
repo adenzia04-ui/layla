@@ -38,7 +38,7 @@ import 'widgets/quran_player_bar.dart';
 /// While a reciter reads, the ayah is washed in gold on the page and the
 /// word being spoken glows and glides along the line; the book turns to
 /// the next page as the voice reaches it. A touch on any word starts the
-/// recitation from that ayah.
+/// recitation from that ayah. Each swipe turns exactly one page.
 class MushafScreen extends ConsumerStatefulWidget {
   const MushafScreen({super.key, this.surah, this.page});
 
@@ -54,6 +54,7 @@ class MushafScreen extends ConsumerStatefulWidget {
 
 class _MushafScreenState extends ConsumerState<MushafScreen> {
   PageController? _controller;
+  final ValueNotifier<int> _anchor = ValueNotifier<int>(0);
   int _page = 1;
   int _first = 1;
   int _last = Quran.pageCount;
@@ -73,16 +74,19 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
     final int wanted = widget.page ?? (widget.surah == null ? saved : _first);
     _page = wanted.clamp(_first, _last);
     _controller = PageController(initialPage: _page - _first);
+    _anchor.value = _page - _first;
     MushafPages.instance.warmAround(_page, first: _first, last: _last);
   }
 
   @override
   void dispose() {
+    _anchor.dispose();
     _controller?.dispose();
     super.dispose();
   }
 
   void _onPage(int index) {
+    _anchor.value = index;
     setState(() => _page = _first + index);
     unawaited(ref.read(lastPageProvider.notifier).set(_page));
     MushafPages.instance.warmAround(_page, first: _first, last: _last);
@@ -225,39 +229,52 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
               ),
             ],
           ),
-          body: PageView.builder(
-            controller: _controller,
-            // Right to left: the next page comes from the left, like the book.
-            reverse: true,
-            // No rubber-band at the covers: a book does not stretch past
-            // its last page, and the turn animation under a bounce read as
-            // the page tearing loose.
-            physics: const _BookPhysics(parent: ClampingScrollPhysics()),
-            itemCount: _count,
-            onPageChanged: _onPage,
-            itemBuilder: (BuildContext context, int i) {
-              final int number = _first + i;
-              return _Turning(
-                controller: _controller!,
-                index: i,
-                child: _Page(
-                  number: number,
-                  night: _night,
-                  quran: q,
-                  surahName: q
-                      .surahsOnPage(number)
-                      .map((Surah s) => s.arabicName)
-                      .join(' · '),
-                  juzName: 'الجزء ${juzOrdinals[q.juzOfPage(number) - 1]}',
-                  onTapAyah: (int surah, int ayah) {
-                    unawaited(HapticFeedback.lightImpact());
-                    unawaited(
-                      playSurah(ref, quran: q, surah: surah, ayah: ayah),
-                    );
-                  },
-                ),
-              );
+          body: NotificationListener<ScrollStartNotification>(
+            // A swipe is measured from the page under the finger when it
+            // lands, so a second swipe mid-turn still moves just one page.
+            onNotification: (ScrollStartNotification n) {
+              if (n.dragDetails != null && (_controller?.hasClients ?? false)) {
+                _anchor.value = (_controller!.page ?? 0).round();
+              }
+              return false;
             },
+            child: PageView.builder(
+              controller: _controller,
+              // Right to left: the next page comes from the left, like the book.
+              reverse: true,
+              // No rubber-band at the covers: a book does not stretch past
+              // its last page, and the turn animation under a bounce read as
+              // the page tearing loose.
+              physics: _OnePagePhysics(
+                anchor: _anchor,
+                parent: const ClampingScrollPhysics(),
+              ),
+              itemCount: _count,
+              onPageChanged: _onPage,
+              itemBuilder: (BuildContext context, int i) {
+                final int number = _first + i;
+                return _Turning(
+                  controller: _controller!,
+                  index: i,
+                  child: _Page(
+                    number: number,
+                    night: _night,
+                    quran: q,
+                    surahName: q
+                        .surahsOnPage(number)
+                        .map((Surah s) => s.arabicName)
+                        .join(' · '),
+                    juzName: 'الجزء ${juzOrdinals[q.juzOfPage(number) - 1]}',
+                    onTapAyah: (int surah, int ayah) {
+                      unawaited(HapticFeedback.lightImpact());
+                      unawaited(
+                        playSurah(ref, quran: q, surah: surah, ayah: ayah),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
           ),
           bottomNavigationBar: ayahs.isEmpty
               ? null
@@ -335,17 +352,63 @@ class _Turning extends StatelessWidget {
   }
 }
 
-/// A firmer snap than the default, so a half-turn always settles on a page.
-class _BookPhysics extends PageScrollPhysics {
-  const _BookPhysics({super.parent});
+/// One page per swipe, like a book.
+///
+/// The stock page physics let a hard flick — or a second swipe while the
+/// page was still settling — carry the book two or three pages on, and its
+/// spring snapped the page down quickly. Here a swipe goes exactly one page
+/// from the page the finger landed on, whatever its speed, and the page
+/// settles on a critically damped spring: no bounce, no rush.
+class _OnePagePhysics extends ScrollPhysics {
+  const _OnePagePhysics({required this.anchor, super.parent});
+
+  /// The page under the finger when the swipe began.
+  final ValueNotifier<int> anchor;
 
   @override
-  _BookPhysics applyTo(ScrollPhysics? ancestor) =>
-      _BookPhysics(parent: buildParent(ancestor));
+  _OnePagePhysics applyTo(ScrollPhysics? ancestor) =>
+      _OnePagePhysics(anchor: anchor, parent: buildParent(ancestor));
 
   @override
   SpringDescription get spring =>
-      const SpringDescription(mass: 60, stiffness: 120, damping: 1.1);
+      const SpringDescription(mass: 1, stiffness: 90, damping: 19);
+
+  @override
+  bool get allowImplicitScrolling => false;
+
+  @override
+  Simulation? createBallisticSimulation(
+    ScrollMetrics position,
+    double velocity,
+  ) {
+    if ((velocity <= 0 && position.pixels <= position.minScrollExtent) ||
+        (velocity >= 0 && position.pixels >= position.maxScrollExtent)) {
+      return super.createBallisticSimulation(position, velocity);
+    }
+    final double width = position.viewportDimension;
+    if (width <= 0) return super.createBallisticSimulation(position, velocity);
+    final double here = position.pixels / width;
+    final Tolerance tolerance = toleranceFor(position);
+    int target;
+    if (velocity.abs() > tolerance.velocity) {
+      target = velocity > 0 ? anchor.value + 1 : anchor.value - 1;
+    } else {
+      target = here.round();
+    }
+    target = target.clamp(anchor.value - 1, anchor.value + 1);
+    final double to = (target * width).clamp(
+      position.minScrollExtent,
+      position.maxScrollExtent,
+    );
+    if ((to - position.pixels).abs() < 0.5) return null;
+    return ScrollSpringSimulation(
+      spring,
+      position.pixels,
+      to,
+      velocity,
+      tolerance: tolerance,
+    );
+  }
 }
 
 class _Page extends ConsumerWidget {

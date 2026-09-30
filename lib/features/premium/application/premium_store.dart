@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/services/prefs_service.dart';
 import '../domain/premium_plan.dart';
+import '../domain/support_tip.dart';
 
 /// Hands every paid feature to everyone, for testing on our own phones.
 ///
@@ -22,9 +24,19 @@ import '../domain/premium_plan.dart';
 /// Forgetting now costs nothing: a build without the flag is the strict one.
 const bool kUnlockAllForTesting = bool.fromEnvironment('LAYLA_UNLOCK_ALL');
 
+/// Whether Premium is sold on this platform at all.
+///
+/// Only on Android. The iPhone app is the creator's own and is not in the
+/// App Store, so there is nothing to buy there and everything is open. When
+/// it does launch on iOS, this is the one line that changes.
+final bool kPremiumSoldHere = kIsWeb || !Platform.isIOS;
+
 /// Whether this phone has Layla Pro Premium.
 final Provider<bool> isProProvider = Provider<bool>(
-  (Ref ref) => kUnlockAllForTesting || ref.watch(premiumProvider).isPro,
+  (Ref ref) =>
+      kUnlockAllForTesting ||
+      !kPremiumSoldHere ||
+      ref.watch(premiumProvider).isPro,
 );
 
 /// Whether the paid colour sets and counter faces can be chosen.
@@ -34,13 +46,17 @@ final Provider<bool> isProProvider = Provider<bool>(
 const bool kStylesOpenForTesting = kUnlockAllForTesting;
 
 final Provider<bool> styleUnlockedProvider = Provider<bool>(
-  (Ref ref) => kStylesOpenForTesting || ref.watch(premiumProvider).isPro,
+  (Ref ref) =>
+      kStylesOpenForTesting ||
+      !kPremiumSoldHere ||
+      ref.watch(premiumProvider).isPro,
 );
 
 /// Whether the lock badges are drawn on the paid colours and counters —
-/// until Premium is actually bought or restored on this phone.
+/// until Premium is actually bought or restored on this phone. Never where
+/// Premium is not sold.
 final Provider<bool> styleLocksShownProvider = Provider<bool>(
-  (Ref ref) => !ref.watch(premiumProvider).isPro,
+  (Ref ref) => kPremiumSoldHere && !ref.watch(premiumProvider).isPro,
 );
 
 final NotifierProvider<PremiumStore, PremiumState> premiumProvider =
@@ -54,9 +70,13 @@ class PremiumState {
     this.storeReady = false,
     this.busy = false,
     this.error,
+    this.thanked,
   });
 
   final bool isPro;
+
+  /// The support gift that just went through, to thank for; null otherwise.
+  final SupportTip? thanked;
 
   /// Keyed by product id; empty until the store has answered.
   final Map<String, ProductDetails> products;
@@ -67,6 +87,9 @@ class PremiumState {
   String priceFor(PremiumPlan plan) =>
       products[plan.id]?.price ?? '\$${plan.fallbackPrice}';
 
+  String tipPrice(SupportTip tip) =>
+      products[tip.id]?.price ?? '\$${tip.dollars}';
+
   PremiumState copyWith({
     bool? isPro,
     Map<String, ProductDetails>? products,
@@ -74,16 +97,20 @@ class PremiumState {
     bool? busy,
     String? error,
     bool clearError = false,
+    SupportTip? thanked,
+    bool clearThanks = false,
   }) => PremiumState(
     isPro: isPro ?? this.isPro,
     products: products ?? this.products,
     storeReady: storeReady ?? this.storeReady,
     busy: busy ?? this.busy,
     error: clearError ? null : error ?? this.error,
+    thanked: clearThanks ? null : thanked ?? this.thanked,
   );
 }
 
-/// Premium, through StoreKit.
+/// Premium and the support gifts, through the store — Google Play; on the
+/// iPhone nothing is sold and the store is never asked.
 ///
 /// The entitlement is remembered on the phone the moment a purchase or a
 /// restore succeeds, so the app never has to ask the store again just to
@@ -121,10 +148,12 @@ class PremiumStore extends Notifier<PremiumState> {
           debugPrint('Layla Pro: purchase stream error ($e)');
         },
       );
+      if (!kPremiumSoldHere) return;
       if (!await iap.isAvailable()) return;
-      final ProductDetailsResponse res = await iap.queryProductDetails(
-        PremiumPlan.ids,
-      );
+      final ProductDetailsResponse res = await iap.queryProductDetails(<String>{
+        ...PremiumPlan.ids,
+        ...SupportTip.ids,
+      });
       state = state.copyWith(
         storeReady: true,
         products: cheapestPerPlan(res.productDetails),
@@ -169,7 +198,12 @@ class PremiumStore extends Notifier<PremiumState> {
         case PurchaseStatus.purchased:
         case PurchaseStatus.restored:
           if (PremiumPlan.ids.contains(p.productID)) await _grant();
-          state = state.copyWith(busy: false, clearError: true);
+          final SupportTip? tip = SupportTip.byId(p.productID);
+          state = state.copyWith(
+            busy: false,
+            clearError: true,
+            thanked: p.status == PurchaseStatus.purchased ? tip : null,
+          );
         case PurchaseStatus.error:
           state = state.copyWith(
             busy: false,
@@ -244,4 +278,32 @@ class PremiumStore extends Notifier<PremiumState> {
   }
 
   void clearError() => state = state.copyWith(clearError: true);
+
+  /// A one-off gift to the creator. Consumed at once, so it can be given
+  /// again; it unlocks nothing.
+  Future<void> support(SupportTip tip) async {
+    final ProductDetails? product = state.products[tip.id];
+    if (product == null) {
+      state = state.copyWith(
+        error:
+            'Google Play has not listed this amount yet. Please try again in '
+            'a moment.',
+      );
+      return;
+    }
+    state = state.copyWith(busy: true, clearError: true, clearThanks: true);
+    try {
+      final bool started = await InAppPurchase.instance.buyConsumable(
+        purchaseParam: PurchaseParam(productDetails: product),
+      );
+      if (!started) state = state.copyWith(busy: false);
+    } catch (e) {
+      state = state.copyWith(
+        busy: false,
+        error: 'Could not start the payment ($e).',
+      );
+    }
+  }
+
+  void clearThanks() => state = state.copyWith(clearThanks: true);
 }

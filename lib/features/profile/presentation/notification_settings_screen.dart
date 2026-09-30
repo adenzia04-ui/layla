@@ -150,7 +150,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
           // notification simply does not arrive and nothing on screen
           // suggests why. iOS has no equivalent, and `unrestrictedProvider`
           // answers true there so this never appears.
-          if (!(ref.watch(unrestrictedProvider).valueOrNull ?? true)) ...<Widget>[
+          if (!(ref.watch(unrestrictedProvider).valueOrNull ??
+              true)) ...<Widget>[
             const SizedBox(height: Insets.md),
             NightCard(
               child: Column(
@@ -846,7 +847,8 @@ class _AndroidSoftLockCard extends ConsumerWidget {
             // there was no way on Android to choose one. Switched on, both
             // permissions granted, and nothing would ever happen.
             _StepRow(
-              done: ref.watch(blockedAppCountProvider).valueOrNull != null &&
+              done:
+                  ref.watch(blockedAppCountProvider).valueOrNull != null &&
                   ref.watch(blockedAppCountProvider).valueOrNull! > 0,
               title: 'Apps to pause',
               body:
@@ -900,10 +902,7 @@ class _AndroidSoftLockCard extends ConsumerWidget {
               alignment: Alignment.centerLeft,
               child: TextButton.icon(
                 onPressed: () => _testMatScanner(context, ref),
-                icon: const Icon(
-                  Icons.center_focus_strong_outlined,
-                  size: 18,
-                ),
+                icon: const Icon(Icons.center_focus_strong_outlined, size: 18),
                 label: const Text('Test the prayer-mat scanner'),
                 style: TextButton.styleFrom(foregroundColor: AppColors.gold),
               ),

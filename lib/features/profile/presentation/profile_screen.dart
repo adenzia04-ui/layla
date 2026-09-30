@@ -5,6 +5,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../core/config/platform_features.dart';
 import '../../premium/application/premium_store.dart';
+import '../../premium/presentation/support_sheet.dart';
 import '../../../core/routing/routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -155,22 +156,20 @@ class ProfileScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: Insets.lg),
             child: Column(
               children: <Widget>[
-                _MenuRow(
-                  icon: Icons.workspace_premium_outlined,
-
-                  // Says out loud which build this is. The paid features
-                  // are open only when a build asked for it with
-                  // --dart-define=LAYLA_UNLOCK_ALL=true; without it the
-                  // prayer-mat scan and the paid counters behave as they will
-                  // for a real customer. Knowing which of the two you are
-                  // holding is the difference between "the camera is broken"
-                  // and "this build is not Premium".
-                  label: kUnlockAllForTesting
-                      ? 'Layla Pro Premium · unlocked for testing'
-                      : 'Layla Pro Premium',
-
-                  onTap: () => context.push(Routes.paywall),
-                ),
+                // Premium and the support gift are sold on Android only;
+                // on the iPhone everything is already open.
+                if (kPremiumSoldHere) ...<Widget>[
+                  _MenuRow(
+                    icon: Icons.workspace_premium_outlined,
+                    label: 'Layla Pro Premium',
+                    onTap: () => context.push(Routes.paywall),
+                  ),
+                  _MenuRow(
+                    icon: Icons.volunteer_activism_outlined,
+                    label: 'Support the creator',
+                    onTap: () => showSupportSheet(context),
+                  ),
+                ],
                 _MenuRow(
                   icon: Icons.person_outline_rounded,
                   label: 'Account',
@@ -577,15 +576,15 @@ class _BuildLineState extends State<_BuildLine> {
     try {
       final PackageInfo info = await PackageInfo.fromPlatform();
       if (!mounted) return;
-      setState(() => _text = 'Layla Pro · v${info.version} (${info.buildNumber})');
+      setState(
+        () => _text = 'Layla Pro · v${info.version} (${info.buildNumber})',
+      );
     } catch (_) {
       // A test harness has no package. The plain name is still true.
     }
   }
 
   @override
-  Widget build(BuildContext context) => Text(
-    _text,
-    style: AppType.bodySm.copyWith(color: AppColors.mistFaint),
-  );
+  Widget build(BuildContext context) =>
+      Text(_text, style: AppType.bodySm.copyWith(color: AppColors.mistFaint));
 }

@@ -10,6 +10,7 @@ import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/layla_mark.dart';
 import '../application/charity_fund.dart';
+import 'support_sheet.dart';
 import '../application/premium_store.dart';
 import '../domain/premium_plan.dart';
 
@@ -139,6 +140,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   ? null
                   : () => ref.read(premiumProvider.notifier).restore(),
               child: const Text('Restore purchases'),
+            ),
+            TextButton(
+              onPressed: () => showSupportSheet(context),
+              style: TextButton.styleFrom(foregroundColor: AppColors.goldSoft),
+              child: const Text('Or support the creator with a one-off gift'),
             ),
             if (premium.error != null) ...<Widget>[
               const SizedBox(height: Insets.sm),
