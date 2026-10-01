@@ -4,6 +4,8 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
@@ -13,6 +15,8 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.ByteArrayOutputStream
 import java.nio.FloatBuffer
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import org.json.JSONObject
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -55,9 +59,31 @@ object MatVisionPlugin {
     private var otherVectors: List<FloatArray> = emptyList()
     private var loadFailed = false
 
+    /**
+     * One worker, off the main thread. The encoder takes a few hundred
+     * milliseconds on a budget phone, and a live scan asks twice a second:
+     * run on the main thread, every call froze the screen for that long,
+     * which is the stutter the whole app had on Android while scanning.
+     * Answers are handed back on the main thread, as the channel requires.
+     */
+    private val worker: ExecutorService = Executors.newSingleThreadExecutor()
+    private val main = Handler(Looper.getMainLooper())
+
     fun register(activity: Activity, engine: FlutterEngine) {
         MethodChannel(engine.dartExecutor.binaryMessenger, CHANNEL)
-            .setMethodCallHandler { call, result -> handle(activity, call, result) }
+            .setMethodCallHandler { call, result ->
+                // Frame buffers are reused by the camera; copy what the call
+                // carries before leaving this thread.
+                worker.execute {
+                    val reply = MainThreadResult(result, main)
+                    try {
+                        handle(activity, call, reply)
+                    } catch (error: Throwable) {
+                        Log.w(TAG, "mat vision call failed", error)
+                        reply.success(null)
+                    }
+                }
+            }
     }
 
     private fun handle(
@@ -399,5 +425,28 @@ object MatVisionPlugin {
                 out[row * width + col] = (0xFF shl 24) or (g shl 16) or (g shl 8) or g
             }
         }
+    }
+}
+
+/** A `MethodChannel.Result` that always answers on the main thread. */
+private class MainThreadResult(
+    private val inner: MethodChannel.Result,
+    private val main: Handler,
+) : MethodChannel.Result {
+    private var done = false
+
+    override fun success(result: Any?) = once { inner.success(result) }
+
+    override fun error(code: String, message: String?, details: Any?) =
+        once { inner.error(code, message, details) }
+
+    override fun notImplemented() = once { inner.notImplemented() }
+
+    private fun once(block: () -> Unit) {
+        synchronized(this) {
+            if (done) return
+            done = true
+        }
+        main.post(block)
     }
 }
