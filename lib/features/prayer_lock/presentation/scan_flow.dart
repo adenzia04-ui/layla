@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/permission_service.dart';
+import '../../../core/utils/result.dart';
 import '../../../core/config/platform_features.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
@@ -84,10 +85,17 @@ Future<bool> confirmWithScan(
       '${session.prayer.label} confirmed. May it be accepted.',
     );
   } else {
+    // Say what actually went wrong. "Could not be saved" hid every reason —
+    // a photo the check turned down, a day that would not write — behind
+    // one line, and nobody could tell which it was.
+    final Object? error = ref.read(prayerLockControllerProvider).error;
+    final String why = error is AppFailure
+        ? error.message
+        : 'The photo could not be saved.';
     context.showMessage(
       Have.enforcedAppLock
-          ? 'The photo could not be saved. Your apps stay paused until it is.'
-          : 'The photo could not be saved. Prayer focus stays on until it is.',
+          ? '$why Your apps stay paused until it is confirmed.'
+          : '$why Prayer focus stays on until it is confirmed.',
     );
   }
   return ok;

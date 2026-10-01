@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/formatters.dart';
@@ -213,7 +215,17 @@ class PrayerDayRepository {
       tx.set(userRef, <String, Object?>{
         'stats': nextStats,
       }, SetOptions(merge: true));
-      await tx.commit();
+      // Not awaited. The batch lands in the local store the moment commit
+      // is called, and every screen reads from there; what the future
+      // waits for is the server's acknowledgement, which on a weak signal
+      // can take minutes or never come — and the bead stayed grey and the
+      // lock stayed on for exactly that long. The write is kept by the SDK
+      // and sent when it can be; only a refusal is worth hearing about.
+      unawaited(
+        tx.commit().catchError((Object e) {
+          debugPrint('Layla Pro: prayer write refused ($e)');
+        }),
+      );
     }
   }
 

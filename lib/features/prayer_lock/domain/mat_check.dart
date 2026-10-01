@@ -220,20 +220,22 @@ abstract final class MatCheck {
   /// The bar a proof photo must clear when Claude cannot be asked.
   static const double _offlineProofAt = 0.0;
 
-  /// The final verdict on a proof photo, strict: only a prayer mat passes.
+  /// The final verdict on a proof photo.
   ///
-  /// [second] is Claude's answer, or [MatVerdict.unsure] when it could not be
-  /// asked (no signal, no endpoint). Claude decides when it answers, inside
-  /// the on-device floor. Without it, the photo has to clear the same bar a
-  /// live frame does — the old generous threshold is what let rugs through.
+  /// The on-device score settles the clear cases on its own: at or above
+  /// the live scan's bar ([_scanAt]) the photo is a mat — the scanner only
+  /// fires there, and a scan that fires and is then refused reads as the
+  /// app not believing someone who has just prayed; below [_proofFloor] it
+  /// is a carpet or a floor. In the band between, Claude decides when it
+  /// can be asked ([second]), and without it the photo must clear zero,
+  /// which no measured carpet did.
   static MatVerdict decideProof(List<VisionLabel> labels, MatVerdict second) {
     final double? margin = marginOf(labels);
-    if (margin != null && margin < _proofFloor) return MatVerdict.looksWrong;
+    if (margin != null) {
+      if (margin >= _scanAt) return MatVerdict.looksRight;
+      if (margin < _proofFloor) return MatVerdict.looksWrong;
+    }
     if (second != MatVerdict.unsure) return second;
-    // Without Claude the phone decides alone. Zero sits in the gap between
-    // the measured carpets (at or below +0.002) and the mats (median
-    // +0.053), and is a touch below the live scan's bar so a photo that
-    // just fired is not then refused by the same encoder.
     if (margin != null) {
       return margin >= _offlineProofAt
           ? MatVerdict.looksRight
@@ -244,6 +246,10 @@ abstract final class MatCheck {
     // phone that cannot check at all — refusing it would trap the person.
     return decide(labels);
   }
+
+  /// Whether a proof photo's score leaves the decision to Claude.
+  static bool needsProofOpinion(double margin) =>
+      margin >= _proofFloor && margin < _scanAt;
 
   static bool needsSecondOpinion(double? margin) =>
       margin != null && margin >= _askAbove && margin <= _askBelow;

@@ -35,6 +35,8 @@ import 'widgets/ramadan_card.dart';
 import 'widgets/today_progress_card.dart';
 import '../../prayer_lock/application/prayer_lock_controller.dart';
 import '../../prayer_lock/domain/prayer_session.dart';
+import '../../prayer_lock/presentation/scan_flow.dart';
+import '../../premium/application/premium_store.dart';
 import 'widgets/prayer_choice_card.dart';
 import '../../streaks/data/prayer_day_repository.dart';
 import '../../../core/widgets/app_snackbar.dart';
@@ -361,13 +363,49 @@ Set<PrayerId> _reopenable(
   final Set<String> dismissed = ref.watch(dismissedSessionsProvider);
   final String today = Fmt.dayId(now);
 
+  // Every prayer whose time has come and which is not confirmed: a miss to
+  // reopen, a put-off one to bring back, or simply one still owed — Dhuhr
+  // at Asr time — which used to be unreachable until the current prayer
+  // was settled, so a bead could not be tapped to confirm it.
   return <PrayerId>{
     for (final PrayerId id in PrayerId.obligatory)
       if (!now.isBefore(schedule.slotFor(id).start))
-        if (day.recordFor(id).status == PrayerStatus.missed ||
+        if (!day.recordFor(id).status.isSettled ||
+            day.recordFor(id).status == PrayerStatus.missed ||
             dismissed.contains('$today|${id.key}'))
           id,
   };
+}
+
+/// Confirms [prayer] from its bead: the mat scan with Premium, one tap
+/// without. The session is built for that prayer's own slot, so a backlog
+/// prayer is confirmed as itself and not as whatever is current.
+Future<void> _confirmFromBead(
+  BuildContext context,
+  WidgetRef ref,
+  PrayerId prayer,
+  PrayerDay day,
+  PrayerSchedule schedule,
+  DateTime now,
+) async {
+  final PrayerSlot slot = schedule.slotFor(prayer);
+  final PrayerSession session = PrayerSession(
+    prayer: prayer,
+    startedAt: slot.start,
+    endsAt: slot.start.add(kPrayerSessionLength),
+    status: day.recordFor(prayer).status,
+    isCurrent: ref.read(activeSessionProvider)?.prayer == prayer,
+  );
+  if (ref.read(isProProvider)) {
+    await confirmWithScan(context, ref, session);
+    return;
+  }
+  final bool ok = await ref
+      .read(prayerLockControllerProvider.notifier)
+      .confirmWithoutProof(session);
+  if (ok && context.mounted) {
+    context.showSuccess('${prayer.label} confirmed. May it be accepted.');
+  }
 }
 
 /// Puts a prayer marked missed back to pending, after asking.
@@ -382,13 +420,19 @@ Future<void> _reopenPrayer(
   PrayerDay day,
   DateTime now,
 ) async {
-  // Only a recorded miss touches Firestore. One that was merely put off is
-  // still pending there — all that hid it was a dismissal held in memory, so
-  // bringing it back is a local matter and needs no dialog at all.
+  // Only a recorded miss touches Firestore. One still owed — put off, or
+  // simply not yet confirmed — goes straight to its confirmation: the scan
+  // with Premium, one tap without. Any dismissal is cleared on the way so
+  // the card below shows it again too.
   if (day.recordFor(prayer).status != PrayerStatus.missed) {
     ref
         .read(dismissedSessionsProvider.notifier)
         .clear('${Fmt.dayId(now)}|${prayer.key}');
+    final PrayerSchedule? schedule = ref
+        .read(prayerScheduleProvider)
+        .valueOrNull;
+    if (schedule == null) return;
+    await _confirmFromBead(context, ref, prayer, day, schedule, now);
     return;
   }
 
