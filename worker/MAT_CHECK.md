@@ -38,9 +38,10 @@ anyone without a Firebase ID token.
 ## What it costs
 
 `claude-haiku-4-5`, one image plus a short prompt: roughly **£0.0005 per
-check**. The app only escalates photos the on-device check is unsure about —
-around 5–10% — so 100 users praying five times a day is a few pounds a month,
-not the ~£9 it would be if every photo were sent.
+check**. Since 1 Oct 2026 every proof photo is checked (strict: only a prayer
+mat passes, a carpet or rug does not), so 100 Premium users praying five times
+a day is about £7–9 a month. The on-device check still screens out clear
+carpets first and stands in when there is no signal.
 
 ## What it does not do
 

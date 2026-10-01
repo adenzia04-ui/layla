@@ -207,6 +207,35 @@ abstract final class MatCheck {
     return MatVerdict.unsure;
   }
 
+  /// The floor for a proof photo: below this the on-device check is
+  /// confident the photo is a carpet or a floor, not a prayer mat, and no
+  /// second opinion overrules it.
+  ///
+  /// Measured on 53 prayer mats and 22 carpets: carpets ran from -0.131 to
+  /// +0.002 and mats from -0.026 upward (median +0.053). -0.02 turns away the
+  /// clear carpets while keeping all but the very faintest mat; the rest is
+  /// for Claude to settle.
+  static const double _proofFloor = -0.02;
+
+  /// The final verdict on a proof photo, strict: only a prayer mat passes.
+  ///
+  /// [second] is Claude's answer, or [MatVerdict.unsure] when it could not be
+  /// asked (no signal, no endpoint). Claude decides when it answers, inside
+  /// the on-device floor. Without it, the photo has to clear the same bar a
+  /// live frame does — the old generous threshold is what let rugs through.
+  static MatVerdict decideProof(List<VisionLabel> labels, MatVerdict second) {
+    final double? margin = marginOf(labels);
+    if (margin != null && margin < _proofFloor) return MatVerdict.looksWrong;
+    if (second != MatVerdict.unsure) return second;
+    if (margin != null) {
+      return margin >= _scanAt ? MatVerdict.looksRight : MatVerdict.looksWrong;
+    }
+    // No encoder and no Claude: nothing can judge it. The live scan already
+    // refused to fire without an encoder, so this is a manual capture on a
+    // phone that cannot check at all — refusing it would trap the person.
+    return decide(labels);
+  }
+
   static bool needsSecondOpinion(double? margin) =>
       margin != null && margin >= _askAbove && margin <= _askBelow;
 

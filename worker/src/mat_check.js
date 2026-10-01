@@ -16,19 +16,20 @@ const MODEL = "claude-haiku-4-5";
 
 // One yes/no question, no room to wander. Kept short because every token is
 // billed on every prayer.
-const SYSTEM = `You judge whether a photo shows a prayer mat (sajjada).
+const SYSTEM = `You judge whether a photo shows a prayer mat (sajjada): the
+small rug made for one person to pray on.
 
 Answer with one word: MAT or OTHER.
 
-MAT: a prayer mat or prayer rug, including plain embossed velvet ones with no
-printed pattern, folded or travel mats, and mats being prayed on. An ordinary
-decorative rug counts as MAT if it is clearly laid out and being used to pray.
+MAT: a prayer mat. It is sized for one person and usually has a prayer-niche
+(mihrab or arch) design, a framed border, or the plain embossed velvet style.
+Folded or travel prayer mats, and prayer mats being prayed on, also count.
 
-OTHER: bare carpet or flooring, a towel or bedsheet, furniture, a wall or
-ceiling, a person's face, a screen, or anything that is not a mat.
+OTHER: wall-to-wall or room carpet, an ordinary area rug or decorative rug, a
+doormat, a bath mat, a yoga mat, a towel, blanket or bedsheet, a bare floor,
+furniture, a wall or ceiling, a person, a screen, or anything else.
 
-If it is genuinely unclear, answer MAT. Refusing someone who has just prayed is
-worse than letting a carpet through.`;
+If you cannot tell that it is a prayer mat, answer OTHER.`;
 
 function json(status, data) {
   return new Response(JSON.stringify(data), {

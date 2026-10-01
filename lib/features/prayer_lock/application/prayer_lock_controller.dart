@@ -197,21 +197,16 @@ class PrayerLockController extends AutoDisposeAsyncNotifier<void> {
       final ProofRepository proofs = ref.read(proofRepositoryProvider);
       final XFile file = photo;
 
-      // Look at the photo before keeping it. A confident "this is a face" or
-      // "this is the sky" is worth catching here, while the camera is still
-      // fresh in mind — rejecting it later would mean asking someone to go
-      // back and photograph their mat again for no visible reason.
-      //
-      // Only a confident contradiction blocks. Anything else passes, because
-      // no free classifier can actually recognise a prayer mat and this must
-      // not become a gate that traps honest people.
+      // Only a prayer mat confirms a prayer. A carpet, a rug, a floor, a
+      // towel is turned away here, while the camera is still in hand, with
+      // a reason that says what to do.
       final MatVerdict verdict = await ref
           .read(matVisionProvider)
-          .inspect(file.path);
+          .inspectProof(file.path);
       if (verdict == MatVerdict.looksWrong) {
         throw const AppFailure(
-          'That does not look like your prayer mat. Point the camera down at '
-          'the mat and take it again.',
+          'That does not look like a prayer mat. A carpet or rug does not '
+          'count — point the camera at your prayer mat and try again.',
           code: 'proof-not-a-mat',
         );
       }

@@ -143,6 +143,20 @@ class MatVision {
     return (verdict: verdict, margin: margin, detail: detail);
   }
 
+  /// The strict verdict on a proof photo: only a prayer mat passes.
+  ///
+  /// Every proof photo is shown to Claude when the endpoint is configured —
+  /// not only the ambiguous ones — because a decorative rug and a prayer mat
+  /// look alike to the on-device encoder and a carpet must not confirm a
+  /// prayer. See [MatCheck.decideProof].
+  Future<MatVerdict> inspectProof(String path) async {
+    final List<VisionLabel> labels = await _labels(path);
+    final MatVerdict second = _claude.available
+        ? await _askClaude(path)
+        : MatVerdict.unsure;
+    return MatCheck.decideProof(labels, second);
+  }
+
   Future<MatVerdict> inspect(String path) async {
     final List<VisionLabel> labels = await _labels(path);
     final MatVerdict local = MatCheck.decide(labels);
