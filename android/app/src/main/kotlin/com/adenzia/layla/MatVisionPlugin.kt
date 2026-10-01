@@ -101,6 +101,22 @@ object MatVisionPlugin {
                 result.success(downscale(path, maxEdge, quality))
             }
 
+            // The passing preview frame as a JPEG, upright. Dart used to read
+            // the first plane as BGRA, which is what iOS sends; Android sends
+            // YUV, so the kept "photo" was noise and every scan that fired was
+            // then refused.
+            "frameToJpeg" -> {
+                val bitmap = decodeFrame(call)
+                if (bitmap == null) {
+                    result.success(null)
+                    return
+                }
+                val out = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                bitmap.recycle()
+                result.success(out.toByteArray())
+            }
+
             else -> result.notImplemented()
         }
     }

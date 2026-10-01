@@ -357,6 +357,34 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
   Future<XFile?> _keepFrame(CameraController cam) async {
     final CameraImage? img = _latest;
     if (img == null || img.planes.isEmpty) return null;
+    // Android hands over YUV in three planes. Only the native side can turn
+    // that into a picture; reading its first plane as BGRA (the path below,
+    // which is iOS's single plane) gave a scrambled image that the proof
+    // check then rightly refused.
+    if (img.planes.length >= 3) {
+      final Uint8List? jpeg = await ref
+          .read(matVisionProvider)
+          .frameJpeg(
+            MatFrame(
+              bytes: img.planes.first.bytes,
+              width: img.width,
+              height: img.height,
+              bytesPerRow: img.planes.first.bytesPerRow,
+              sensorOrientation: cam.description.sensorOrientation,
+              u: img.planes[1].bytes,
+              v: img.planes[2].bytes,
+              uvRowStride: img.planes[1].bytesPerRow,
+              uvPixelStride: img.planes[1].bytesPerPixel ?? 1,
+            ),
+          );
+      if (jpeg == null) return null;
+      final Directory dir = await getTemporaryDirectory();
+      final File file = File(
+        '${dir.path}/mat-${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
+      await file.writeAsBytes(jpeg, flush: true);
+      return XFile(file.path, mimeType: 'image/jpeg');
+    }
     try {
       final Plane plane = img.planes.first;
       final Completer<ui.Image> raw = Completer<ui.Image>();

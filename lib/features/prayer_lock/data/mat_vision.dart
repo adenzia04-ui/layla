@@ -253,27 +253,40 @@ class MatVision {
     return Uint8List.fromList(img.encodeJpg(small, quality: 70));
   }
 
+  /// The frame as a JPEG, upright, by the native side — the only side that
+  /// knows the frame's real pixel format. Null when there is no bridge.
+  Future<Uint8List?> frameJpeg(MatFrame frame) async {
+    try {
+      return await _channel.invokeMethod<Uint8List>(
+        'frameToJpeg',
+        _frameArgs(frame),
+      );
+    } on Object catch (e) {
+      debugPrint('Layla Pro: frame could not be kept natively ($e)');
+      return null;
+    }
+  }
+
+  static Map<String, Object?> _frameArgs(MatFrame frame) => <String, Object?>{
+    'bytes': frame.bytes,
+    'y': frame.bytes,
+    'width': frame.width,
+    'height': frame.height,
+    'bytesPerRow': frame.bytesPerRow,
+    'yRowStride': frame.bytesPerRow,
+    'orientation': frame.exifOrientation,
+    'rotation': ((frame.sensorOrientation % 360) + 360) % 360,
+    if (frame.u != null) 'u': frame.u,
+    if (frame.v != null) 'v': frame.v,
+    if (frame.uvRowStride != null) 'uvRowStride': frame.uvRowStride,
+    if (frame.uvPixelStride != null) 'uvPixelStride': frame.uvPixelStride,
+  };
+
   Future<List<VisionLabel>> _labels(String path) =>
       _ask('classify', <String, Object?>{'path': path});
 
   Future<List<VisionLabel>> _frameLabels(MatFrame frame) =>
-      _ask('classifyFrame', <String, Object?>{
-        // iOS reads 'bytes' and 'orientation'; Android reads 'y', the chroma
-        // planes and 'rotation'. Both are sent so neither platform needs to
-        // know what the other wanted.
-        'bytes': frame.bytes,
-        'y': frame.bytes,
-        'width': frame.width,
-        'height': frame.height,
-        'bytesPerRow': frame.bytesPerRow,
-        'yRowStride': frame.bytesPerRow,
-        'orientation': frame.exifOrientation,
-        'rotation': ((frame.sensorOrientation % 360) + 360) % 360,
-        if (frame.u != null) 'u': frame.u,
-        if (frame.v != null) 'v': frame.v,
-        if (frame.uvRowStride != null) 'uvRowStride': frame.uvRowStride,
-        if (frame.uvPixelStride != null) 'uvPixelStride': frame.uvPixelStride,
-      });
+      _ask('classifyFrame', _frameArgs(frame));
 
   Future<List<VisionLabel>> _ask(
     String method,
