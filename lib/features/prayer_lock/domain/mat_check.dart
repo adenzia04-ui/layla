@@ -217,6 +217,9 @@ abstract final class MatCheck {
   /// for Claude to settle.
   static const double _proofFloor = -0.02;
 
+  /// The bar a proof photo must clear when Claude cannot be asked.
+  static const double _offlineProofAt = 0.0;
+
   /// The final verdict on a proof photo, strict: only a prayer mat passes.
   ///
   /// [second] is Claude's answer, or [MatVerdict.unsure] when it could not be
@@ -227,8 +230,14 @@ abstract final class MatCheck {
     final double? margin = marginOf(labels);
     if (margin != null && margin < _proofFloor) return MatVerdict.looksWrong;
     if (second != MatVerdict.unsure) return second;
+    // Without Claude the phone decides alone. Zero sits in the gap between
+    // the measured carpets (at or below +0.002) and the mats (median
+    // +0.053), and is a touch below the live scan's bar so a photo that
+    // just fired is not then refused by the same encoder.
     if (margin != null) {
-      return margin >= _scanAt ? MatVerdict.looksRight : MatVerdict.looksWrong;
+      return margin >= _offlineProofAt
+          ? MatVerdict.looksRight
+          : MatVerdict.looksWrong;
     }
     // No encoder and no Claude: nothing can judge it. The live scan already
     // refused to fire without an encoder, so this is a manual capture on a

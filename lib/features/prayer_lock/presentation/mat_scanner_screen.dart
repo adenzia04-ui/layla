@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../premium/application/premium_store.dart';
 import '../data/mat_vision.dart';
 import '../domain/mat_check.dart';
 
@@ -132,6 +133,9 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
   bool _torch = false;
   bool _busy = false;
   String? _fault;
+
+  /// The last frame's score, shown on a testing build only.
+  double? _lastMargin;
 
   Timer? _countdown;
   DateTime? _lastLook;
@@ -303,9 +307,9 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
     // was asked for. The other two carry the colour, and without them the
     // check would be judging a greyscale picture.
     final bool hasChroma = image.planes.length >= 3;
-    final MatVerdict seen = await ref
+    final ({MatVerdict verdict, double? margin}) judged = await ref
         .read(matVisionProvider)
-        .inspectFrame(
+        .examineFrame(
           MatFrame(
             bytes: plane.bytes,
             width: image.width,
@@ -321,6 +325,10 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
           ),
         );
     if (!mounted || _phase != _Phase.scanning) return;
+    final MatVerdict seen = judged.verdict;
+    if (kUnlockAllForTesting && judged.margin != _lastMargin) {
+      setState(() => _lastMargin = judged.margin);
+    }
 
     // Anything but a pass breaks the run. The count is what "hold steady"
     // actually means, so it has to reset the moment the mat leaves the frame.
@@ -494,7 +502,11 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
 
   String get _status => switch (_phase) {
     _Phase.starting => 'Opening the camera…',
-    _Phase.scanning => _run > 0 ? 'Hold steady…' : 'Looking for your mat…',
+    _Phase.scanning =>
+      (_run > 0 ? 'Hold steady…' : 'Looking for your mat…') +
+          (kUnlockAllForTesting && _lastMargin != null
+              ? '  (${_lastMargin! >= 0 ? '+' : ''}${_lastMargin!.toStringAsFixed(3)}, needs +0.020)'
+              : ''),
     _Phase.found => 'Prayer mat found.',
     _Phase.timedOut => 'Time ran out. Scan again, or use ⋯ to take the photo.',
     _Phase.manual => 'Frame your mat, then use ⋯ to take the photo.',

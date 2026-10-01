@@ -11,6 +11,7 @@ import ai.onnxruntime.OrtSession
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import java.io.ByteArrayOutputStream
 import java.nio.FloatBuffer
 import org.json.JSONObject
 import kotlin.math.max
@@ -84,8 +85,57 @@ object MatVisionPlugin {
                 result.success(labelsFor(decodeFrame(call)))
             }
 
+            // A smaller JPEG of a photo, for the one copy that leaves the
+            // phone. iOS has had this from the start; without it Android sent
+            // the full capture, which was over the Worker's size limit, so
+            // Claude was never actually asked on Android.
+            "downscale" -> {
+                val path = call.argument<String>("path")
+                val maxEdge = call.argument<Int>("maxEdge") ?: 640
+                val quality = ((call.argument<Double>("quality") ?: 0.7) * 100)
+                    .toInt().coerceIn(30, 95)
+                if (path == null) {
+                    result.error("downscale", "downscale needs a file path", null)
+                    return
+                }
+                result.success(downscale(path, maxEdge, quality))
+            }
+
             else -> result.notImplemented()
         }
+    }
+
+    private fun downscale(path: String, maxEdge: Int, quality: Int): ByteArray? {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(path, bounds)
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+        // Decode at a coarse fraction first, so a 12-megapixel capture never
+        // has to exist in memory at full size.
+        var sample = 1
+        while (max(bounds.outWidth, bounds.outHeight) / (sample * 2) >= maxEdge) {
+            sample *= 2
+        }
+        val full = BitmapFactory.decodeFile(
+            path,
+            BitmapFactory.Options().apply { inSampleSize = sample },
+        ) ?: return null
+        val longest = max(full.width, full.height)
+        val scaled = if (longest > maxEdge) {
+            val k = maxEdge.toFloat() / longest
+            Bitmap.createScaledBitmap(
+                full,
+                (full.width * k).toInt().coerceAtLeast(1),
+                (full.height * k).toInt().coerceAtLeast(1),
+                true,
+            )
+        } else {
+            full
+        }
+        val out = ByteArrayOutputStream()
+        scaled.compress(Bitmap.CompressFormat.JPEG, quality, out)
+        if (scaled !== full) scaled.recycle()
+        full.recycle()
+        return out.toByteArray()
     }
 
     /**

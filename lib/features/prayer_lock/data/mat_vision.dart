@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image/image.dart' as img;
 
 import '../domain/mat_check.dart';
 import 'mat_second_opinion.dart';
@@ -121,6 +122,19 @@ class MatVision {
   Future<MatVerdict> inspectFrame(MatFrame frame) async =>
       MatCheck.decideFrame(await _frameLabels(frame));
 
+  /// The verdict on a live frame, with the number behind it — for the
+  /// scanner's readout on a testing build, so a scan that will not fire can
+  /// be reported as "+0.012" rather than "it does not work".
+  Future<({MatVerdict verdict, double? margin})> examineFrame(
+    MatFrame frame,
+  ) async {
+    final List<VisionLabel> labels = await _frameLabels(frame);
+    return (
+      verdict: MatCheck.decideFrame(labels),
+      margin: MatCheck.marginOf(labels),
+    );
+  }
+
   /// The verdict plus the numbers behind it, for the test button.
   ///
   /// The margin is what the threshold is compared against, so seeing it is the
@@ -195,17 +209,44 @@ class MatVision {
 
   Future<Uint8List?> _shrink(String path) async {
     try {
-      return await _channel.invokeMethod<Uint8List>(
+      final Uint8List? native = await _channel.invokeMethod<Uint8List>(
         'downscale',
         <String, Object?>{'path': path, 'maxEdge': _sendAt, 'quality': 0.7},
       );
+      if (native != null && native.isNotEmpty) return native;
     } on Object catch (e) {
-      // Not fatal: the full capture still answers the question, it just costs
-      // more. A platform with no bridge never reaches here anyway, because
-      // there is no margin without one and so nothing to escalate.
+      debugPrint('Layla Pro: native mat downscale failed ($e)');
+    }
+    // No bridge, or it failed: shrink in Dart instead. Slower, but it means
+    // the one copy that goes to Claude is always small enough to be sent —
+    // a full capture is over the Worker's limit, and refusing to send it was
+    // how Android quietly went without the second opinion.
+    try {
+      final Uint8List bytes = await File(path).readAsBytes();
+      return await compute(shrinkInDart, bytes);
+    } on Object catch (e) {
       debugPrint('Layla Pro: mat downscale failed ($e)');
       return null;
     }
+  }
+
+  @visibleForTesting
+  static Uint8List? shrinkInDart(Uint8List bytes) {
+    final img.Image? decoded = img.decodeImage(bytes);
+    if (decoded == null) return null;
+    final img.Image upright = img.bakeOrientation(decoded);
+    final int longest = upright.width > upright.height
+        ? upright.width
+        : upright.height;
+    final img.Image small = longest > _sendAt
+        ? img.copyResize(
+            upright,
+            width: upright.width >= upright.height ? _sendAt : null,
+            height: upright.height > upright.width ? _sendAt : null,
+            interpolation: img.Interpolation.average,
+          )
+        : upright;
+    return Uint8List.fromList(img.encodeJpg(small, quality: 70));
   }
 
   Future<List<VisionLabel>> _labels(String path) =>
