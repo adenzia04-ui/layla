@@ -220,23 +220,18 @@ abstract final class MatCheck {
   /// The bar a proof photo must clear when Claude cannot be asked.
   static const double _offlineProofAt = 0.0;
 
-  /// The final verdict on a proof photo.
+  /// The final verdict on a proof photo: only a prayer mat passes.
   ///
-  /// The on-device score settles the clear cases on its own: at or above
-  /// the live scan's bar ([_scanAt]) the photo is a mat — the scanner only
-  /// fires there, and a scan that fires and is then refused reads as the
-  /// app not believing someone who has just prayed; below [_proofFloor] it
-  /// is a carpet or a floor. In the band between, Claude decides when it
-  /// can be asked ([second]), and without it the photo must clear zero,
-  /// which no measured carpet did.
+  /// Claude decides whenever it answers ([second]); it is the one judge
+  /// that can tell a prayer mat from a carpet, which the on-device score
+  /// cannot — a thick rug scores like a mat. The phone's own score only
+  /// stands in when Claude cannot be asked: below the carpet floor it is
+  /// refused, otherwise it must clear zero, which no measured carpet did.
   static MatVerdict decideProof(List<VisionLabel> labels, MatVerdict second) {
+    if (second != MatVerdict.unsure) return second;
     final double? margin = marginOf(labels);
     if (margin != null) {
-      if (margin >= _scanAt) return MatVerdict.looksRight;
       if (margin < _proofFloor) return MatVerdict.looksWrong;
-    }
-    if (second != MatVerdict.unsure) return second;
-    if (margin != null) {
       return margin >= _offlineProofAt
           ? MatVerdict.looksRight
           : MatVerdict.looksWrong;

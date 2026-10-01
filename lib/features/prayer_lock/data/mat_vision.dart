@@ -165,13 +165,13 @@ class MatVision {
   /// prayer. See [MatCheck.decideProof].
   Future<MatVerdict> inspectProof(String path) async {
     final List<VisionLabel> labels = await _labels(path);
-    final double? margin = MatCheck.marginOf(labels);
-    // Claude is asked only where the phone cannot settle it: between the
-    // carpet floor and the scan bar, or when there is no score at all.
-    final bool ask =
-        _claude.available &&
-        (margin == null || MatCheck.needsProofOpinion(margin));
-    final MatVerdict second = ask ? await _askClaude(path) : MatVerdict.unsure;
+    // Every proof photo goes to Claude: the on-device score cannot tell a
+    // thick carpet from a prayer mat, and a carpet must not confirm a
+    // prayer. Claude's answer is then the answer; the score stands in only
+    // when there is no signal.
+    final MatVerdict second = _claude.available
+        ? await _askClaude(path)
+        : MatVerdict.unsure;
     return MatCheck.decideProof(labels, second);
   }
 
