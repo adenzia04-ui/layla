@@ -293,15 +293,19 @@ class _Bead extends StatelessWidget {
         switch (status) {
           // Confirmed: the same navy bead, lit — a gold ring, the prayer's own
           // glyph in gold, and a soft glow. No tick; the light is the mark.
+          // Prayed: solid gold with a tick, unmistakable at a glance. It
+          // used to be the dark bead with a gold rim, which was all but the
+          // twin of the next prayer's bead — and so a confirmed prayer did
+          // not look confirmed.
           PrayerStatus.completed => (
             fill: <Color>[
-              AppColors.navyElevated,
-              AppColors.navy,
-              AppColors.midnight,
+              AppColors.goldSoft,
+              AppColors.gold,
+              AppColors.goldDim,
             ],
-            rim: AppColors.gold,
-            mark: null,
-            ink: AppColors.goldSoft,
+            rim: AppColors.goldSoft,
+            mark: Icons.check_rounded,
+            ink: AppColors.midnight,
           ),
           PrayerStatus.missed => (
             fill: <Color>[

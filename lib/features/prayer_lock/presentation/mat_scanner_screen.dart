@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -683,6 +684,17 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
                 title: Text('Scan again', style: AppType.titleSm),
                 onTap: () => Navigator.of(context).pop('again'),
               ),
+            // Testing builds only: put a photo from the gallery through the
+            // very same confirmation the camera's photo goes through.
+            if (kUnlockAllForTesting)
+              ListTile(
+                leading: const Icon(
+                  Icons.photo_library_outlined,
+                  color: AppColors.gold,
+                ),
+                title: Text('Choose a photo (testing)', style: AppType.titleSm),
+                onTap: () => Navigator.of(context).pop('gallery'),
+              ),
             ListTile(
               leading: Icon(
                 _torch
@@ -703,6 +715,14 @@ class _MatScannerScreenState extends ConsumerState<MatScannerScreen>
     );
     if (!mounted) return;
     switch (pick) {
+      case 'gallery':
+        final XFile? chosen = await ImagePicker().pickImage(
+          source: ImageSource.gallery,
+          maxWidth: 1280,
+          maxHeight: 1280,
+          imageQuality: 85,
+        );
+        if (chosen != null && mounted) Navigator.of(context).pop(chosen);
       case 'shoot':
         await _shoot();
       case 'again':
